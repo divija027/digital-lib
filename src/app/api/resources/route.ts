@@ -5,7 +5,11 @@ import { getCurrentUser } from '@/lib/auth'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+
+// Configure runtime for large file uploads
+export const runtime = 'nodejs'
+export const maxDuration = 60 // 60 seconds timeout
 
 export async function GET(request: NextRequest) {
   try {
@@ -80,6 +84,13 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     console.log('Form data keys:', Array.from(formData.keys()))
     const file = formData.get('file') as File
+    
+    console.log('File details:', {
+      name: file?.name,
+      size: file?.size,
+      type: file?.type,
+      sizeInMB: file ? (file.size / (1024 * 1024)).toFixed(2) : 'N/A'
+    })
     const title = formData.get('title') as string
     const description = formData.get('description') as string
     const categoryId = formData.get('categoryId') as string
@@ -96,8 +107,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_FILE_SIZE) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2)
+      const maxSizeMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0)
       return NextResponse.json(
-        { error: 'File too large' },
+        { error: `File too large (${fileSizeMB}MB). Maximum allowed size is ${maxSizeMB}MB.` },
         { status: 400 }
       )
     }

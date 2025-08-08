@@ -106,12 +106,16 @@ export function ResourceUpload({ categories, subjects, onUploadSuccess }: Resour
       })
 
       let result
+      let responseText
       try {
-        result = await response.json()
+        responseText = await response.text()
+        result = JSON.parse(responseText)
       } catch (parseError) {
         console.error('JSON parse error:', parseError)
-        console.error('Response text:', await response.text())
-        throw new Error('Server returned invalid response. Please check server logs.')
+        console.error('Response text:', responseText)
+        console.error('Response status:', response.status)
+        console.error('Response headers:', Object.fromEntries(response.headers.entries()))
+        throw new Error(`Server returned invalid response: ${responseText || 'Empty response'}`)
       }
 
       if (!response.ok) {
@@ -286,7 +290,14 @@ export function ResourceUpload({ categories, subjects, onUploadSuccess }: Resour
           </div>
 
           <Button type="submit" className="w-full" disabled={isUploading}>
-            {isUploading ? 'Uploading...' : 'Upload Resource'}
+            {isUploading ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Uploading... Please wait
+              </div>
+            ) : (
+              'Upload Resource'
+            )}
           </Button>
         </form>
       </CardContent>
