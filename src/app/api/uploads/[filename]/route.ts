@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
     // Optional: Add authentication check
@@ -14,7 +14,7 @@ export async function GET(
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     // }
 
-    const filename = params.filename
+    const { filename } = await params
     const filePath = join(process.cwd(), 'uploads', filename)
 
     try {
