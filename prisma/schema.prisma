@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  uploadedResources Resource[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  resources Resource[]
+
+  @@map("categories")
+}
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  semester    Int
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  resources Resource[]
+
+  @@map("subjects")
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  fileName    String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  type        ResourceType
+  semester    Int?
+  year        Int?
+  downloads   Int          @default(0)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Foreign keys
+  categoryId String
+  subjectId  String?
+  uploadedBy String
+
+  // Relations
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  uploader  User     @relation(fields: [uploadedBy], references: [id])
+
+  @@map("resources")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum ResourceType {
+  QUESTION_PAPER
+  STUDY_MATERIAL
+  PREVIOUS_YEAR_PAPER
+  SYLLABUS
+  NOTES
+  OTHER
+}
