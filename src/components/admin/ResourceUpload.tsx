@@ -105,10 +105,17 @@ export function ResourceUpload({ categories, subjects, onUploadSuccess }: Resour
         body: formData,
       })
 
-      const result = await response.json()
+      let result
+      try {
+        result = await response.json()
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError)
+        console.error('Response text:', await response.text())
+        throw new Error('Server returned invalid response. Please check server logs.')
+      }
 
       if (!response.ok) {
-        throw new Error(result.error)
+        throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`)
       }
 
       setSuccess('Resource uploaded successfully!')
