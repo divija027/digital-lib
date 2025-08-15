@@ -289,261 +289,217 @@ export default function Home() {
       <div className="h-14 sm:h-16 lg:h-20 xl:h-24"></div>
 
       <main>
-        {/* Enhanced Hero Section - Mobile Optimized */}
-        <section className="relative py-8 sm:py-10 lg:py-12 xl:py-18 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50 overflow-hidden">
-          {/* Dynamic Background Elements - Scaled for Mobile */}
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-            <div className="absolute top-3/4 right-1/4 w-48 h-48 sm:w-64 sm:h-64 lg:w-96 lg:h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] lg:w-[800px] lg:h-[800px] bg-gradient-to-r from-blue-300/5 to-purple-300/5 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        {/* Enhanced Clean Hero Section */}
+        <section className="relative min-h-[85vh] lg:min-h-[90vh] bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 overflow-hidden">
+          {/* Refined Background Pattern */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_40%,rgba(59,130,246,0.08),transparent_50%)]"></div>
+            <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]"></div>
           </div>
+          
+          {/* Subtle Grid Pattern */}
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat'
+          }}></div>
 
-          {/* Floating motivation bubbles - Mobile Optimized */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-16 sm:top-20 left-4 sm:left-10 animate-bounce" style={{ animationDelay: '1s', animationDuration: '3s' }}>
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium shadow-lg">
-                <Brain className="w-2 h-2 sm:w-3 sm:h-3 inline mr-1" />
-                <span className="hidden sm:inline">Smart Learning</span>
-                <span className="sm:hidden">Smart</span>
-              </div>
-            </div>
-            <div className="absolute top-24 sm:top-32 right-6 sm:right-16 animate-bounce" style={{ animationDelay: '2s', animationDuration: '3s' }}>
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium shadow-lg">
-                <Trophy className="w-2 h-2 sm:w-3 sm:h-3 inline mr-1" />
-                <span className="hidden sm:inline">Top Grades</span>
-                <span className="sm:hidden">Grades</span>
-              </div>
-            </div>
-            <div className="absolute bottom-20 sm:bottom-32 left-6 sm:left-20 animate-bounce" style={{ animationDelay: '3s', animationDuration: '3s' }}>
-              <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium shadow-lg">
-                <Rocket className="w-2 h-2 sm:w-3 sm:h-3 inline mr-1" />
-                <span className="hidden sm:inline">Career Ready</span>
-                <span className="sm:hidden">Career</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
-              <div className={`space-y-6 sm:space-y-8 transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                <div className="space-y-4 sm:space-y-6">
-                  {/* Enhanced Badge with Animation - Mobile Optimized */}
-                  <div className="flex items-center justify-center lg:justify-start">
-                    <Badge variant="outline" className="text-blue-700 border-blue-200 bg-blue-50/80 px-3 sm:px-4 py-1.5 sm:py-2 hover:scale-105 transition-transform duration-200 group">
-                      <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-yellow-500 fill-current animate-pulse" />
-                      <span className="font-semibold text-xs sm:text-sm">Trusted by 25,000+ Students</span>
-                      <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 ml-1 sm:ml-2 text-blue-500 group-hover:animate-spin" />
-                    </Badge>
-                  </div>
-                  
-                  {/* Dynamic Hero Title with Typing Animation - Mobile Optimized */}
-                  <div className="space-y-3 sm:space-y-4 text-center lg:text-left">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight">
-                      <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                        {typedText}
-                        <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}>|</span>
-                      </span>
-                      <span className="text-gray-900 block mt-1 sm:mt-2">Your</span>
-                      <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent block relative">
-                        VTU Journey
-                        <div className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-0.5 sm:h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-pulse"></div>
-                      </span>
-                    </h1>
-                    
-                    {/* Rotating Motivational Phrases - Mobile Optimized */}
-                    <div className="relative h-6 sm:h-8 overflow-hidden">
-                      <p className="text-sm sm:text-lg lg:text-xl font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse absolute">
-                        {motivationalPhrases[Math.floor(Date.now() / 3000) % motivationalPhrases.length]}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Enhanced Description - Mobile Optimized */}
-                  <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light text-center lg:text-left px-2 sm:px-0">
-                    Join the revolution in VTU education! Access 
-                    <span className="font-semibold text-blue-600"> AI-powered study materials</span>, 
-                    <span className="font-semibold text-indigo-600"> expert-curated notes</span>, and 
-                    <span className="font-semibold text-purple-600"> previous year question papers</span>. 
-                    Everything you need to transform from student to scholar.
-                  </p>
-                </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div className="flex flex-col lg:flex-row items-center justify-between min-h-[85vh] lg:min-h-[90vh] py-16 lg:py-20 gap-12 lg:gap-16">
+              
+              {/* Content Section - Enhanced */}
+              <div className={`flex-1 text-center lg:text-left transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
                 
-                {/* Enhanced Action Buttons - Mobile Optimized */}
-                <div className="flex flex-col gap-3 sm:gap-4 w-full">
-                  <Link href="/register" className="w-full">
-                    <Button size="lg" className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-bold w-full group shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
-                      {/* Button shine effect */}
-                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                      <Rocket className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 group-hover:animate-bounce" />
-                      <span className="hidden sm:inline">Start Your Success Journey</span>
-                      <span className="sm:hidden">Start Your Journey</span>
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3 group-hover:translate-x-2 transition-transform duration-200" />
+                {/* Enhanced Trust Badge */}
+                <div className="inline-flex items-center gap-2 bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-full px-4 py-2.5 mb-8 shadow-sm hover:shadow-md transition-all duration-300">
+                  <Star className="w-4 h-4 text-yellow-500 fill-current animate-pulse" />
+                  <span className="text-sm font-medium text-blue-700">Trusted by 25,000+ VTU Students</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
+
+                {/* Enhanced Hero Title */}
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">
+                  <span className="text-gray-900 block">
+                    <span className="inline-block">
+                      {typedText}
+                      <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100 text-blue-600`}>|</span>
+                    </span>
+                  </span>
+                  <span className="text-gray-900 block mt-2">Your Academic</span>
+                  <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent block mt-2">
+                    Success Story
+                  </span>
+                </h1>
+
+                {/* Enhanced Subtitle */}
+                <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                  Access premium study materials, previous year papers, and AI-powered learning tools designed exclusively for VTU engineering students.
+                </p>
+
+                {/* Enhanced Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
+                  <Link href="/register" className="group">
+                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group-hover:-translate-y-1">
+                      <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                      Start Learning Free
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                     </Button>
                   </Link>
-                  <Link href="/dashboard" className="w-full">
-                    <Button variant="outline" size="lg" className="border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold w-full transition-all duration-300 group backdrop-blur-sm">
-                      <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 group-hover:animate-pulse" />
-                      <span className="hidden sm:inline">Explore Resources</span>
-                      <span className="sm:hidden">Explore</span>
-                      <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2 sm:ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200" />
+                  <Link href="/dashboard" className="group">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg">
+                      <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                      Explore Resources
                     </Button>
                   </Link>
                 </div>
 
-                {/* Enhanced Feature Highlights - Mobile Optimized */}
-                <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:gap-6 pt-4">
-                  <div className="flex items-center space-x-3 p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-green-200/50 hover:bg-green-50/60 transition-all duration-300 group">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                {/* Enhanced Key Features Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto lg:mx-0">
+                  <div className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-sm">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-bold text-gray-900 text-sm sm:text-base block">100% Free Access</span>
-                      <p className="text-xs sm:text-sm text-gray-500 truncate">No hidden costs ever</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-blue-200/50 hover:bg-blue-50/60 transition-all duration-300 group">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                      <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-bold text-gray-900 text-sm sm:text-base block">Instant Access</span>
-                      <p className="text-xs sm:text-sm text-gray-500 truncate">Start learning now</p>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-gray-900">100% Free</p>
+                      <p className="text-xs text-gray-500">Forever & Always</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-purple-200/50 hover:bg-purple-50/60 transition-all duration-300 group">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                      <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  
+                  <div className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-sm">
+                      <Zap className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-bold text-gray-900 text-sm sm:text-base block">AI-Powered</span>
-                      <p className="text-xs sm:text-sm text-gray-500 truncate">Smart recommendations</p>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-gray-900">Instant Access</p>
+                      <p className="text-xs text-gray-500">No Waiting</p>
                     </div>
                   </div>
-                </div>
-
-                {/* Success Metrics Teaser - Mobile Optimized */}
-                <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-100/60">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">Join the Top Performers</h3>
-                        <p className="text-xs sm:text-sm text-gray-600">85% see grade improvements in 30 days</p>
-                      </div>
+                  
+                  <div className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center shadow-sm">
+                      <Brain className="w-5 h-5 text-purple-600" />
                     </div>
-                    <div className="flex space-x-1 flex-shrink-0">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
-                      ))}
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-gray-900">AI-Powered</p>
+                      <p className="text-xs text-gray-500">Smart Learning</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Enhanced Right Side Visualization - Mobile Optimized */}
-              <div className={`relative order-first lg:order-last lg:pl-8 transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
-                {/* Main Dashboard Mockup - Mobile Optimized */}
-                <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-gray-100/60 p-4 sm:p-6 transform rotate-0 sm:rotate-1 hover:rotate-0 transition-all duration-700 group max-w-sm sm:max-w-none mx-auto lg:mx-0">
-                  {/* Enhanced Browser Tabs - Mobile Optimized */}
-                  <div className="absolute top-3 sm:top-6 left-3 sm:left-6 flex space-x-1 sm:space-x-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-400 rounded-full opacity-80 group-hover:animate-pulse"></div>
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-400 rounded-full opacity-80 group-hover:animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full opacity-80 group-hover:animate-pulse" style={{ animationDelay: '1s' }}></div>
-                  </div>
+              {/* Enhanced Visual Section */}
+              <div className={`flex-1 w-full max-w-xl mx-auto lg:mx-0 transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
+                
+                {/* Enhanced Dashboard Preview */}
+                <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100/80 overflow-hidden backdrop-blur-sm hover:shadow-3xl transition-all duration-500">
                   
-                  {/* Dashboard Content - Mobile Optimized */}
-                  <div className="mt-6 sm:mt-10 space-y-3 sm:space-y-4">
-                    <div className="flex items-center justify-between mb-4 sm:mb-6">
-                      <h3 className="text-sm sm:text-lg font-bold text-gray-900">Your Study Dashboard</h3>
-                      <div className="flex items-center space-x-1 sm:space-x-2">
-                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-[10px] sm:text-xs font-medium text-green-600">Live</span>
+                  {/* Enhanced Browser Header */}
+                  <div className="flex items-center gap-2 px-5 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200/80">
+                    <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
+                    <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
+                    <div className="flex-1 mx-4">
+                      <div className="bg-white rounded-lg px-4 py-2 text-xs text-gray-500 border border-gray-200 shadow-sm">
+                        🔒 brainreef.com/dashboard
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enhanced Dashboard Content */}
+                  <div className="p-6 bg-gradient-to-br from-white to-gray-50/30">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold text-gray-900">Your Study Hub</h3>
+                      <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-green-600 font-medium">Online</span>
                       </div>
                     </div>
 
-                    {/* Enhanced Subject Cards - Mobile Optimized */}
-                    <div className="flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-lg sm:rounded-xl border border-blue-200/50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group/card">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-md sm:rounded-lg flex items-center justify-center group-hover/card:scale-110 transition-transform duration-200 flex-shrink-0">
-                        <BookOpen className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-gray-900 font-bold text-xs sm:text-sm truncate">Data Structures & Algorithms</h4>
-                        <p className="text-gray-500 text-[10px] sm:text-xs truncate">Complete notes & solved examples</p>
-                        <div className="w-full bg-blue-200 rounded-full h-1 sm:h-1.5 mt-1 sm:mt-2">
-                          <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1 sm:h-1.5 rounded-full w-3/4 animate-pulse"></div>
+                    {/* Enhanced Study Cards */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <BookOpen className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">Data Structures & Algorithms</h4>
+                          <p className="text-xs text-gray-500 mb-2">Complete notes & examples</p>
+                          <div className="w-full bg-blue-200 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full w-3/4 transition-all duration-500"></div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-blue-600">75%</span>
+                          <p className="text-xs text-gray-500">Progress</p>
                         </div>
                       </div>
-                      <div className="text-blue-600 font-bold text-sm sm:text-xl flex-shrink-0">85%</div>
-                    </div>
 
-                    <div className="flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 bg-gradient-to-r from-green-50 to-emerald-100/50 rounded-lg sm:rounded-xl border border-green-200/50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group/card">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-md sm:rounded-lg flex items-center justify-center group-hover/card:scale-110 transition-transform duration-200 flex-shrink-0">
-                        <FileText className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-gray-900 font-bold text-xs sm:text-sm truncate">Computer Networks - 2023</h4>
-                        <p className="text-gray-500 text-[10px] sm:text-xs truncate">Previous year question paper</p>
-                        <div className="w-full bg-green-200 rounded-full h-1 sm:h-1.5 mt-1 sm:mt-2">
-                          <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-1 sm:h-1.5 rounded-full w-full"></div>
+                      <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100/50 rounded-xl border border-green-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <FileText className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">Computer Networks - 2024</h4>
+                          <p className="text-xs text-gray-500 mb-2">Latest question paper with solutions</p>
+                          <div className="w-full bg-green-200 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full w-full transition-all duration-500"></div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-green-600">100%</span>
+                          <p className="text-xs text-gray-500">Complete</p>
                         </div>
                       </div>
-                      <div className="text-green-600 font-bold text-sm sm:text-xl flex-shrink-0">100%</div>
+
+                      <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 rounded-xl border border-purple-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">Operating Systems</h4>
+                          <p className="text-xs text-gray-500 mb-2">Comprehensive study guide</p>
+                          <div className="w-full bg-purple-200 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full w-1/2 transition-all duration-500"></div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-purple-600">50%</span>
+                          <p className="text-xs text-gray-500">In Progress</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Enhanced Floating Stats - Mobile Optimized */}
-                <div className="absolute -top-3 sm:-top-6 -right-3 sm:-right-6 bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-100/60 p-2 sm:p-4 transform -rotate-2 sm:-rotate-3 hover:rotate-0 transition-all duration-500 group">
-                  <div className="flex items-center space-x-2 sm:space-x-4">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm font-bold text-gray-900">25k+ Students</p>
-                      <p className="text-[10px] sm:text-xs text-gray-500">Learning Daily</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 sm:mt-3 flex items-center space-x-1 sm:space-x-2">
-                    <div className="flex -space-x-1">
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-white bg-gradient-to-r ${['from-blue-400 to-blue-500', 'from-green-400 to-green-500', 'from-purple-400 to-purple-500'][i]} flex-shrink-0`}></div>
-                      ))}
-                    </div>
-                    <span className="text-[10px] sm:text-xs text-gray-600 font-medium">+124 today</span>
-                  </div>
-                </div>
-                
-                <div className="absolute -bottom-3 sm:-bottom-6 -left-3 sm:-left-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-2 sm:p-4 text-white transform rotate-2 sm:rotate-3 hover:rotate-0 transition-all duration-500 group">
-                  <div className="flex items-center space-x-2 sm:space-x-4">
-                    <Download className="w-4 h-4 sm:w-6 sm:h-6 group-hover:animate-bounce flex-shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm font-bold">500k+ Downloads</p>
-                      <p className="text-[10px] sm:text-xs opacity-90">This Month</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 sm:mt-3 flex items-center space-x-1 sm:space-x-2">
-                    <div className="flex space-x-0.5 sm:space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-2 h-2 sm:w-3 sm:h-3 text-yellow-400 fill-current" />
-                      ))}
-                    </div>
-                    <span className="text-[10px] sm:text-xs opacity-90">4.9/5</span>
                   </div>
                 </div>
 
-                {/* Floating Achievement Badge - Mobile Optimized */}
-                <div className="absolute top-1/2 -right-6 sm:-right-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full p-2 sm:p-4 shadow-lg sm:shadow-xl transform hover:scale-110 transition-all duration-300 animate-bounce hidden sm:block" style={{ animationDuration: '4s' }}>
-                  <Trophy className="w-4 h-4 sm:w-8 sm:h-8 text-white" />
+                {/* Enhanced Floating Stats */}
+                <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-gray-200/80 p-5 transform rotate-3 hover:rotate-0 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">25K+</p>
+                    <p className="text-xs text-gray-500 font-medium">Active Students</p>
+                  </div>
+                </div>
+
+                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-gray-200/80 p-5 transform -rotate-3 hover:rotate-0 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">10K+</p>
+                    <p className="text-xs text-gray-500 font-medium">Study Resources</p>
+                  </div>
+                </div>
+
+                {/* New Achievement Badge */}
+                <div className="absolute top-1/2 -left-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg p-3 transform -rotate-12 hover:rotate-0 transition-all duration-300 hover:scale-110">
+                  <Trophy className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Scroll Indicator - Mobile Optimized */}
-          <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="flex flex-col items-center space-y-1 sm:space-y-2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
-              <span className="text-[10px] sm:text-xs font-medium">Explore More</span>
-              <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
+          {/* Enhanced Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <div className="flex flex-col items-center text-gray-400 group cursor-pointer">
+              <span className="text-xs font-medium mb-2 group-hover:text-gray-600 transition-colors duration-200">Discover More</span>
+              <div className="animate-bounce group-hover:animate-pulse">
+                <ChevronDown className="w-6 h-6 group-hover:text-blue-500 transition-colors duration-200" />
+              </div>
             </div>
           </div>
         </section>
