@@ -67,7 +67,7 @@ const collegeData = {
     { code: 'TJ', name: 'T. JOHN INSTITUTE OF TECHNOLOGY' },
     { code: 'VI', name: 'VEMANA INSTITUTE OF TECHNOLOGY' },
     { code: 'VK', name: 'VIVEKANANDA INSTITUTE OF TECHNOLOGY' },
-    // Additional missing colleges
+    // Additional colleges from complete list
     { code: 'AA', name: 'ACHARYS NRV SCHOOL OF ARCHITECTURE' },
     { code: 'AH', name: 'ACS COLLEGE OF ENGINEERING' },
     { code: 'AK', name: 'AKSHAYA INSTITUTE OF TECHNOLOGY' },
@@ -87,7 +87,7 @@ const collegeData = {
     { code: 'BQ', name: 'BMS SCHOOL OF ARCHITECTURE' },
     { code: 'JA', name: 'S J B School of Arch. & Planning' },
     { code: 'GO', name: 'GOPALAN SCHOOL OF ARCHITECTURE & PLANNING' },
-    { code: 'RRS', name: 'R.R. SCHOOL OF ARCHITECTURE' }, // Using RRS to avoid conflict with existing RR
+    { code: 'RR', name: 'R.R. SCHOOL OF ARCHITECTURE' },
     { code: 'AN', name: 'ADITHYA ACADEMY OF ARCHITECTURE & DESGIN' },
     { code: 'PC', name: 'BGS SCHOOL OF ARCHITECTURE & PLANNING' },
     { code: 'KF', name: 'K S SCHOOL OF ARCHITECTURE' },
@@ -103,109 +103,51 @@ const collegeData = {
     { code: 'SW', name: 'SRI BASAVESHWAR INSTITUTE OF TECHNOLOGY' },
     { code: 'RF', name: 'R V INSTITUTE OF TECHNOLOGY AND MGMT' },
     { code: 'WS', name: 'EAST WEST SCHOOL OF ARCHITECTURE' },
-    { code: 'BGS', name: 'BGS College of Engineering & Technology' },
-    { code: 'ADT', name: 'Aditya College of Engineering & Technology' },
-    { code: 'AKS', name: 'Akash Institute of Engineering & Technology' },
-    { code: 'GIT', name: 'Ghousia Institute of Technology for Women' },
+    { code: '', name: 'BGS College of Engineering & Technology' },
+    { code: '', name: 'Aditya College of Engineering & Technology' },
+    { code: '', name: 'Akash Institute of Engineering & Technology' },
+    { code: '', name: 'Ghousia Institute of Technology for Women' },
   ],
   BELAGAVI: [
     { code: 'AB', name: 'ANJUMAN INSTITUTE OF TECHNOLOGY & MANAGEMENT' },
-    { code: 'AC', name: 'ANJUMAN COLLEGE OF ENGINEERING AND TECHNOLOGY' },
-    { code: 'AD', name: 'ANGADI INSTITUTE OF TECHNOLOGY AND MANAGEMENT' },
-    { code: 'AE', name: 'ART COLLEGE OF SCIENCE TECHNOLOGY DHARWAD' },
-    { code: 'AF', name: 'ASHOKRAO MANE GROUP OF INSTITUTIONS' },
-    { code: 'BJ', name: 'B V BHOOMRADDI COLLEGE OF ENGINEERING AND TECHNOLOGY' },
     { code: 'BL', name: 'BLDEAS COLLEGE OF ENGINEERING' },
-    { code: 'BM', name: 'BASAVESHWAR ENGINEERING COLLEGE' },
-    { code: 'BN', name: 'BELGAUM INSTITUTE OF TECHNOLOGY' },
-    { code: 'BP', name: 'BALLARY TECHNICAL AND MANAGEMENT SCIENCES' },
-    { code: 'BQ', name: 'BVVS SARDAR PATEL COLLEGE OF ENGINEERING' },
     { code: 'GO', name: 'GOVT. ENGINEERING COLLEGE HAVERI' },
-    { code: 'GH', name: 'GOVT. POLYTECHNIC HAVERI' },
     { code: 'HN', name: 'HIRASUGAR INSTITUTE OF TECHNOLOGY' },
-    { code: 'HK', name: 'HKE SOCIETY COLLEGE OF ENGINEERING' },
-    { code: 'JA', name: 'JAIN COLLEGE OF ENGINEERING' },
     { code: 'KD', name: 'KLE COLLEGE OF ENG. AND TECHNOLOGY CHIKODI' },
     { code: 'KE', name: 'KLE INSTITUTE OF TECH HUBLI' },
     { code: 'KL', name: 'KLE Dr M. S. SHESHGIRI COLLEGE OF ENGINEERING AND TECHNOLOGY' },
-    { code: 'KM', name: 'KLE TECHNOLOGICAL UNIVERSITY' },
-    { code: 'KN', name: 'KLS INSTITUTE OF ENGINEERING AND TECHNOLOGY' },
     { code: 'MB', name: 'MALIK SANDAL INSTITUTE OF ART AND ARCHITECTURE' },
     { code: 'MM', name: 'MARATHA MANDALS ENGINEERING COLLEGE' },
-    { code: 'MH', name: 'MAHARAJA INSTITUTE OF TECHNOLOGY BELGAUM' },
-    { code: 'NI', name: 'NARGUND COLLEGE OF ENGINEERING' },
-    { code: 'PD', name: 'PDA COLLEGE OF ENGINEERING' },
     { code: 'RH', name: 'RURAL ENGINEERING COLLEGE, HULKOTI' },
-    { code: 'RV', name: 'RAJARAMBAPU INSTITUTE OF TECHNOLOGY' },
-    { code: 'BU', name: 'SG BALEKUNDRI INST. OF TECH' },
+    { code: 'BU', name: 'S G BALEKUNDRI INST. OF TECH' },
     { code: 'SR', name: 'S.T.J. INSTITUTE OF TECHNOLOGY' },
     { code: 'SA', name: 'SECAB INSTITUTE OF ENGINEERING AND TECHNOLOGY' },
-    { code: 'SM', name: 'SHARNBASVA UNIVERSITY COLLEGE OF ENGINEERING' },
     { code: 'KA', name: 'SMT. KAMALA AND SRI VENKAPPA M. AGADI COLLEGE OF ENGINEERING AND TECHNOLOGY' },
     { code: 'TG', name: 'SRI TONTADARAYA COLLEGE OF ENGINEERING' },
-    { code: 'TE', name: 'TONTADARYA COLLEGE OF ENGINEERING' },
     { code: 'VD', name: 'VISHWANATHARAO DESHPANDE INSTITUTE OF TECHNOLOGY, HALIYAL' },
-    { code: 'WA', name: 'WALCHAND INSTITUTE OF TECHNOLOGY' },
-    // Additional missing colleges
-    { code: 'GB', name: 'GOVT. ENGINEERING COLLEGE HUVINHADAGALI' },
-    { code: 'GP', name: 'GOVERNMENT ENGINEERING COLLEGE KARWAR' },
-    { code: 'AG', name: 'ANGADI INSTITUTE OF TECHNOLOGY AND MGMT.' }, // Note: Different from AD
-    { code: 'JI', name: 'JAIN COLLEGE OF ENGINEERING' }, // Note: Different from JA
-    { code: 'VS', name: 'V S M\'S INSTITUTE OF TECHNOLOGY' },
-    { code: 'AV', name: 'AGM RURAL COLLEGE OF ENGINEERING & TECHNOLOGY' },
-    { code: 'GJ', name: 'GRIJABAI SAIL INSTITUTE OF TECHNOLOGY KARWAR' },
-    { code: 'LB', name: 'BILURU GURUBASAVA MAHASWAMIJI INSTITUTE OF TECHNOLOGY' },
-    { code: 'VL', name: 'BASAVA ENGG SCHOOL OF TECHNOLOGY ZALAKI' },
-    { code: 'IH', name: 'JAIN COLLEGE OF ENGG HUBBALLI' },
-    { code: 'LG', name: 'GOVERNMENT ENGINEERING COLLEGE, TALAKAL' },
-    { code: 'KF', name: 'ANGADI SCHOOL OF ARCHITECTURE BELAGAVI' },
-    { code: 'JR', name: 'JAIN COLLEGE OF ENGINEERING & RESEARCH BELAGAVI' },
-    { code: 'GRR', name: 'Govt.Engineering College, Ron Road' },
   ],
   KALABURAGI: [
     { code: 'BK', name: 'BASAVAKALYAN ENGINEERING COLLEGE' },
-    { code: 'BG', name: 'BHEEMANNA KHANDRE INSTITUTE OF TECHNOLOGY, BHALKI' },
-    { code: 'BR', name: 'BRINDAVAN COLLEGE OF ENGINEERING' },
-    { code: 'GT', name: 'GOVERNMENT ENGINEERING COLLEGE RAICHUR' },
     { code: 'GU', name: 'GOVT. ENGINEERING COLLEGE RAICHUR' },
     { code: 'GN', name: 'GURU NANAK DEV ENGINEERING COLLEGE' },
-    { code: 'HI', name: 'HIRASUGAR INSTITUTE OF TECHNOLOGY KALABURAGI' },
     { code: 'KC', name: 'K.C.T. ENGINEERING COLLEGE' },
     { code: 'KB', name: 'KHAJA BANDA NAWAZ COLLEGE OF ENGINEERING' },
-    { code: 'KH', name: 'KHAJA BANDA NAWAZ INSTITUTE OF TECHNOLOGY' },
     { code: 'NA', name: 'NAVODAYA INSTITUTE OF TECHNOLOGY' },
-    { code: 'NB', name: 'NAVODAYA COLLEGE OF ENGINEERING' },
-    { code: 'PD', name: 'POOJYA DODDAPPA APPA COLLEGE OF ENGINEERING' },
     { code: 'PG', name: 'PROUDADEVARAYA INSTITUTE OF TECHNOLOGY' },
     { code: 'VC', name: 'RAO BAHADDUR Y MAHABALESHWARAPPA ENGG COLLEGE' },
     { code: 'RB', name: 'BHEEMANNA KHANDRE INSTITUTE OF TECHNOLOGY, BHALKI' },
     { code: 'SL', name: 'SLN COLLEGE OF ENGINEERING' },
-    { code: 'SG', name: 'SHARNBASVA GOVERNMENT ENGINEERING COLLEGE' },
     { code: 'VN', name: 'VEERAPPA NISTY ENGINEERING COLLEGE' },
-    { code: 'VT', name: 'VIJAYANAGARA ENGINEERING COLLEGE' },
-    // Additional missing colleges
-    { code: 'LA', name: 'LINGARAJ APPA ENGINEERING COLLEGE' },
-    { code: 'GF', name: 'GODUTAI ENGINEERING COLLEGE FOR WOMEN' },
-    { code: 'TS', name: 'SHETTY INSTITUTE OF TECHNOLOGY' },
-    { code: 'NG', name: 'GOVERNMENT ENGINEERING COLLEGE, GANGAVATI' },
-    { code: 'NBI', name: 'GOVERNMENT ENGINEERING COLLEGE, BIDAR' },
-    { code: 'NSA', name: 'Poojya Dr. Shivakumar Swamiji School of Architecture Kalaburagi' },
   ],
   MYSURU: [
     { code: 'AI', name: 'ADICHUNCHANAGIRI INSTITUTE OF TECHNOLOGY' },
     { code: 'AL', name: 'ALVAS INST. OF ENGG. AND TECHNOLOGY' },
-    { code: 'AM', name: 'ACHARYA INSTITUTE OF TECHNOLOGY SOLDEVANAHALLI' },
     { code: 'BB', name: 'BAHUBALI COLLEGE OF ENGINEERING' },
     { code: 'BD', name: 'BAPUJI INSTITUTE OF ENGINEERING AND TECHNOLOGY' },
-    { code: 'BN', name: 'BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT' },
     { code: 'BP', name: 'BEARYS INSTITUTE OF TECHNOLOGY' },
-    { code: 'BT', name: 'BRINDAVAN INSTITUTE OF TECHNOLOGY' },
     { code: 'CB', name: 'CANARA ENGINEERING COLLEGE' },
     { code: 'CI', name: 'COORG INSTITUTE OF TECHNOLOGY' },
-    { code: 'DL', name: 'DAYANANDA SAGAR COLLEGE OF ENGINEERING' },
     { code: 'DM', name: 'YENEPOYA INSTITUTE OF TECHNOLOGY' },
-    { code: 'DS', name: 'DAYANANDA SAGAR UNIVERSITY' },
-    { code: 'FI', name: 'FIELD MARSHAL K M CARIAPPA COLLEGE OF ENGINEERING' },
     { code: 'GM', name: 'GM.INSTITUTE OF TECHONOLOGY' },
     { code: 'GE', name: 'GOVT. ENGINEERING COLLEGE CHAMARAJANAGARA' },
     { code: 'GH', name: 'GOVT. ENGINEERING COLLEGE HASSAN' },
@@ -213,49 +155,23 @@ const collegeData = {
     { code: 'GK', name: 'GOVT. ENGINEERING COLLEGE MANDYA' },
     { code: 'GR', name: 'GOVT. TOOL ROOM AND TRAINING CENTRE' },
     { code: 'GW', name: 'GSSS INSTITUTE OF ENGINEERING AND TECHNOLOGY FOR WOMEN' },
-    { code: 'HI', name: 'HASSAN INSTITUTE OF MEDICAL SCIENCES' },
     { code: 'JN', name: 'JAWAHARLAL NEHRU NATIONAL COLLEGE OF ENGINERING' },
-    { code: 'JS', name: 'JSS SCIENCE AND TECHNOLOGY UNIVERSITY' },
     { code: 'KV', name: 'K.V.G. COLLEGE OF ENGINEERING' },
     { code: 'KM', name: 'KARAVALI INSTITUTE OF TECHNOLOGY' },
     { code: 'MH', name: 'MAHARAJA INSTITUTE OF TECHNOLOGY MYSORE' },
     { code: 'MT', name: 'MANGALORE INSTITUTE OF TECHNOLOGY AND ENGINEERING' },
     { code: 'MK', name: 'MOODLAKATTE INSTITUTE OF TECHONOLOGY' },
-    { code: 'NC', name: 'NITTE GULABI SHETTY MEMORIAL INSTITUTE OF PHARMACEUTICAL SCIENCES' },
     { code: 'NN', name: 'NIE INST. OF TECHNOLOGY' },
     { code: 'PA', name: 'P.A.COLLEGE OF ENGINEERING' },
-    { code: 'PE', name: 'PES COLLEGE OF ENGINEERING' },
     { code: 'PM', name: 'PES INSITUTE OF TECHNOLOGY AND MGMT.' },
     { code: 'RA', name: 'RAJEEV INST. OF TECHNOLOGY' },
-    { code: 'RV', name: 'R V COLLEGE OF ENGINEERING' },
     { code: 'SH', name: 'SHREE DEVI INSTITUTE OF TECHNOLOGY' },
-    { code: 'SI', name: 'SIDDAGANGA INSTITUTE OF TECHNOLOGY' },
     { code: 'SM', name: 'SJM INSTITUTE OF TECHNOLOGY' },
     { code: 'SU', name: 'SRI DHARMASTHAL MANJUNATHESHWAR INSTITUTE OF TECHNOLOGY' },
     { code: 'JE', name: 'SRI JAYACHAMRAJENDRA COLLEGE OFF ENGG. EVENING' },
-    { code: 'SK', name: 'SHRI KRISHNA INSTITUTE OF TECHNOLOGY' },
     { code: 'SN', name: 'SRINIVAS INSTITUTE OF TECHNOLOGY' },
-    { code: 'ST', name: 'SRI TARALABALU JAGADGURU INSTITUTE OF TECHNOLOGY' },
     { code: 'VM', name: 'VIDYA VIKAS INSTITUTE OF ENGINEERING AND TECHNOLOGY' },
     { code: 'VP', name: 'VIVEKANANDA COLLEGE OF ENGINEERING AND TECHNOLOGY' },
-    { code: 'YE', name: 'YENEPOYA INSTITUTE OF TECHNOLOGY' },
-    // Additional missing colleges
-    { code: 'YG', name: 'NAVKIS COLLEGE OF ENGINEERING HASSAN' },
-    { code: 'MW', name: 'SHRI MADHWA VADIRAJA INSTITUTE OF TECHNOLOGY & MANAGEMENT' },
-    { code: 'AD', name: 'ACADEMY FOR TECHNICAL AND MANAGEMENT EXCELLENCE' },
-    { code: 'UB', name: 'UBDT ENGINEERING COLLEGE DAVANAGERE (Constituent College of VTU)' },
-    { code: 'MG', name: 'G MADEGOWDA INSTITUTE OF TECHNOLOGY' },
-    { code: 'JD', name: 'JAIN INSTITUTE OF TECHNOLOGY' },
-    { code: 'MR', name: 'MANGALORE MARINE COLLEGE & TECHNOLOGY' },
-    { code: 'CA', name: 'CAUVERY INSTITUTE OF TECHNOLOGY' },
-    { code: 'MA', name: 'MYSORE SCHOOL OF ARCHITECTURE' },
-    { code: 'ED', name: 'BEARYS ENVIRONMENT ARCHITECTURE DESIGN SCHOOL MANGALORE' },
-    { code: 'MO', name: 'MYSORE COLLEGE OF ENGINEERING AND MANAGEMENT' },
-    { code: 'MU', name: 'MYSURU ROYAL INSTITUTE OF TECHNOLOGY' },
-    { code: 'CM', name: 'WADIYAR CENTRE FOR ARCHITECTURE' },
-    { code: 'MN', name: 'Maharaja Institute of Technology' },
-    { code: 'JK', name: 'A.J. Institute of Engineering' },
-    { code: 'HG', name: 'GOVERNMENT ENGINEERING COLLEGE, MOSALE HOSAHALLI' },
   ]
 }
 
@@ -531,11 +447,11 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
   return (
     <div className="relative" ref={dropdownRef}>
       <div className="relative">
-        <Building2 className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10" />
+        <Building2 className="absolute left-3 top-3 h-5 w-5 text-gray-400 z-10" />
         <Input
           ref={inputRef}
-          placeholder="🧠 Smart search: college name, code, or keywords"
-          className="pl-9 sm:pl-10 pr-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
+          placeholder="🧠 Smart search: college name, code, or keywords (e.g., 'engineering', 'AY', 'bangalore')"
+          className="pl-10 pr-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80"
           value={isOpen ? searchTerm : value}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -545,37 +461,37 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="absolute right-0 top-0 h-10 sm:h-12 px-2 sm:px-3 py-2 hover:bg-transparent"
+          className="absolute right-0 top-0 h-12 px-3 py-2 hover:bg-transparent"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </Button>
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 sm:max-h-80 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto">
           {searchTerm && searchResults.length === 0 ? (
-            <div className="p-3 sm:p-4 text-center text-gray-500">
-              <div className="text-xs sm:text-sm mb-2 font-medium">No colleges found for "{searchTerm}"</div>
+            <div className="p-4 text-center text-gray-500">
+              <div className="text-sm mb-2 font-medium">No colleges found for "{searchTerm}"</div>
               <div className="text-xs text-gray-400 space-y-1">
                 <div>Try searching with:</div>
                 <div>• College codes (e.g., "AY", "BI", "MT")</div>
-                <div>• Keywords (e.g., "engineering", "technology")</div>
-                <div>• Cities (e.g., "bangalore", "mysore")</div>
-                <div>• Even with typos - we'll find matches!</div>
+                <div>• Keywords (e.g., "engineering", "technology", "govt")</div>
+                <div>• Cities (e.g., "bangalore", "mysore", "hubli")</div>
+                <div>• Even with typos - we'll find the best matches!</div>
               </div>
             </div>
           ) : !searchTerm ? (
-            <div className="p-3 sm:p-4 text-center text-gray-500">
-              <div className="flex justify-center mb-2 sm:mb-3">
-                <Search className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300" />
+            <div className="p-4 text-center text-gray-500">
+              <div className="flex justify-center mb-3">
+                <Search className="w-8 h-8 text-gray-300" />
               </div>
-              <div className="text-xs sm:text-sm mb-2 font-medium">🧠 Intelligent VTU College Search</div>
+              <div className="text-sm mb-2 font-medium">🧠 Intelligent VTU College Search</div>
               <div className="text-xs text-gray-400 space-y-1">
                 <div>🔍 Advanced fuzzy matching with typo tolerance</div>
                 <div>📝 Search by name, code, keywords, or abbreviations</div>
-                <div className="hidden sm:block">🎯 Finds exact matches even with partial input</div>
-                <div className="hidden sm:block">🚀 Powered by advanced search algorithms</div>
+                <div>🎯 Finds exact matches even with partial input</div>
+                <div>🚀 Powered by advanced search algorithms</div>
               </div>
             </div>
           ) : (
@@ -584,31 +500,31 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
                 <button
                   key={`${result.college.code}-${index}`}
                   type="button"
-                  className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-b-0"
+                  className="w-full text-left px-4 py-3 hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-b-0"
                   onClick={() => handleCollegeSelect(result.college)}
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0 pr-2">
-                      <div className="font-medium text-xs sm:text-sm leading-5">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm leading-5">
                         {highlightMatch(result.college.name, searchTerm)}
                       </div>
                       {result.college.code && (
-                        <div className="flex items-center gap-1 sm:gap-2 mt-1">
+                        <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-gray-500">
-                            Code: <span className="font-mono bg-gray-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{result.college.code}</span>
+                            Code: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{result.college.code}</span>
                           </span>
-                          <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                          <span className="text-xs text-gray-500 capitalize hidden sm:inline">
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-500 capitalize">
                             {result.college.region.toLowerCase()}
                           </span>
-                          <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                          <span className="text-xs text-blue-600 capitalize hidden sm:inline">
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-blue-600 capitalize">
                             {result.matchType.replace('-', ' ')} match
                           </span>
                         </div>
                       )}
                     </div>
-                    <div className="flex-shrink-0 ml-1 sm:ml-2 flex items-center">
+                    <div className="flex-shrink-0 ml-2 flex items-center">
                       {getMatchQualityIndicator(result.score)}
                     </div>
                   </div>
@@ -616,9 +532,9 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
               ))}
               
               {searchResults.length === 50 && (
-                <div className="p-2 sm:p-3 text-center text-gray-500 text-xs bg-gray-50 border-t">
+                <div className="p-3 text-center text-gray-500 text-xs bg-gray-50 border-t">
                   <div className="font-medium mb-1">Showing top 50 matches</div>
-                  <div className="hidden sm:block">🎯 Refine your search for more specific results</div>
+                  <div>🎯 Refine your search for more specific results</div>
                 </div>
               )}
             </div>
@@ -693,20 +609,20 @@ export function RegisterForm() {
     return (
       <div className="w-full max-w-md mx-auto">
         <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-xl">
-          <CardContent className="pt-6 pb-6 sm:pt-8 sm:pb-8 px-4 sm:px-6">
+          <CardContent className="pt-8 pb-8">
             <div className="text-center space-y-4">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-100 to-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                <Mail className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                <Mail className="w-8 h-8 text-green-600" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Check Your Email!</h3>
-                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed px-2 sm:px-0">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Check Your Email!</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
                   We've sent a verification link to your email address. Please click the link to verify your account and complete your registration.
                 </p>
               </div>
               <div className="pt-4">
                 <Link href="/login">
-                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-10 sm:h-12 text-sm sm:text-base">
+                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
                     Go to Login
                   </Button>
                 </Link>
@@ -720,40 +636,40 @@ export function RegisterForm() {
 
   return (
     <Card className="w-full max-w-md mx-auto border-0 shadow-2xl bg-white/80 backdrop-blur-xl">
-      <CardHeader className="text-center pb-3 sm:pb-4 px-4 sm:px-6">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
-          <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+      <CardHeader className="text-center pb-4">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <GraduationCap className="w-8 h-8 text-white" />
         </div>
-        <CardTitle className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
           Join BrainReef
         </CardTitle>
-        <p className="text-xs sm:text-sm text-gray-600 mt-2 px-2 sm:px-0">Start your academic success journey today</p>
+        <p className="text-sm text-gray-600 mt-2">Start your academic success journey today</p>
       </CardHeader>
       
-      <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+      <CardContent className="space-y-6">
         {error && (
           <Alert variant="destructive" className="border-red-200 bg-red-50">
             <XCircle className="h-4 w-4" />
-            <AlertDescription className="text-red-700 text-sm">{error}</AlertDescription>
+            <AlertDescription className="text-red-700">{error}</AlertDescription>
           </Alert>
         )}
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Full Name */}
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-gray-700 font-medium text-sm">Full Name</Label>
+            <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name</Label>
             <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="fullName"
                 placeholder="Enter your full name"
-                className="pl-9 sm:pl-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
+                className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80"
                 {...register('fullName')}
               />
             </div>
             {errors.fullName && (
-              <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <XCircle className="w-4 h-4" />
                 {errors.fullName.message}
               </p>
             )}
@@ -761,9 +677,9 @@ export function RegisterForm() {
 
           {/* Intelligent College Selection */}
           <div className="space-y-2">
-            <Label htmlFor="collegeName" className="text-gray-700 font-medium flex items-center gap-2 text-sm">
+            <Label htmlFor="collegeName" className="text-gray-700 font-medium flex items-center gap-2">
               College Name
-              <span className="text-xs text-gray-500 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-2 py-1 rounded-full hidden sm:inline">
+              <span className="text-xs text-gray-500 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-2 py-1 rounded-full">
                 🧠 AI-Powered Search
               </span>
             </Label>
@@ -779,8 +695,8 @@ export function RegisterForm() {
               )}
             />
             {errors.collegeName && (
-              <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <XCircle className="w-4 h-4" />
                 {errors.collegeName.message}
               </p>
             )}
@@ -788,20 +704,20 @@ export function RegisterForm() {
 
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-700 font-medium text-sm">Email Address</Label>
+            <Label htmlFor="email" className="text-gray-700 font-medium">Email Address</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email address"
-                className="pl-9 sm:pl-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
+                className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80"
                 {...register('email')}
               />
             </div>
             {errors.email && (
-              <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <XCircle className="w-4 h-4" />
                 {errors.email.message}
               </p>
             )}
@@ -809,59 +725,59 @@ export function RegisterForm() {
 
           {/* Password */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-700 font-medium text-sm">Password</Label>
+            <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Create a strong password"
-                className="pl-9 sm:pl-10 pr-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
+                className="pl-10 pr-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80"
                 {...register('password')}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-10 sm:h-12 px-2 sm:px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-12 px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                  <EyeOff className="h-4 w-4 text-gray-500" />
                 ) : (
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                  <Eye className="h-4 w-4 text-gray-500" />
                 )}
               </Button>
             </div>
             
             {/* Password Requirements */}
             {password && (
-              <div className="space-y-2 mt-3 p-2 sm:p-3 bg-gray-50 rounded-lg border">
+              <div className="space-y-2 mt-3 p-3 bg-gray-50 rounded-lg border">
                 <p className="text-xs font-medium text-gray-700 mb-2">Password Requirements:</p>
-                <div className="grid grid-cols-2 gap-1 sm:gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div className={`flex items-center gap-1 text-xs ${passwordValidations.length ? 'text-green-600' : 'text-gray-500'}`}>
                     {passwordValidations.length ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                    <span className="text-xs">6+ characters</span>
+                    6+ characters
                   </div>
                   <div className={`flex items-center gap-1 text-xs ${passwordValidations.uppercase ? 'text-green-600' : 'text-gray-500'}`}>
                     {passwordValidations.uppercase ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                    <span className="text-xs">Uppercase letter</span>
+                    Uppercase letter
                   </div>
                   <div className={`flex items-center gap-1 text-xs ${passwordValidations.digit ? 'text-green-600' : 'text-gray-500'}`}>
                     {passwordValidations.digit ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                    <span className="text-xs">Number</span>
+                    Number
                   </div>
                   <div className={`flex items-center gap-1 text-xs ${passwordValidations.special ? 'text-green-600' : 'text-gray-500'}`}>
                     {passwordValidations.special ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                    <span className="text-xs">Special character</span>
+                    Special character
                   </div>
                 </div>
               </div>
             )}
             
             {errors.password && (
-              <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <XCircle className="w-4 h-4" />
                 {errors.password.message}
               </p>
             )}
@@ -869,33 +785,33 @@ export function RegisterForm() {
 
           {/* Confirm Password */}
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-gray-700 font-medium text-sm">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm your password"
-                className="pl-9 sm:pl-10 pr-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
+                className="pl-10 pr-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80"
                 {...register('confirmPassword')}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-10 sm:h-12 px-2 sm:px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-12 px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                  <EyeOff className="h-4 w-4 text-gray-500" />
                 ) : (
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                  <Eye className="h-4 w-4 text-gray-500" />
                 )}
               </Button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <XCircle className="w-4 h-4" />
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -903,17 +819,17 @@ export function RegisterForm() {
 
           <Button 
             type="submit" 
-            className="w-full h-10 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base" 
+            className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]" 
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Creating Account...
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Sparkles className="w-4 h-4" />
                 Create Account
               </div>
             )}
@@ -921,7 +837,7 @@ export function RegisterForm() {
         </form>
 
         <div className="text-center pt-2">
-          <p className="text-xs sm:text-sm text-gray-600">
+          <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <Link href="/login" className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors">
               Sign in here
@@ -930,7 +846,7 @@ export function RegisterForm() {
         </div>
 
         <div className="text-center pt-2">
-          <p className="text-xs text-gray-500 leading-relaxed px-2 sm:px-0">
+          <p className="text-xs text-gray-500 leading-relaxed">
             By creating an account, you agree to our{' '}
             <Link href="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>{' '}
             and{' '}

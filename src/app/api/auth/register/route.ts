@@ -6,13 +6,14 @@ import { hashPassword } from '@/lib/auth'
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  name: z.string().min(2),
+  fullName: z.string().min(2),
+  collegeName: z.string().min(2),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, name } = registerSchema.parse(body)
+    const { email, password, fullName, collegeName } = registerSchema.parse(body)
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -32,13 +33,15 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         password: hashedPassword,
-        name,
+        name: fullName,
+        collegeName,
         role: 'STUDENT'
       },
       select: {
         id: true,
         email: true,
         name: true,
+        collegeName: true,
         role: true,
         createdAt: true
       }
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: 'Invalid input data', details: error.issues },
         { status: 400 }
       )
     }
