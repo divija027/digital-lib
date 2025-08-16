@@ -585,32 +585,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Enhanced Features Section - Mobile Optimized */}
-        <section id="features" className="py-12 sm:py-16 lg:py-24 bg-white relative overflow-hidden">
+        {/* Enhanced Features Section - Highly Mobile Responsive */}
+        <section id="features" className="py-8 sm:py-12 md:py-16 lg:py-24 bg-white relative overflow-hidden">
           {/* Animated background elements - Mobile Optimized */}
           <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '3s' }}></div>
+            <div className="absolute top-1/4 left-1/4 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 sm:opacity-30 animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 sm:opacity-30 animate-pulse" style={{ animationDelay: '3s' }}></div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-8 sm:mb-10 md:mb-14 lg:mb-20">
               <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                <Badge variant="outline" className="text-blue-700 border-blue-200 bg-blue-50/80 mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-yellow-500" />
-                  <span className="text-xs sm:text-sm">Why Choose BrainReef</span>
+                <Badge variant="outline" className="text-blue-700 border-blue-200 bg-blue-50/80 mb-3 sm:mb-4 md:mb-5 lg:mb-6 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm">
+                  <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 mr-1 sm:mr-1.5 md:mr-2 text-yellow-500" />
+                  <span>Why Choose BrainReef</span>
                 </Badge>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 leading-tight px-2 sm:px-0">
-                  Everything You Need to <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Succeed</span>
+                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 leading-tight px-2 sm:px-3 md:px-0">
+                  Everything You Need to <br className="hidden sm:block" />
+                  <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Succeed</span>
                 </h2>
-                <p className="text-base sm:text-lg lg:text-xl xl:text-2xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed px-4 sm:px-0">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed px-3 sm:px-4 md:px-6 lg:px-0">
                   Comprehensive learning resources designed specifically for VTU engineering students, 
                   curated by experts and verified by top performers.
                 </p>
               </div>
             </div>
             
-            <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
+            {/* Mobile-First Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 xl:gap-10">
               {features.map((feature, index) => (
                 <div
                   key={index}
@@ -621,39 +623,39 @@ export default function Home() {
                   onMouseEnter={() => setHoveredFeature(index)}
                   onMouseLeave={() => setHoveredFeature(null)}
                 >
-                  <Card className="relative border-0 shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white/80 backdrop-blur-sm h-full">
+                  <Card className="relative border-0 shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white/80 backdrop-blur-sm h-full min-h-[280px] sm:min-h-[320px] md:min-h-[350px]">
                     {/* Animated gradient background */}
                     <div className={`absolute inset-0 ${feature.color} opacity-70 group-hover:opacity-90 transition-opacity duration-500`}></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 group-hover:from-white/30 group-hover:to-white/20 transition-all duration-500"></div>
                     
                     {/* Floating accent element */}
-                    <div className={`absolute top-3 sm:top-4 right-3 sm:right-4 w-1.5 h-1.5 sm:w-2 sm:h-2 ${feature.accent} rounded-full group-hover:w-2 group-hover:h-2 sm:group-hover:w-3 sm:group-hover:h-3 transition-all duration-300`}></div>
+                    <div className={`absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 ${feature.accent} rounded-full group-hover:w-1.5 group-hover:h-1.5 sm:group-hover:w-2 sm:group-hover:h-2 md:group-hover:w-3 md:group-hover:h-3 transition-all duration-300`}></div>
                     
-                    <CardHeader className="text-center pb-4 sm:pb-6 pt-6 sm:pt-8 lg:pt-10 relative z-10">
+                    <CardHeader className="text-center pb-3 sm:pb-4 md:pb-6 pt-4 sm:pt-6 md:pt-8 lg:pt-10 relative z-10 px-3 sm:px-4 md:px-6">
                       {/* Enhanced icon with animations - Mobile Optimized */}
-                      <div className="relative mx-auto mb-4 sm:mb-6">
-                        <div className={`w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg sm:shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-                          <feature.icon className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${feature.iconColor} group-hover:scale-110 transition-transform duration-300`} />
+                      <div className="relative mx-auto mb-3 sm:mb-4 md:mb-6">
+                        <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-white rounded-xl sm:rounded-2xl md:rounded-3xl flex items-center justify-center shadow-md sm:shadow-lg md:shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                          <feature.icon className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 ${feature.iconColor} group-hover:scale-110 transition-transform duration-300`} />
                         </div>
                         {hoveredFeature === index && (
-                          <div className="absolute inset-0 bg-white/30 rounded-2xl sm:rounded-3xl animate-ping"></div>
+                          <div className="absolute inset-0 bg-white/30 rounded-xl sm:rounded-2xl md:rounded-3xl animate-ping"></div>
                         )}
                       </div>
                       
-                      <CardTitle className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-800 mb-3 sm:mb-4 group-hover:text-gray-900 transition-colors duration-300 px-2 sm:px-0">
+                      <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-800 mb-2 sm:mb-3 md:mb-4 group-hover:text-gray-900 transition-colors duration-300 leading-tight">
                         {feature.title}
                       </CardTitle>
                     </CardHeader>
                     
-                    <CardContent className="text-center px-4 sm:px-6 pb-6 sm:pb-8 lg:pb-10 relative z-10">
-                      <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">
+                    <CardContent className="text-center px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 md:pb-8 lg:pb-10 relative z-10">
+                      <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors duration-300 line-clamp-3 sm:line-clamp-none">
                         {feature.description}
                       </p>
                       
                       {/* Call to action that appears on hover - Mobile Optimized */}
-                      <div className={`mt-4 sm:mt-6 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300`}>
+                      <div className={`mt-3 sm:mt-4 md:mt-6 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300`}>
                         <div className="flex items-center justify-center text-xs sm:text-sm font-semibold text-blue-600">
-                          Learn More <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+                          Learn More <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 ml-1" />
                         </div>
                       </div>
                     </CardContent>
@@ -667,42 +669,64 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Subjects Section - Mobile Optimized */}
-        <section id="subjects" className="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-gray-50/50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-              <Badge variant="outline" className="text-purple-700 border-purple-200 bg-purple-50/80 mb-3 sm:mb-4 px-3 sm:px-4 py-1.5 sm:py-2">
-                <span className="text-xs sm:text-sm">All Engineering Branches</span>
+        {/* Subjects Section - Highly Mobile Responsive */}
+        <section id="subjects" className="py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-b from-gray-50/50 to-white">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+            <div className="text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16">
+              <Badge variant="outline" className="text-purple-700 border-purple-200 bg-purple-50/80 mb-2 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm">
+                <span>All Engineering Branches</span>
               </Badge>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 px-2 sm:px-0">
-                Study Materials for <span className="text-purple-600">Every Branch</span>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 px-2 sm:px-3 md:px-0 leading-tight">
+                Study Materials for <br className="block sm:hidden" />
+                <span className="text-purple-600">Every Branch</span>
               </h2>
-              <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-600 max-w-2xl mx-auto font-light px-4 sm:px-0">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto font-light px-3 sm:px-4 md:px-6 lg:px-0 leading-relaxed">
                 Choose your engineering branch and access tailored study resources, notes, and question papers
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Mobile-First Grid Layout for Subjects */}
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {subjects.map((subject, index) => (
-                <Link key={index} href="/dashboard">
-                  <Card className="border-gray-200/80 hover:border-purple-200 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full hover:-translate-y-1">
-                    <CardContent className="p-4 sm:p-6 lg:p-8 text-center h-full flex flex-col justify-center">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:from-purple-200 group-hover:to-purple-300 transition-all duration-300 shadow-lg">
-                        <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-purple-600" />
+                <Link key={index} href="/dashboard" className="block h-full">
+                  <Card className="border-gray-200/80 hover:border-purple-200 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full hover:-translate-y-1 min-h-[140px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px]">
+                    <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 text-center h-full flex flex-col justify-center items-center">
+                      {/* Icon Container - Mobile Optimized */}
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:from-purple-200 group-hover:to-purple-300 transition-all duration-300 shadow-md sm:shadow-lg">
+                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-purple-600" />
                       </div>
-                      <h3 className="font-bold text-base sm:text-lg text-gray-900 group-hover:text-purple-600 transition-colors mb-1 sm:mb-2">
+                      
+                      {/* Subject Title - Mobile Optimized */}
+                      <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 group-hover:text-purple-600 transition-colors mb-1 sm:mb-1.5 md:mb-2 leading-tight text-center px-1">
                         {subject}
                       </h3>
-                      <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-600 transition-colors">
+                      
+                      {/* Description - Mobile Optimized */}
+                      <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-600 transition-colors leading-relaxed text-center px-1">
                         Complete study materials & papers
                       </p>
-                      <div className="mt-3 sm:mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      
+                      {/* Arrow Indicator */}
+                      <div className="mt-2 sm:mt-3 md:mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 mx-auto" />
                       </div>
                     </CardContent>
                   </Card>
                 </Link>
               ))}
+            </div>
+            
+            {/* Mobile Call-to-Action */}
+            <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 text-center">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 px-3">
+                Can't find your branch? We're constantly adding new subjects.
+              </p>
+              <Link href="/dashboard">
+                <Button variant="outline" className="w-full sm:w-auto px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base border-purple-200 text-purple-600 hover:bg-purple-50">
+                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  Browse All Subjects
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
