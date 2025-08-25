@@ -37,7 +37,8 @@ const PHYSICS_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['Differential Calculus', 'Integral Calculus', 'Differential Equations', 'Series and Sequences', 'Applications of Calculus']
+    modules: ['Differential Calculus', 'Integral Calculus', 'Differential Equations', 'Series and Sequences', 'Applications of Calculus'],
+    description: 'Fundamental mathematical concepts including limits, derivatives, integrals, and their applications in engineering problems.'
   },
   { 
     code: 'PHY', 
@@ -45,7 +46,8 @@ const PHYSICS_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['Mechanics and Properties of Matter', 'Waves and Oscillations', 'Thermodynamics', 'Optics and Lasers', 'Modern Physics']
+    modules: ['Mechanics and Properties of Matter', 'Waves and Oscillations', 'Thermodynamics', 'Optics and Lasers', 'Modern Physics'],
+    description: 'Core physics concepts essential for engineering applications including mechanics, waves, thermodynamics, and modern physics.'
   },
   { 
     code: 'EEE', 
@@ -53,7 +55,8 @@ const PHYSICS_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['DC Circuits', 'AC Circuits', 'Magnetic Circuits', 'Transformers', 'Electrical Machines Basics']
+    modules: ['DC Circuits', 'AC Circuits', 'Magnetic Circuits', 'Transformers', 'Electrical Machines Basics'],
+    description: 'Fundamental electrical engineering concepts including circuit analysis, electromagnetic theory, and basic electrical machines.'
   },
   { 
     code: 'ENG', 
@@ -61,7 +64,8 @@ const PHYSICS_CYCLE_SUBJECTS: Subject[] = [
     credits: 3, 
     type: 'theory', 
     category: 'core',
-    modules: ['Grammar and Usage', 'Vocabulary Building', 'Reading Comprehension', 'Writing Skills', 'Oral Communication']
+    modules: ['Grammar and Usage', 'Vocabulary Building', 'Reading Comprehension', 'Writing Skills', 'Oral Communication'],
+    description: 'English language skills development focusing on technical communication, presentation skills, and professional writing.'
   },
   { 
     code: 'CS', 
@@ -69,7 +73,35 @@ const PHYSICS_CYCLE_SUBJECTS: Subject[] = [
     credits: 3, 
     type: 'theory', 
     category: 'core',
-    modules: ['Programming Fundamentals', 'Data Types and Variables', 'Control Structures', 'Functions and Arrays', 'Problem Solving Techniques']
+    modules: ['Programming Fundamentals', 'Data Types and Variables', 'Control Structures', 'Functions and Arrays', 'Problem Solving Techniques'],
+    description: 'Introduction to programming concepts using C language, covering basic programming constructs and problem-solving techniques.'
+  },
+  { 
+    code: 'PHYLAB', 
+    name: 'Physics Laboratory', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['Measurement and Errors', 'Mechanics Experiments', 'Optics Experiments', 'Electrical Measurements', 'Modern Physics Lab'],
+    description: 'Hands-on laboratory experiments to understand fundamental physics concepts and develop experimental skills.'
+  },
+  { 
+    code: 'EELAB', 
+    name: 'Basic Electrical Engineering Laboratory', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['DC Circuit Analysis', 'AC Circuit Measurements', 'Transformer Testing', 'Motor Characteristics', 'Electrical Safety'],
+    description: 'Laboratory experiments in electrical engineering covering circuit analysis, measurements, and electrical machine characteristics.'
+  },
+  { 
+    code: 'CSLAB', 
+    name: 'Programming Laboratory', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['C Programming Basics', 'Control Structures Implementation', 'Functions and Recursion', 'Arrays and Strings', 'File Operations'],
+    description: 'Practical programming sessions using C language to implement algorithms and solve engineering problems.'
   }
 ]
 
@@ -80,7 +112,8 @@ const CHEMISTRY_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['Vector Calculus', 'Multiple Integrals', 'Numerical Methods', 'Fourier Series', 'Partial Differential Equations']
+    modules: ['Vector Calculus', 'Multiple Integrals', 'Numerical Methods', 'Fourier Series', 'Partial Differential Equations'],
+    description: 'Advanced mathematical concepts including vector calculus, numerical methods, and their applications in engineering analysis.'
   },
   { 
     code: 'CHE', 
@@ -88,7 +121,8 @@ const CHEMISTRY_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['Atomic Structure and Bonding', 'Thermochemistry', 'Electrochemistry', 'Polymers and Advanced Materials', 'Environmental Chemistry']
+    modules: ['Atomic Structure and Bonding', 'Thermochemistry', 'Electrochemistry', 'Polymers and Advanced Materials', 'Environmental Chemistry'],
+    description: 'Chemical principles and their applications in engineering, including materials science and environmental considerations.'
   },
   { 
     code: 'ECE', 
@@ -96,23 +130,53 @@ const CHEMISTRY_CYCLE_SUBJECTS: Subject[] = [
     credits: 4, 
     type: 'theory', 
     category: 'core',
-    modules: ['Semiconductor Devices', 'Amplifiers', 'Digital Electronics', 'Communication Systems', 'Integrated Circuits']
+    modules: ['Semiconductor Devices', 'Amplifiers', 'Digital Electronics', 'Communication Systems', 'Integrated Circuits'],
+    description: 'Fundamental electronics concepts including semiconductor devices, amplifiers, and digital systems essential for modern engineering.'
   },
   { 
-    code: 'ME', 
-    name: 'Elements of Mechanical Engineering', 
+    code: 'ENG2', 
+    name: 'Technical English', 
     credits: 3, 
     type: 'theory', 
     category: 'core',
-    modules: ['Thermodynamics', 'Fluid Mechanics', 'Manufacturing Processes', 'Materials Science', 'Machine Design Basics']
+    modules: ['Technical Writing', 'Report Writing', 'Presentation Skills', 'Professional Communication', 'Documentation Standards'],
+    description: 'Advanced English communication skills focused on technical documentation, professional presentations, and industry communication.'
   },
   { 
-    code: 'CE', 
-    name: 'Elements of Civil Engineering', 
+    code: 'ENV', 
+    name: 'Environmental Studies', 
     credits: 3, 
     type: 'theory', 
     category: 'core',
-    modules: ['Building Materials', 'Surveying', 'Structural Analysis', 'Environmental Engineering', 'Transportation Engineering']
+    modules: ['Ecosystem and Biodiversity', 'Environmental Pollution', 'Natural Resources', 'Environmental Management', 'Sustainable Development'],
+    description: 'Environmental awareness and sustainability concepts essential for responsible engineering practices and environmental protection.'
+  },
+  { 
+    code: 'CHELAB', 
+    name: 'Chemistry Laboratory', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['Quantitative Analysis', 'Organic Synthesis', 'Physical Chemistry Experiments', 'Instrumental Analysis', 'Materials Testing'],
+    description: 'Laboratory experiments in chemistry covering analytical techniques, synthesis, and characterization of materials.'
+  },
+  { 
+    code: 'ECELAB', 
+    name: 'Basic Electronics Laboratory', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['Diode Characteristics', 'Transistor Amplifiers', 'Digital Logic Gates', 'Oscillators and Timers', 'Power Supplies'],
+    description: 'Hands-on experiments with electronic devices, circuits, and systems to understand fundamental electronics principles.'
+  },
+  { 
+    code: 'WS', 
+    name: 'Workshop Practice', 
+    credits: 2, 
+    type: 'lab', 
+    category: 'core',
+    modules: ['Carpentry and Pattern Making', 'Foundry Practice', 'Machine Shop Practice', 'Welding and Sheet Metal Work', 'Electrical and Electronic Practice'],
+    description: 'Practical workshop training covering various manufacturing processes and hands-on experience with tools and machines.'
   }
 ]
 
@@ -832,7 +896,7 @@ export const FIRST_YEAR_CYCLES: BranchData[] = [
         semester: 'Physics Cycle', 
         name: 'Physics Cycle Semester',
         subjects: PHYSICS_CYCLE_SUBJECTS, 
-        totalCredits: 18 
+        totalCredits: 24 
       }
     ]
   },
@@ -848,7 +912,7 @@ export const FIRST_YEAR_CYCLES: BranchData[] = [
         semester: 'Chemistry Cycle', 
         name: 'Chemistry Cycle Semester',
         subjects: CHEMISTRY_CYCLE_SUBJECTS, 
-        totalCredits: 18 
+        totalCredits: 24 
       }
     ]
   }
@@ -973,11 +1037,21 @@ export function getCycleByCode(code: string): BranchData | undefined {
 }
 
 export function getSubjectsBySemester(branchCode: string, semester: number | string): Subject[] {
+  // First try to find in regular branches
   const branch = getBranchByCode(branchCode)
-  if (!branch) return []
+  if (branch) {
+    const semesterData = branch.semesters.find(sem => sem.semester === semester)
+    return semesterData?.subjects || []
+  }
   
-  const semesterData = branch.semesters.find(sem => sem.semester === semester)
-  return semesterData?.subjects || []
+  // If not found, try to find in first year cycles
+  const cycle = getCycleByCode(branchCode)
+  if (cycle) {
+    const semesterData = cycle.semesters.find(sem => sem.semester === semester)
+    return semesterData?.subjects || []
+  }
+  
+  return []
 }
 
 export function getAllBranches(): BranchData[] {

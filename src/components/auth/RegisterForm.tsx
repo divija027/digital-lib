@@ -570,12 +570,10 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
               <div className="flex justify-center mb-2 sm:mb-3">
                 <Search className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300" />
               </div>
-              <div className="text-xs sm:text-sm mb-2 font-medium">🧠 Intelligent VTU College Search</div>
+              <div className="text-xs sm:text-sm mb-2 font-medium">Search VTU Colleges</div>
               <div className="text-xs text-gray-400 space-y-1">
-                <div>🔍 Advanced fuzzy matching with typo tolerance</div>
-                <div>📝 Search by name, code, keywords, or abbreviations</div>
-                <div className="hidden sm:block">🎯 Finds exact matches even with partial input</div>
-                <div className="hidden sm:block">🚀 Powered by advanced search algorithms</div>
+                <div>Search by college name or code</div>
+                <div>Example: "Bangalore" or "BI" for BIT</div>
               </div>
             </div>
           ) : (
@@ -597,19 +595,8 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
                           <span className="text-xs text-gray-500">
                             Code: <span className="font-mono bg-gray-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{result.college.code}</span>
                           </span>
-                          <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                          <span className="text-xs text-gray-500 capitalize hidden sm:inline">
-                            {result.college.region.toLowerCase()}
-                          </span>
-                          <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                          <span className="text-xs text-blue-600 capitalize hidden sm:inline">
-                            {result.matchType.replace('-', ' ')} match
-                          </span>
                         </div>
                       )}
-                    </div>
-                    <div className="flex-shrink-0 ml-1 sm:ml-2 flex items-center">
-                      {getMatchQualityIndicator(result.score)}
                     </div>
                   </div>
                 </button>
@@ -618,7 +605,6 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
               {searchResults.length === 50 && (
                 <div className="p-2 sm:p-3 text-center text-gray-500 text-xs bg-gray-50 border-t">
                   <div className="font-medium mb-1">Showing top 50 matches</div>
-                  <div className="hidden sm:block">🎯 Refine your search for more specific results</div>
                 </div>
               )}
             </div>

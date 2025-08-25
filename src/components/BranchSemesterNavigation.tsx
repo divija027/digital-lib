@@ -13,10 +13,20 @@ import {
   Grid3X3,
   List,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Clock,
   Users,
   ArrowLeft,
-  BookMarked
+  BookMarked,
+  Home,
+  Play,
+  CheckCircle2,
+  BarChart3,
+  Target,
+  Award,
+  Lightbulb,
+  Filter
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { VTU_CURRICULUM, FIRST_YEAR_CYCLES, getBranchByCode, getCycleByCode, getSubjectsBySemester, getAllBranches, getAllCycles } from '@/lib/vtu-curriculum'
@@ -29,132 +39,48 @@ export function BranchSemesterNavigation({ onSelectionChange }: BranchSemesterNa
   const [selectedCategory, setSelectedCategory] = useState<'cycles' | 'branches' | ''>('')
   const [selectedItem, setSelectedItem] = useState<string>('')
   const [selectedSemester, setSelectedSemester] = useState<number | string>(3)
+  const [selectedSubject, setSelectedSubject] = useState<string>('')
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     if (selectedItem && selectedSemester && onSelectionChange) {
-      onSelectionChange(selectedItem, selectedSemester)
+      onSelectionChange(selectedItem, selectedSemester, selectedSubject)
     }
-  }, [selectedItem, selectedSemester, onSelectionChange])
+  }, [selectedItem, selectedSemester, selectedSubject, onSelectionChange])
 
-  // Initial category selection
-  if (!selectedCategory) {
-    return (
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">VTU Study Hub</h1>
-              <p className="text-gray-600 text-lg">Choose your academic level to access study materials</p>
-            </div>
-          </div>
-        </div>
+  // Smooth transition helper
+  const handleTransition = (callback: () => void) => {
+    setIsTransitioning(true)
+    setTimeout(() => {
+      callback()
+      setTimeout(() => setIsTransitioning(false), 150)
+    }, 150)
+  }
 
-        {/* Category Selection Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card 
-            className="cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-l-4 border-l-indigo-500"
-            onClick={() => setSelectedCategory('cycles')}
-          >
-            <CardContent className="p-8">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <span className="text-3xl">⚛️</span>
-                  </div>
-                  <Badge variant="secondary" className="text-sm font-medium">First Year</Badge>
-                </div>
-                
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Physics & Chemistry Cycles</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Foundation courses for first-year engineering students covering fundamental concepts in Physics and Chemistry
-                  </p>
-                </div>
+  // Reset navigation to dashboard
+  const resetToDashboard = () => {
+    handleTransition(() => {
+      setSelectedCategory('')
+      setSelectedItem('')
+      setSelectedSubject('')
+      setSearchTerm('')
+    })
+  }
 
-                <div className="flex items-center justify-between pt-4">
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <BookMarked className="w-4 h-4" />
-                      2 Cycles
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      All Branches
-                    </span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-l-4 border-l-blue-500"
-            onClick={() => setSelectedCategory('branches')}
-          >
-            <CardContent className="p-8">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <span className="text-3xl">💻</span>
-                  </div>
-                  <Badge variant="secondary" className="text-sm font-medium">Semesters 3-7</Badge>
-                </div>
-                
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Engineering Branches</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Specialized engineering courses for students in their respective branches from 3rd to 7th semester
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-4">
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <BookMarked className="w-4 h-4" />
-                      7 Branches
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      5 Semesters
-                    </span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="bg-gray-50 rounded-2xl p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-2xl font-bold text-blue-600">9</div>
-              <div className="text-sm text-gray-600">Total Programs</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">50+</div>
-              <div className="text-sm text-gray-600">Subjects</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-600">250+</div>
-              <div className="text-sm text-gray-600">Modules</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-orange-600">1000+</div>
-              <div className="text-sm text-gray-600">Resources</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+  // Module toggle handler
+  const toggleModule = (moduleId: string) => {
+    setExpandedModules(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(moduleId)) {
+        newSet.delete(moduleId)
+      } else {
+        newSet.add(moduleId)
+      }
+      return newSet
+    })
   }
 
   // Show items based on selected category
