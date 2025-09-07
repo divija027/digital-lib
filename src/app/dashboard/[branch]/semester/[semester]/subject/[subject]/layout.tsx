@@ -67,11 +67,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${subjectName} - ${semesterDisplay} ${branchData.name} | BrainReef`,
-    description: `Study ${subjectName} with comprehensive modules, resources, and materials. ${currentSubject?.description || `${currentSubject?.credits || ''} credits ${currentSubject?.type || ''} subject for VTU students.`}`,
-    keywords: `VTU, ${branchData.name}, ${semesterDisplay}, ${subjectName}, modules, study materials, ${currentSubject?.code || ''}`,
+    description: `Study ${subjectName} with comprehensive question papers and resources. ${currentSubject?.description || `${currentSubject?.credits || ''} credits ${currentSubject?.type || ''} subject for VTU students.`}`,
+    keywords: `VTU, ${branchData.name}, ${semesterDisplay}, ${subjectName}, question papers, previous year papers, ${currentSubject?.code || ''}`,
     openGraph: {
       title: `${subjectName} - ${semesterDisplay} ${branchData.name}`,
-      description: `Study ${subjectName} with comprehensive modules and resources for VTU students.`,
+      description: `Study ${subjectName} with comprehensive question papers and resources for VTU students.`,
       type: 'website',
     }
   }

@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${semesterDisplay} ${branchData.name} Subjects - VTU | BrainReef`,
-    description: `Browse ${semesterDisplay} subjects for ${branchData.name}. Access study materials, modules, and resources for VTU students.`,
+    description: `Browse ${semesterDisplay} subjects for ${branchData.name}. Access question papers and study resources for VTU students.`,
     keywords: `VTU, ${branchData.name}, ${semesterDisplay}, subjects, study materials`,
     openGraph: {
       title: `${semesterDisplay} ${branchData.name} Subjects - VTU`,

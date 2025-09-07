@@ -56,7 +56,7 @@ const navigationItems = [
     icon: FileText,
     children: [
       { title: 'All Resources', href: '/admin/resources' },
-      { title: 'Upload Files', href: '/admin/resources/upload' },
+      { title: 'Upload Question Papers', href: '/admin/resources/upload' },
       { title: 'Categories', href: '/admin/resources/categories' }
     ]
   },
@@ -75,32 +75,13 @@ const navigationItems = [
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
-  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null)
+  const [user] = useState<{ name: string; email: string; role: string }>({
+    name: 'Public Admin',
+    email: 'admin@vtu.in',
+    role: 'admin'
+  })
   const router = useRouter()
   const pathname = usePathname()
-
-  // Check authentication
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/me')
-        if (response.ok) {
-          const userData = await response.json()
-          if (userData.role !== 'admin') {
-            router.push('/login')
-            return
-          }
-          setUser(userData)
-        } else {
-          router.push('/login')
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-        router.push('/login')
-      }
-    }
-    checkAuth()
-  }, [router])
 
   const toggleExpanded = (title: string) => {
     setExpandedItems(prev => 
@@ -110,26 +91,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     )
   }
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      router.push('/login')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+  const handleLogout = () => {
+    // No-op since there's no authentication
+    console.log('Logout clicked - no authentication system active')
   }
 
   const isActive = (href: string, exact = false) => {
     if (exact) return pathname === href
     return pathname.startsWith(href)
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    )
   }
 
   return (

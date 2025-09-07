@@ -28,15 +28,23 @@ interface ResourceCategoriesProps {
   branch?: string
 }
 
-// Resource Categories with module support
+// Resource Categories for question papers focus
 const RESOURCE_CATEGORIES = [
   {
     id: 'question-papers',
     name: 'Question Papers',
-    description: 'Previous year and model question papers',
+    description: 'Previous year and main exam papers',
     icon: FileQuestion,
     color: 'bg-blue-500',
     count: 45
+  },
+  {
+    id: 'model-papers',
+    name: 'Model Papers',
+    description: 'Model question papers and practice tests',
+    icon: BookMarked,
+    color: 'bg-orange-500',
+    count: 25
   },
   {
     id: 'notes',
@@ -55,14 +63,6 @@ const RESOURCE_CATEGORIES = [
     count: 12
   },
   {
-    id: 'modules',
-    name: 'Module-wise Content',
-    description: 'Content organized by modules (1-5)',
-    icon: BookMarked,
-    color: 'bg-orange-500',
-    count: 125
-  },
-  {
     id: 'assignments',
     name: 'Assignments',
     description: 'Practice assignments and solutions',
@@ -72,95 +72,86 @@ const RESOURCE_CATEGORIES = [
   }
 ]
 
-// Sample resources with module organization
+// Sample resources with question papers focus
 const SAMPLE_RESOURCES = [
   {
     id: '1',
-    title: 'Module 1: Introduction to Data Structures',
+    title: 'Data Structures - Main Exam 2023',
     subject: 'Data Structures and Applications',
-    type: 'modules',
+    type: 'question-papers',
     format: 'PDF',
     size: '2.4 MB',
     uploadDate: '2024-01-15',
     downloads: 1250,
     rating: 4.8,
-    module: 1,
-    tags: ['arrays', 'basics', 'introduction'],
-    description: 'Comprehensive introduction to data structures covering arrays, basic operations, and complexity analysis'
+    year: 2023,
+    examType: 'Main Exam',
+    tags: ['2023', 'main-exam', 'theory'],
+    description: 'Complete question paper with solutions from December 2023 main examination'
   },
   {
     id: '2',
-    title: 'Module 2: Linked Lists Implementation',
+    title: 'Data Structures - Supplementary 2023',
     subject: 'Data Structures and Applications',
-    type: 'modules',
+    type: 'question-papers',
     format: 'PDF',
     size: '3.1 MB',
     uploadDate: '2024-01-20',
     downloads: 980,
     rating: 4.6,
-    module: 2,
-    tags: ['linked-lists', 'pointers', 'implementation'],
-    description: 'Detailed implementation of various types of linked lists with examples and exercises'
+    year: 2023,
+    examType: 'Supplementary',
+    tags: ['2023', 'supplementary', 'theory'],
+    description: 'Supplementary examination question paper with detailed solutions'
   },
   {
     id: '3',
-    title: 'Module 3: Stacks and Queues',
+    title: 'Data Structures - Model Paper 2024',
     subject: 'Data Structures and Applications',
-    type: 'modules',
+    type: 'model-papers',
     format: 'PDF',
     size: '2.8 MB',
     uploadDate: '2024-01-30',
     downloads: 875,
     rating: 4.5,
-    module: 3,
-    tags: ['stacks', 'queues', 'LIFO', 'FIFO'],
-    description: 'Complete guide to stacks and queues with applications and problem-solving techniques'
+    year: 2024,
+    examType: 'Model Paper',
+    tags: ['2024', 'model-paper', 'practice'],
+    description: 'Official model question paper for preparation and practice'
   },
   {
     id: '4',
-    title: 'Module 4: Trees and Graph Algorithms',
+    title: 'Data Structures - Main Exam 2022',
     subject: 'Data Structures and Applications',
-    type: 'modules',
+    type: 'question-papers',
     format: 'PDF',
     size: '4.2 MB',
     uploadDate: '2024-02-05',
     downloads: 1150,
     rating: 4.7,
-    module: 4,
-    tags: ['trees', 'graphs', 'algorithms'],
-    description: 'Advanced topics covering binary trees, BST, graph traversal, and shortest path algorithms'
+    year: 2022,
+    examType: 'Main Exam',
+    tags: ['2022', 'main-exam', 'solved'],
+    description: 'Previous year question paper with step-by-step solutions'
   },
   {
     id: '5',
-    title: 'Module 5: Sorting and Searching',
+    title: 'Data Structures - Main Exam 2021',
     subject: 'Data Structures and Applications',
-    type: 'modules',
+    type: 'question-papers',
     format: 'PDF',
     size: '3.5 MB',
     uploadDate: '2024-02-10',
     downloads: 1420,
     rating: 4.9,
-    module: 5,
-    tags: ['sorting', 'searching', 'algorithms'],
-    description: 'Comprehensive coverage of sorting and searching algorithms with complexity analysis'
+    year: 2021,
+    examType: 'Main Exam',
+    tags: ['2021', 'main-exam', 'solutions'],
+    description: 'Complete question paper with detailed explanations and marking scheme'
   },
   {
     id: '6',
-    title: 'Previous Year Question Paper - 2023',
-    subject: 'Data Structures and Applications',
-    type: 'question-papers',
-    format: 'PDF',
-    size: '1.2 MB',
-    uploadDate: '2024-01-10',
-    downloads: 2150,
-    rating: 4.9,
-    module: null,
-    tags: ['2023', 'question-paper', 'solved'],
-    description: 'Complete solved question paper from 2023 with detailed explanations'
-  },
-  {
-    id: '7',
-    title: 'Complete Study Notes - All Modules',
+    title: 'Complete Study Notes - Data Structures',
     subject: 'Data Structures and Applications',
     type: 'notes',
     format: 'PDF',
@@ -168,12 +159,12 @@ const SAMPLE_RESOURCES = [
     uploadDate: '2024-01-25',
     downloads: 3200,
     rating: 4.7,
-    module: null,
+    year: 2024,
     tags: ['complete', 'notes', 'comprehensive'],
-    description: 'Comprehensive study notes covering all modules with examples and practice problems'
+    description: 'Comprehensive study notes covering all topics with examples and practice problems'
   },
   {
-    id: '8',
+    id: '7',
     title: 'Official Syllabus - 2024 Scheme',
     subject: 'Data Structures and Applications',
     type: 'syllabus',
@@ -182,13 +173,13 @@ const SAMPLE_RESOURCES = [
     uploadDate: '2024-01-05',
     downloads: 5600,
     rating: 5.0,
-    module: null,
+    year: 2024,
     tags: ['syllabus', 'official', '2024'],
     description: 'Official VTU syllabus document for 2024 scheme'
   },
   {
-    id: '9',
-    title: 'Assignment 1: Array Operations',
+    id: '8',
+    title: 'Practice Assignment with Solutions',
     subject: 'Data Structures and Applications',
     type: 'assignments',
     format: 'PDF',
@@ -196,29 +187,15 @@ const SAMPLE_RESOURCES = [
     uploadDate: '2024-01-12',
     downloads: 890,
     rating: 4.4,
-    module: 1,
-    tags: ['assignment', 'arrays', 'practice'],
-    description: 'Practice assignment covering array operations with solutions'
-  },
-  {
-    id: '10',
-    title: 'Assignment 2: Linked List Problems',
-    subject: 'Data Structures and Applications',
-    type: 'assignments',
-    format: 'PDF',
-    size: '1.8 MB',
-    uploadDate: '2024-01-22',
-    downloads: 650,
-    rating: 4.3,
-    module: 2,
-    tags: ['assignment', 'linked-lists', 'problems'],
-    description: 'Problem-solving assignment for linked list implementation and operations'
+    year: 2024,
+    tags: ['assignment', 'practice', 'solutions'],
+    description: 'Practice assignment covering important topics with detailed solutions'
   }
 ]
 
 export function ResourceCategories({ subject, semester, branch }: ResourceCategoriesProps) {
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedModule, setSelectedModule] = useState<number | null>(null)
+  const [selectedYear, setSelectedYear] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('latest')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
@@ -226,13 +203,13 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
 
   const filteredResources = resources.filter(resource => {
     const matchesCategory = selectedCategory === 'all' || resource.type === selectedCategory
-    const matchesModule = selectedModule === null || resource.module === selectedModule
+    const matchesYear = selectedYear === null || resource.year === selectedYear
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          resource.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesSubject = !subject || resource.subject.toLowerCase().includes(subject.toLowerCase())
     
-    return matchesCategory && matchesModule && matchesSearch && matchesSubject
+    return matchesCategory && matchesYear && matchesSearch && matchesSubject
   })
 
   const sortedResources = [...filteredResources].sort((a, b) => {
@@ -245,15 +222,16 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
         return b.rating - a.rating
       case 'name':
         return a.title.localeCompare(b.title)
-      case 'module':
-        return (a.module || 99) - (b.module || 99)
+      case 'year':
+        return (b.year || 0) - (a.year || 0)
       default:
         return 0
     }
   })
 
-  // Generate modules (1-5 based on requirements)
-  const modules = Array.from({ length: 5 }, (_, i) => i + 1)
+  // Generate years (last 5 years)
+  const currentYear = new Date().getFullYear()
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
   return (
     <div className="space-y-6">
@@ -261,11 +239,11 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Study Resources</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Question Papers & Resources</h2>
             <p className="text-gray-600">
               {subject && semester && branch 
                 ? `${subject} • Semester ${semester} • ${branch}`
-                : 'Browse and download study materials organized by modules'
+                : 'Browse and download question papers and study materials'
               }
             </p>
           </div>
@@ -294,7 +272,7 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search resources, modules, or tags..."
+                placeholder="Search question papers, notes, or tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -311,32 +289,32 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
             <option value="popular">Most Downloaded</option>
             <option value="rating">Highest Rated</option>
             <option value="name">Name (A-Z)</option>
-            <option value="module">By Module</option>
+            <option value="year">By Year</option>
           </select>
         </div>
       </div>
 
-      {/* Module Filter */}
+      {/* Year Filter */}
       <div className="space-y-3">
-        <h3 className="text-sm font-medium text-gray-700">Filter by Module</h3>
+        <h3 className="text-sm font-medium text-gray-700">Filter by Year</h3>
         <div className="flex flex-wrap gap-2">
           <Button
-            variant={selectedModule === null ? 'default' : 'outline'}
+            variant={selectedYear === null ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedModule(null)}
+            onClick={() => setSelectedYear(null)}
             className="h-9"
           >
-            All Modules
+            All Years
           </Button>
-          {modules.map((module) => (
+          {years.map((year) => (
             <Button
-              key={module}
-              variant={selectedModule === module ? 'default' : 'outline'}
+              key={year}
+              variant={selectedYear === year ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedModule(module)}
+              onClick={() => setSelectedYear(year)}
               className="h-9"
             >
-              Module {module}
+              {year}
             </Button>
           ))}
         </div>
@@ -345,7 +323,7 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
       {/* Category Navigation */}
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-gray-700">Resource Categories</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
           <Card 
             className={`cursor-pointer transition-all duration-300 ${
               selectedCategory === 'all' 
@@ -396,10 +374,10 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-600">
             Showing {sortedResources.length} of {resources.length} resources
-            {selectedModule && ` for Module ${selectedModule}`}
+            {selectedYear && ` for year ${selectedYear}`}
           </p>
           
-          {(selectedCategory !== 'all' || selectedModule !== null) && (
+          {(selectedCategory !== 'all' || selectedYear !== null) && (
             <div className="flex gap-2">
               {selectedCategory !== 'all' && (
                 <Button 
@@ -410,13 +388,13 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
                   Clear Category
                 </Button>
               )}
-              {selectedModule !== null && (
+              {selectedYear !== null && (
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => setSelectedModule(null)}
+                  onClick={() => setSelectedYear(null)}
                 >
-                  Clear Module
+                  Clear Year
                 </Button>
               )}
             </div>
@@ -450,7 +428,7 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
             <Button variant="outline" onClick={() => {
               setSearchTerm('')
               setSelectedCategory('all')
-              setSelectedModule(null)
+              setSelectedYear(null)
             }}>
               Clear All Filters
             </Button>
@@ -480,9 +458,9 @@ function ResourceCard({ resource }: { resource: any }) {
                 <Star className="w-4 h-4 fill-current" />
                 <span>{resource.rating}</span>
               </div>
-              {resource.module && (
+              {resource.year && (
                 <Badge variant="outline" className="text-xs">
-                  Module {resource.module}
+                  {resource.year}
                 </Badge>
               )}
             </div>
@@ -575,9 +553,9 @@ function ResourceListItem({ resource }: { resource: any }) {
                   <Star className="w-4 h-4 fill-current" />
                   <span>{resource.rating}</span>
                 </div>
-                {resource.module && (
+                {resource.year && (
                   <Badge variant="outline" className="text-xs">
-                    Module {resource.module}
+                    {resource.year}
                   </Badge>
                 )}
               </div>

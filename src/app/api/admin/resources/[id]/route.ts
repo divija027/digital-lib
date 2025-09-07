@@ -1,16 +1,11 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminToken, createAdminResponse } from '@/lib/admin-auth'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
 
     const resource = await prisma.resource.findUnique({
       where: { id: params.id },
@@ -28,14 +23,14 @@ export async function GET(
     })
 
     if (!resource) {
-      return createAdminResponse('Resource not found', 404)
+      return Response.json({ error: 'Resource not found' }, { status: 404 })
     }
 
     return Response.json(resource)
 
   } catch (error) {
     console.error('Get resource API error:', error)
-    return createAdminResponse('Failed to fetch resource', 500)
+    return Response.json({ error: 'Failed to fetch resource' }, { status: 500 })
   }
 }
 
@@ -44,11 +39,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
     const body = await request.json()
     const { 
       title, 
@@ -88,12 +78,12 @@ export async function PUT(
 
     return Response.json(updatedResource)
 
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
-      return createAdminResponse('Resource not found', 404)
+      return Response.json({ error: 'Resource not found' }, { status: 404 })
     }
     console.error('Update resource API error:', error)
-    return createAdminResponse('Failed to update resource', 500)
+    return Response.json({ error: 'Failed to update resource' }, { status: 500 })
   }
 }
 
@@ -102,11 +92,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
     // Get resource info before deletion for file cleanup
     const resource = await prisma.resource.findUnique({
       where: { id: params.id },
@@ -114,7 +99,7 @@ export async function DELETE(
     })
 
     if (!resource) {
-      return createAdminResponse('Resource not found', 404)
+      return Response.json({ error: 'Resource not found' }, { status: 404 })
     }
 
     await prisma.resource.delete({
@@ -131,11 +116,11 @@ export async function DELETE(
 
     return Response.json({ message: 'Resource deleted successfully' })
 
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
-      return createAdminResponse('Resource not found', 404)
+      return Response.json({ error: 'Resource not found' }, { status: 404 })
     }
     console.error('Delete resource API error:', error)
-    return createAdminResponse('Failed to delete resource', 500)
+    return Response.json({ error: 'Failed to delete resource' }, { status: 500 })
   }
 }

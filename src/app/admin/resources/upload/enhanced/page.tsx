@@ -21,7 +21,7 @@ import Link from 'next/link'
 import { EnhancedResourceUpload } from '@/components/admin/EnhancedResourceUpload'
 import { QuestionPaperManager } from '@/components/admin/QuestionPaperManager'
 
-export default function UploadResourcePage() {
+export default function EnhancedUploadPage() {
   const [activeTab, setActiveTab] = useState('upload')
   const [uploadStats, setUploadStats] = useState({
     todayUploads: 0,
@@ -60,7 +60,7 @@ export default function UploadResourcePage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Question Paper Management</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Resource Management Center</h1>
             <p className="text-gray-600 mt-2">Upload, manage, and organize question papers by branch and semester</p>
           </div>
         </div>
@@ -225,11 +225,7 @@ export default function UploadResourcePage() {
               <div className="text-center py-12 text-gray-500">
                 <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                 <p className="text-lg font-medium">Branch Organization Tool</p>
-                <p className="text-sm mt-2">Reorganize files by branch and semester structure with drag & drop</p>
-                <Button className="mt-4" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Coming Soon
-                </Button>
+                <p className="text-sm mt-2">Coming soon - Organize files by branch and semester structure</p>
               </div>
             </CardContent>
           </Card>

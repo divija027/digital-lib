@@ -147,7 +147,7 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-4">Academic Programs</h1>
                 <p className="text-gray-600 text-xl max-w-2xl mx-auto leading-relaxed">
-                  Choose your academic program to access comprehensive study materials, modules, and resources
+                  Choose your academic program to access comprehensive question papers and study resources
                 </p>
               </div>
             </div>

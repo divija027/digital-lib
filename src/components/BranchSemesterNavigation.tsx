@@ -322,7 +322,7 @@ function SemesterContent({
             {semesterName} - {branchName}
           </h2>
           <p className="text-gray-600">
-            {subjects.length} subjects • Click on any subject to view modules and resources
+            {subjects.length} subjects • Click on any subject to view question papers and resources
           </p>
         </div>
         
@@ -415,18 +415,18 @@ function SubjectCard({ subject, branch, semester, onSelectionChange }: {
           </div>
 
           <div className="text-xs text-gray-600">
-            <span className="font-medium">Modules:</span> {subject.modules?.length || 5}
+            <span className="font-medium">Question Papers:</span> Available for download
           </div>
 
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <FileText className="w-3 h-3" />
-                Resources
+                Previous Years
               </span>
               <span className="flex items-center gap-1">
                 <BookMarked className="w-3 h-3" />
-                {subject.modules?.length || 5} modules
+                Model Papers
               </span>
             </div>
             <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -466,7 +466,7 @@ function SubjectListItem({ subject, branch, semester, onSelectionChange }: {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900">{subject.name}</h3>
-              <p className="text-sm text-gray-500">{subject.code} • {subject.credits} credits • {subject.modules?.length || 5} modules</p>
+              <p className="text-sm text-gray-500">{subject.code} • {subject.credits} credits • Previous year papers available</p>
             </div>
           </div>
 

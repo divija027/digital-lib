@@ -1,6 +1,6 @@
 // VTU Engineering Curriculum - Customized Structure
 // Physics/Chemistry Cycles + Specific Engineering Branches
-// Semesters 3-7 for each branch, 5 modules per subject
+// Semesters 3-7 for each branch, question papers organized by year and type
 
 export interface Subject {
   code: string

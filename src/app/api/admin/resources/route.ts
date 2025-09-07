@@ -1,13 +1,8 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminToken, createAdminResponse } from '@/lib/admin-auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
 
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -108,22 +103,17 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Resources API error:', error)
-    return createAdminResponse('Failed to fetch resources', 500)
+    return Response.json({ error: 'Failed to fetch resources' }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
     const body = await request.json()
     const { action, resourceIds } = body
 
     if (!action || !resourceIds || !Array.isArray(resourceIds)) {
-      return createAdminResponse('Action and resourceIds are required', 400)
+      return Response.json({ error: 'Action and resourceIds are required' }, { status: 400 })
     }
 
     let updateData: any = {}
@@ -144,7 +134,7 @@ export async function PUT(request: NextRequest) {
           message: `${resourceIds.length} resource(s) deleted successfully` 
         })
       default:
-        return createAdminResponse('Invalid action', 400)
+        return Response.json({ error: 'Invalid action' }, { status: 400 })
     }
 
     const result = await prisma.resource.updateMany({
@@ -159,6 +149,6 @@ export async function PUT(request: NextRequest) {
 
   } catch (error) {
     console.error('Bulk resource action API error:', error)
-    return createAdminResponse('Failed to perform bulk action', 500)
+    return Response.json({ error: 'Failed to perform bulk action' }, { status: 500 })
   }
 }

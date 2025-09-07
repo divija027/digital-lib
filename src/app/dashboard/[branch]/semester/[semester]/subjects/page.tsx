@@ -144,7 +144,7 @@ export default function SubjectsPage() {
               {typeof semesterNumber === 'number' ? `Semester ${semesterNumber}` : semesterNumber} - {branchData.name}
             </h1>
             <p className="text-lg text-gray-600 mt-2">
-              {filteredSubjects.length} subjects • Click on any subject to explore modules
+              {filteredSubjects.length} subjects • Click on any subject to access question papers
             </p>
           </div>
           
@@ -295,7 +295,7 @@ const SubjectCard = ({ subject, onSelect, isBookmarked, onBookmark }: {
 
         <div className="space-y-3">
           <div className="text-sm text-gray-600">
-            <span className="font-medium">Modules:</span> {subject.modules?.length || 5}
+            <span className="font-medium">Question Papers:</span> Available for download
           </div>
           
           <div className="flex items-center justify-between text-sm text-gray-500">
@@ -319,7 +319,7 @@ const SubjectCard = ({ subject, onSelect, isBookmarked, onBookmark }: {
           className="w-full group-hover:bg-blue-50 group-hover:border-blue-300 transition-colors"
           onClick={onSelect}
         >
-          Explore Modules
+          View Question Papers
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
@@ -353,16 +353,12 @@ const SubjectListItem = ({ subject, onSelect, isBookmarked, onBookmark }: {
                 {subject.name}
               </h3>
               <div className="flex items-center gap-2">
-                {subject.modules?.slice(0, 3).map((_: any, index: number) => (
-                  <div key={index} className="w-2 h-2 bg-blue-200 rounded-full"></div>
-                ))}
-                {(subject.modules?.length || 5) > 3 && (
-                  <span className="text-xs text-gray-500">+{(subject.modules?.length || 5) - 3}</span>
-                )}
+                <FileText className="w-4 h-4 text-blue-600" />
+                <span className="text-sm text-blue-600">Question Papers</span>
               </div>
             </div>
             <p className="text-sm text-gray-500 mb-3">
-              {subject.code} • {subject.credits} credits • {subject.modules?.length || 5} modules
+              {subject.code} • {subject.credits} credits • Previous year papers available
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant={subject.type === 'lab' ? 'secondary' : subject.type === 'project' ? 'outline' : 'default'}>
