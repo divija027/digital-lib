@@ -1,22 +1,21 @@
 import { Metadata } from 'next'
-import { getBranchByCode, getCycleByCode } from '@/lib/vtu-curriculum'
+import { getBranchCodeFromSlug } from '@/lib/branch-utils'
 
-// Branch slug to code mapping
-const BRANCH_SLUG_MAP: Record<string, string> = {
-  'physics': 'PHYSICS',
-  'chemistry': 'CHEMISTRY',
-  'cs': 'CSE',
-  'cse': 'CSE',
-  'is': 'ISE',
-  'ise': 'ISE', 
-  'ece': 'ECE',
-  'ai': 'AIML',
-  'aiml': 'AIML',
-  'eee': 'EEE',
-  'civil': 'CE',
-  'ce': 'CE',
-  'mech': 'ME',
-  'me': 'ME'
+interface Subject {
+  id: string
+  name: string
+  code: string
+  credits: number
+  type: string
+  semester: number | null
+  description?: string
+}
+
+interface Branch {
+  id: string
+  name: string
+  code: string
+  isActive: boolean
 }
 
 // Convert slug back to subject name
@@ -34,82 +33,111 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { branch: branchSlug, subject: subjectSlug } = await params
   
-  const branchCode = BRANCH_SLUG_MAP[branchSlug?.toLowerCase()]
-  const branchData = branchCode ? (getBranchByCode(branchCode) || getCycleByCode(branchCode)) : null
-  const subjectName = slugToSubject(subjectSlug)
-  
-  if (!branchData) {
-    return {
-      title: 'Subject Not Found - VTU Digital Library',
-      description: 'The requested subject could not be found.'
+  try {
+    const branchCode = await getBranchCodeFromSlug(branchSlug)
+    
+    if (!branchCode) {
+      return {
+        title: 'Subject Not Found - VTU Digital Library',
+        description: 'The requested subject could not be found.'
+      }
     }
-  }
 
-  const title = `${subjectName} - ${branchData.name} | VTU Digital Library`
-  const description = `Access comprehensive study materials, notes, question papers, and resources for ${subjectName} in ${branchData.name} at VTU Digital Library.`
+    // Fetch branch data
+    const branchResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches`)
+    const branchesData = await branchResponse.json()
+    const branchData = branchesData.find((b: Branch) => b.code === branchCode)
 
-  return {
-    title,
-    description,
-    keywords: [
-      subjectName,
-      branchData.name,
-      'VTU',
-      'study materials',
-      'question papers',
-      'notes',
-      'engineering',
-      'education',
-      'Karnataka',
-      'university'
-    ],
-    authors: [{ name: 'VTU Digital Library' }],
-    creator: 'VTU Digital Library',
-    publisher: 'VTU Digital Library',
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-    openGraph: {
+    if (!branchData) {
+      return {
+        title: 'Branch Not Found - VTU Digital Library',
+        description: 'The requested branch could not be found.'
+      }
+    }
+
+    // Fetch subjects for this branch to get more details
+    const subjectsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches/${branchData.id}/subjects`)
+    const subjects: Subject[] = await subjectsResponse.json()
+    
+    // Find the specific subject
+    const currentSubject = subjects.find(s => 
+      s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === subjectSlug
+    )
+    
+    const subjectName = currentSubject?.name || slugToSubject(subjectSlug)
+    
+    const title = `${subjectName} - ${branchData.name} | VTU Digital Library`
+    const description = `Access comprehensive study materials, notes, question papers, and resources for ${subjectName} in ${branchData.name} at VTU Digital Library.`
+
+    return {
       title,
       description,
-      url: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects/${subjectSlug}`,
-      siteName: 'VTU Digital Library',
-      images: [
-        {
-          url: 'https://vtu-digital-library.com/og-image.jpg',
-          width: 1200,
-          height: 630,
-          alt: `${subjectName} - ${branchData.name} Study Materials`,
-        },
+      keywords: [
+        subjectName,
+        branchData.name,
+        'VTU',
+        'study materials',
+        'question papers',
+        'notes',
+        'engineering',
+        'education',
+        'Karnataka',
+        'university'
       ],
-      locale: 'en_US',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: ['https://vtu-digital-library.com/twitter-image.jpg'],
-      creator: '@vtudigitallib',
-    },
-    robots: {
-      index: true,
-      follow: true,
-      nocache: true,
-      googleBot: {
+      authors: [{ name: 'VTU Digital Library' }],
+      creator: 'VTU Digital Library',
+      publisher: 'VTU Digital Library',
+      formatDetection: {
+        email: false,
+        address: false,
+        telephone: false,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects/${subjectSlug}`,
+        siteName: 'VTU Digital Library',
+        images: [
+          {
+            url: 'https://vtu-digital-library.com/og-image.jpg',
+            width: 1200,
+            height: 630,
+            alt: `${subjectName} - ${branchData.name} Study Materials`,
+          },
+        ],
+        locale: 'en_US',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: ['https://vtu-digital-library.com/twitter-image.jpg'],
+        creator: '@vtudigitallib',
+      },
+      robots: {
         index: true,
         follow: true,
-        noimageindex: false,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+        nocache: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          noimageindex: false,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
-    },
-    alternates: {
-      canonical: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects/${subjectSlug}`,
-    },
+      alternates: {
+        canonical: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects/${subjectSlug}`,
+      },
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Subject - VTU Digital Library',
+      description: 'Study resources for VTU students.'
+    }
   }
 }
 

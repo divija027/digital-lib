@@ -10,25 +10,42 @@ import {
   GraduationCap,
   ChevronRight
 } from 'lucide-react'
-
-// Branch to slug mapping for routing
-const BRANCH_TO_SLUG: Record<string, string> = {
-  'PHYSICS': 'physics',
-  'CHEMISTRY': 'chemistry',
-  'CSE': 'cs',
-  'ISE': 'is', 
-  'ECE': 'ece',
-  'AIML': 'ai',
-  'EEE': 'eee',
-  'CE': 'civil',
-  'ME': 'mech'
-}
+import { getBranchSlug } from '@/lib/branch-utils'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [scrolled, setScrolled] = useState(false)
+  const [branches, setBranches] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchBranches()
+  }, [])
+
+  const fetchBranches = async () => {
+    try {
+      // Add cache busting to ensure fresh data
+      const timestamp = Date.now()
+      const response = await fetch(`/api/admin/branches?t=${timestamp}`)
+      const data = await response.json()
+      
+      if (data.success) {
+        // Sort by order and filter active branches
+        const sortedActiveBranches = data.branches
+          .filter((branch: any) => branch.isActive)
+          .sort((a: any, b: any) => a.order - b.order)
+        setBranches(sortedActiveBranches)
+      } else {
+        console.error('Failed to fetch branches:', data.error)
+      }
+    } catch (error) {
+      console.error('Error fetching branches:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     let ticking = false
@@ -74,14 +91,13 @@ export default function DashboardPage() {
   }, [lastScrollY])
 
   const handleBranchClick = (branchCode: string) => {
-    const slug = BRANCH_TO_SLUG[branchCode]
-    if (slug) {
-      router.push(`/dashboard/${slug}`)
-    }
+    const slug = getBranchSlug(branchCode)
+    router.push(`/dashboard/${slug}`)
   }
 
-  const handleCycleClick = (cycleType: 'physics' | 'chemistry') => {
-    router.push(`/dashboard/${cycleType}/subjects`)
+  const handleCycleClick = (branchCode: string) => {
+    const slug = getBranchSlug(branchCode)
+    router.push(`/dashboard/${slug}/subjects`)
   }
 
   return (
@@ -138,6 +154,44 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Dashboard Overview */}
         <div className="space-y-12">
+          {/* Quiz Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 text-white shadow-2xl">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h2 className="text-3xl font-bold mb-3">Daily Programming Quiz</h2>
+                <p className="text-blue-100 text-lg mb-4">
+                  Test your programming knowledge with our daily challenges. 
+                  Unlock new levels and compete with other students!
+                </p>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    🏆 Competitive
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    ⏱️ 90s per question
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    🎯 20 questions daily
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-4">
+                <Button
+                  onClick={() => router.push('/dashboard/quiz')}
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  Start Quiz Challenge
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">Day 1</div>
+                  <div className="text-blue-200 text-sm">Available Now</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Enhanced Header */}
           <div className="text-center space-y-6">
             <div className="flex flex-col items-center gap-6">
@@ -153,108 +207,51 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Enhanced 3x3 Branch Grid */}
+          {/* Enhanced Branch Grid */}
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Physics Cycle */}
-              <BranchCard
-                title="Physics"
-                subtitle="Foundation Year"
-                icon="⚛️"
-                color="from-indigo-500 to-purple-600"
-                hoverColor="hover:border-indigo-300"
-                badges={[{ text: "First Year", variant: "secondary" }, { text: "Core", variant: "outline" }]}
-                onClick={() => handleCycleClick('physics')}
-              />
-
-              {/* Chemistry Cycle */}
-              <BranchCard
-                title="Chemistry"
-                subtitle="Foundation Year"
-                icon="🧪"
-                color="from-green-500 to-emerald-600"
-                hoverColor="hover:border-green-300"
-                badges={[{ text: "First Year", variant: "secondary" }, { text: "Core", variant: "outline" }]}
-                onClick={() => handleCycleClick('chemistry')}
-              />
-
-              {/* Computer Science */}
-              <BranchCard
-                title="Computer Science"
-                subtitle="CSE"
-                icon="💻"
-                color="from-blue-500 to-cyan-600"
-                hoverColor="hover:border-blue-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('CSE')}
-              />
-
-              {/* Information Science */}
-              <BranchCard
-                title="Information Science"
-                subtitle="ISE"
-                icon="🌐"
-                color="from-cyan-500 to-teal-600"
-                hoverColor="hover:border-cyan-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('ISE')}
-              />
-
-              {/* Electronics & Communication */}
-              <BranchCard
-                title="Electronics & Communication"
-                subtitle="ECE"
-                icon="📡"
-                color="from-purple-500 to-violet-600"
-                hoverColor="hover:border-purple-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('ECE')}
-              />
-
-              {/* Artificial Intelligence */}
-              <BranchCard
-                title="Artificial Intelligence"
-                subtitle="AI & ML"
-                icon="🤖"
-                color="from-rose-500 to-pink-600"
-                hoverColor="hover:border-rose-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('AIML')}
-              />
-
-              {/* Electrical & Electronics */}
-              <BranchCard
-                title="Electrical & Electronics"
-                subtitle="EEE"
-                icon="⚡"
-                color="from-yellow-500 to-amber-600"
-                hoverColor="hover:border-yellow-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('EEE')}
-              />
-
-              {/* Civil Engineering */}
-              <BranchCard
-                title="Civil Engineering"
-                subtitle="Civil"
-                icon="🏗️"
-                color="from-emerald-500 to-green-600"
-                hoverColor="hover:border-emerald-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('CE')}
-              />
-
-              {/* Mechanical Engineering */}
-              <BranchCard
-                title="Mechanical Engineering"
-                subtitle="Mech"
-                icon="⚙️"
-                color="from-orange-500 to-red-600"
-                hoverColor="hover:border-orange-300"
-                badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
-                onClick={() => handleBranchClick('ME')}
-              />
-            </div>
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Render Cycles First */}
+                {branches
+                  .filter(branch => branch.type === 'cycle')
+                  .map((cycle) => (
+                    <BranchCard
+                      key={cycle.id}
+                      title={cycle.name.replace(' Cycle', '')}
+                      subtitle="Foundation Year"
+                      icon={cycle.icon}
+                      color={`from-${cycle.color.replace('bg-', '').replace('-500', '-500')} to-${cycle.color.replace('bg-', '').replace('-500', '-600')}`}
+                      hoverColor={`hover:border-${cycle.color.replace('bg-', '').replace('-500', '-300')}`}
+                      badges={[{ text: "First Year", variant: "secondary" }, { text: "Core", variant: "outline" }]}
+                      onClick={() => handleCycleClick(cycle.code)}
+                    />
+                  ))
+                }
+                
+                {/* Render Engineering Branches */}
+                {branches
+                  .filter(branch => branch.type === 'branch')
+                  .map((branch) => (
+                    <BranchCard
+                      key={branch.id}
+                      title={branch.name}
+                      subtitle={branch.code}
+                      icon={branch.icon}
+                      color={`from-${branch.color.replace('bg-', '').replace('-500', '-500')} to-${branch.color.replace('bg-', '').replace('-500', '-600')}`}
+                      hoverColor={`hover:border-${branch.color.replace('bg-', '').replace('-500', '-300')}`}
+                      badges={[{ text: "Sem 3-7", variant: "secondary" }, { text: "Engineering", variant: "outline" }]}
+                      onClick={() => handleBranchClick(branch.code)}
+                    />
+                  ))
+                }
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -21,116 +21,28 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react'
+import { clearBranchCache } from '@/lib/branch-utils'
 
-// VTU Branches with their details
-const VTU_BRANCHES = [
-  { 
-    code: 'CSE', 
-    name: 'Computer Science Engineering',
-    color: 'bg-blue-100 text-blue-800',
-    icon: '💻'
-  },
-  { 
-    code: 'ISE', 
-    name: 'Information Science Engineering',
-    color: 'bg-indigo-100 text-indigo-800',
-    icon: '🔧'
-  },
-  { 
-    code: 'ECE', 
-    name: 'Electronics & Communication Engineering',
-    color: 'bg-purple-100 text-purple-800',
-    icon: '📡'
-  },
-  { 
-    code: 'EEE', 
-    name: 'Electrical & Electronics Engineering',
-    color: 'bg-yellow-100 text-yellow-800',
-    icon: '⚡'
-  },
-  { 
-    code: 'ME', 
-    name: 'Mechanical Engineering',
-    color: 'bg-orange-100 text-orange-800',
-    icon: '⚙️'
-  },
-  { 
-    code: 'CE', 
-    name: 'Civil Engineering',
-    color: 'bg-green-100 text-green-800',
-    icon: '🏗️'
-  },
-  { 
-    code: 'CHE', 
-    name: 'Chemical Engineering',
-    color: 'bg-red-100 text-red-800',
-    icon: '🧪'
-  },
-  { 
-    code: 'BT', 
-    name: 'Biotechnology',
-    color: 'bg-emerald-100 text-emerald-800',
-    icon: '🧬'
-  },
-  { 
-    code: 'AE', 
-    name: 'Aeronautical Engineering',
-    color: 'bg-sky-100 text-sky-800',
-    icon: '✈️'
-  },
-  { 
-    code: 'AUTO', 
-    name: 'Automobile Engineering',
-    color: 'bg-gray-100 text-gray-800',
-    icon: '🚗'
-  }
-]
+// Dynamic interfaces for branch and subject data
+interface Branch {
+  id: string
+  name: string
+  code: string
+  description: string
+  icon: string
+  color: string
+  isActive: boolean
+}
 
-// Subjects by branch and semester (sample data)
-const SUBJECTS_BY_BRANCH = {
-  CSE: {
-    3: [
-      { code: 'DS', name: 'Data Structures', credits: 4 },
-      { code: 'DE', name: 'Digital Electronics', credits: 4 },
-      { code: 'CO', name: 'Computer Organization', credits: 4 },
-      { code: 'M3', name: 'Mathematics III', credits: 4 },
-      { code: 'OOP', name: 'Object Oriented Programming', credits: 3 }
-    ],
-    4: [
-      { code: 'OS', name: 'Operating Systems', credits: 4 },
-      { code: 'DBMS', name: 'Database Management Systems', credits: 4 },
-      { code: 'DAA', name: 'Design and Analysis of Algorithms', credits: 4 },
-      { code: 'M4', name: 'Mathematics IV', credits: 4 },
-      { code: 'MP', name: 'Microprocessors', credits: 3 }
-    ],
-    5: [
-      { code: 'CN', name: 'Computer Networks', credits: 4 },
-      { code: 'SE', name: 'Software Engineering', credits: 4 },
-      { code: 'CD', name: 'Compiler Design', credits: 4 },
-      { code: 'UNIX', name: 'UNIX System Programming', credits: 3 },
-      { code: 'AI', name: 'Artificial Intelligence', credits: 3 }
-    ],
-    6: [
-      { code: 'ML', name: 'Machine Learning', credits: 4 },
-      { code: 'CC', name: 'Cloud Computing', credits: 4 },
-      { code: 'IS', name: 'Information Security', credits: 4 },
-      { code: 'WEB', name: 'Web Technologies', credits: 3 },
-      { code: 'SPM', name: 'Software Project Management', credits: 3 }
-    ],
-    7: [
-      { code: 'BDA', name: 'Big Data Analytics', credits: 4 },
-      { code: 'IOT', name: 'Internet of Things', credits: 4 },
-      { code: 'BC', name: 'Blockchain Technology', credits: 3 },
-      { code: 'NLP', name: 'Natural Language Processing', credits: 3 },
-      { code: 'PROJECT', name: 'Major Project Phase I', credits: 6 }
-    ],
-    8: [
-      { code: 'PROJECT2', name: 'Major Project Phase II', credits: 12 },
-      { code: 'INTERN', name: 'Internship', credits: 4 },
-      { code: 'SEMINAR', name: 'Technical Seminar', credits: 2 }
-    ]
-  },
-  // Add other branches as needed
+interface Subject {
+  id: string
+  name: string
+  code: string
+  description: string
+  semester: number
+  credits: number
+  isCore: boolean
+  isActive: boolean
 }
 
 const uploadSchema = z.object({
@@ -158,6 +70,10 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
   const [success, setSuccess] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewTitle, setPreviewTitle] = useState('')
+  const [branches, setBranches] = useState<Branch[]>([])
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [isLoadingBranches, setIsLoadingBranches] = useState(true)
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
@@ -178,16 +94,68 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
   const examMonth = watch('examMonth')
   const schemeYear = watch('schemeYear')
 
-  // Get subjects for selected branch and semester
-  const availableSubjects = selectedBranch && selectedSemester 
-    ? SUBJECTS_BY_BRANCH[selectedBranch as keyof typeof SUBJECTS_BY_BRANCH]?.[parseInt(selectedSemester)] || []
-    : []
+  // Fetch branches on component mount
+  useEffect(() => {
+    fetchBranches()
+  }, [])
+
+  // Fetch subjects when branch or semester changes
+  useEffect(() => {
+    if (selectedBranch && selectedSemester) {
+      fetchSubjects(selectedBranch, parseInt(selectedSemester))
+    } else {
+      setSubjects([])
+    }
+  }, [selectedBranch, selectedSemester])
+
+  const fetchBranches = async () => {
+    try {
+      setIsLoadingBranches(true)
+      clearBranchCache() // Ensure fresh data
+      const response = await fetch('/api/admin/branches')
+      const data = await response.json()
+      
+      console.log('[EnhancedResourceUpload] Fetched branches:', data)
+      
+      if (data.success) {
+        setBranches(data.branches.filter((b: Branch) => b.isActive))
+      }
+    } catch (error) {
+      console.error('Failed to fetch branches:', error)
+      setError('Failed to load branches')
+    } finally {
+      setIsLoadingBranches(false)
+    }
+  }
+
+  const fetchSubjects = async (branchId: string, semester: number) => {
+    try {
+      setIsLoadingSubjects(true)
+      const response = await fetch(`/api/admin/branches/${branchId}/subjects`)
+      const data = await response.json()
+      
+      console.log(`[EnhancedResourceUpload] Fetched subjects for branch ${branchId}, semester ${semester}:`, data)
+      
+      if (data.success) {
+        // Filter subjects by semester and active status
+        const semesterSubjects = data.subjects.filter(
+          (s: Subject) => s.isActive && s.semester === semester
+        )
+        setSubjects(semesterSubjects)
+      }
+    } catch (error) {
+      console.error('Failed to fetch subjects:', error)
+      setError('Failed to load subjects')
+    } finally {
+      setIsLoadingSubjects(false)
+    }
+  }
 
   // Auto-generate title based on selections
   useEffect(() => {
     if (selectedBranch && selectedSemester && selectedSubject && examYear && examMonth && schemeYear) {
-      const branch = VTU_BRANCHES.find(b => b.code === selectedBranch)
-      const subject = availableSubjects.find(s => s.code === selectedSubject)
+      const branch = branches.find(b => b.id === selectedBranch)
+      const subject = subjects.find(s => s.id === selectedSubject)
       
       if (branch && subject) {
         const title = `${branch.code} ${selectedSemester}${getSemesterSuffix(parseInt(selectedSemester))} Sem ${subject.name} ${examMonth} ${examYear} (${schemeYear} Scheme)`
@@ -195,7 +163,7 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
         setValue('title', title)
       }
     }
-  }, [selectedBranch, selectedSemester, selectedSubject, examYear, examMonth, schemeYear, availableSubjects, setValue])
+  }, [selectedBranch, selectedSemester, selectedSubject, examYear, examMonth, schemeYear, branches, subjects, setValue])
 
   const getSemesterSuffix = (sem: number) => {
     if (sem === 1 || sem === 21) return 'st'
@@ -332,13 +300,13 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
           {/* Branch Selection */}
           <div className="space-y-3">
             <Label className="text-base font-medium">Engineering Branch</Label>
-            <Select onValueChange={(value) => setValue('branch', value)}>
+            <Select onValueChange={(value) => setValue('branch', value)} disabled={isLoadingBranches}>
               <SelectTrigger className="h-12">
-                <SelectValue placeholder="Select engineering branch" />
+                <SelectValue placeholder={isLoadingBranches ? "Loading branches..." : "Select engineering branch"} />
               </SelectTrigger>
               <SelectContent>
-                {VTU_BRANCHES.map((branch) => (
-                  <SelectItem key={branch.code} value={branch.code}>
+                {branches.map((branch) => (
+                  <SelectItem key={branch.id} value={branch.id}>
                     <div className="flex items-center gap-3">
                       <span className="text-lg">{branch.icon}</span>
                       <div>
@@ -364,7 +332,7 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
                   <SelectValue placeholder="Select semester" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[3, 4, 5, 6, 7, 8].map((sem) => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
                     <SelectItem key={sem} value={sem.toString()}>
                       <div className="flex items-center gap-2">
                         <GraduationCap className="h-4 w-4" />
@@ -383,14 +351,22 @@ export function EnhancedResourceUpload({ onUploadSuccess }: EnhancedResourceUplo
               <Label className="text-base font-medium">Subject</Label>
               <Select 
                 onValueChange={(value) => setValue('subject', value)}
-                disabled={!selectedBranch || !selectedSemester}
+                disabled={!selectedBranch || !selectedSemester || isLoadingSubjects}
               >
                 <SelectTrigger className="h-12">
-                  <SelectValue placeholder={availableSubjects.length > 0 ? "Select subject" : "Select branch & semester first"} />
+                  <SelectValue placeholder={
+                    !selectedBranch || !selectedSemester 
+                      ? "Select branch & semester first" 
+                      : isLoadingSubjects 
+                        ? "Loading subjects..." 
+                        : subjects.length > 0 
+                          ? "Select subject" 
+                          : "No subjects available"
+                  } />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableSubjects.map((subject) => (
-                    <SelectItem key={subject.code} value={subject.code}>
+                  {subjects.map((subject) => (
+                    <SelectItem key={subject.id} value={subject.id}>
                       <div>
                         <div className="font-medium">{subject.code}</div>
                         <div className="text-sm text-gray-500">{subject.name}</div>

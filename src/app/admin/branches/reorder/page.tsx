@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ArrowLeft, Save, GripVertical, ArrowUp, ArrowDown } from 'lucide-react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 interface Branch {
   id: string
@@ -25,7 +26,6 @@ export default function ReorderBranchesPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   useEffect(() => {
     fetchBranches()
@@ -33,66 +33,19 @@ export default function ReorderBranchesPage() {
 
   const fetchBranches = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockBranches: Branch[] = [
-        {
-          id: '1',
-          name: 'Computer Science Engineering',
-          code: 'CSE',
-          icon: '💻',
-          color: 'from-blue-500 to-cyan-600',
-          order: 1,
-          isActive: true,
-        },
-        {
-          id: '2',
-          name: 'Information Science Engineering',
-          code: 'ISE',
-          icon: '🌐',
-          color: 'from-cyan-500 to-teal-600',
-          order: 2,
-          isActive: true,
-        },
-        {
-          id: '3',
-          name: 'Electronics & Communication',
-          code: 'ECE',
-          icon: '📡',
-          color: 'from-purple-500 to-violet-600',
-          order: 3,
-          isActive: true,
-        },
-        {
-          id: '4',
-          name: 'Mechanical Engineering',
-          code: 'ME',
-          icon: '⚙️',
-          color: 'from-orange-500 to-red-600',
-          order: 4,
-          isActive: true,
-        },
-        {
-          id: '5',
-          name: 'Electrical Engineering',
-          code: 'EEE',
-          icon: '⚡',
-          color: 'from-yellow-500 to-orange-600',
-          order: 5,
-          isActive: true,
-        },
-        {
-          id: '6',
-          name: 'Civil Engineering',
-          code: 'CE',
-          icon: '🏗️',
-          color: 'from-emerald-500 to-green-600',
-          order: 6,
-          isActive: true,
-        }
-      ]
+      const response = await fetch('/api/admin/branches')
+      if (!response.ok) {
+        throw new Error('Failed to fetch branches')
+      }
+      
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch branches')
+      }
       
       // Sort by current order
-      const sortedBranches = mockBranches.sort((a, b) => a.order - b.order)
+      const sortedBranches = data.branches.sort((a: Branch, b: Branch) => a.order - b.order)
       setBranches(sortedBranches)
     } catch (error) {
       console.error('Failed to fetch branches:', error)
@@ -130,16 +83,37 @@ export default function ReorderBranchesPage() {
   const handleSave = async () => {
     setIsSaving(true)
     setError('')
-    setSuccess('')
 
     try {
-      // Mock API call - replace with actual implementation
-      console.log('Saving branch order:', branches.map(b => ({ id: b.id, order: b.order })))
+      const orderData = branches.map(branch => ({
+        id: branch.id,
+        order: branch.order
+      }))
+
+      console.log('Sending reorder data:', orderData) // Debug log
+
+      const response = await fetch('/api/admin/branches/reorder', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ branches: orderData }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update branch order')
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update branch order')
+      }
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSuccess('Branch order updated successfully!')
+      toast.success('Branch order updated successfully!', {
+        duration: 3000,
+        position: 'top-right',
+      })
       setHasChanges(false)
       
       // Redirect after a short delay
@@ -148,7 +122,13 @@ export default function ReorderBranchesPage() {
       }, 1500)
       
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update branch order')
+      console.error('Reorder error:', err) // Debug log
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update branch order'
+      toast.error(errorMessage, {
+        duration: 4000,
+        position: 'top-right',
+      })
+      setError(errorMessage)
     } finally {
       setIsSaving(false)
     }
@@ -187,12 +167,6 @@ export default function ReorderBranchesPage() {
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {success && (
-        <Alert>
-          <AlertDescription>{success}</AlertDescription>
         </Alert>
       )}
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,24 +19,23 @@ import {
   Star,
   Filter
 } from 'lucide-react'
-import { getBranchByCode, getCycleByCode } from '@/lib/vtu-curriculum'
+import { getBranchCodeFromSlug } from '@/lib/branch-utils'
 
-// Branch slug to code mapping
-const BRANCH_SLUG_MAP: Record<string, string> = {
-  'physics': 'PHYSICS',
-  'chemistry': 'CHEMISTRY',
-  'cs': 'CSE',
-  'cse': 'CSE',
-  'is': 'ISE', 
-  'ise': 'ISE',
-  'ece': 'ECE',
-  'ai': 'AIML',
-  'aiml': 'AIML',
-  'eee': 'EEE',
-  'civil': 'CE',
-  'ce': 'CE',
-  'mech': 'ME',
-  'me': 'ME'
+interface Subject {
+  id: string
+  name: string
+  code: string
+  credits: number
+  type: string
+  semester: number | null
+  description?: string
+}
+
+interface Branch {
+  id: string
+  name: string
+  code: string
+  isActive: boolean
 }
 
 // Convert slug back to subject name
@@ -114,16 +113,59 @@ export default function SubjectPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<string>('all')
   const [filterYear, setFilterYear] = useState<string>('all')
-  
-  // Convert slug to branch code and subject name
-  const branchCode = BRANCH_SLUG_MAP[branchSlug?.toLowerCase()]
-  const subjectName = slugToSubject(subjectSlug)
-  
-  // Get branch data
-  const branchData = branchCode ? (getBranchByCode(branchCode) || getCycleByCode(branchCode)) : null
+  const [branchData, setBranchData] = useState<Branch | null>(null)
+  const [currentSubject, setCurrentSubject] = useState<Subject | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const branchCode = await getBranchCodeFromSlug(branchSlug)
+        
+        if (!branchCode) {
+          setError('Branch not found')
+          return
+        }
+
+        // Fetch branch data
+        const branchResponse = await fetch('/api/admin/branches')
+        const branchesData = await branchResponse.json()
+        const branch = branchesData.find((b: Branch) => b.code === branchCode)
+
+        if (!branch) {
+          setError('Branch not found')
+          return
+        }
+
+        setBranchData(branch)
+
+        // Fetch subjects for this branch
+        const subjectsResponse = await fetch(`/api/admin/branches/${branch.id}/subjects`)
+        const subjectsData: Subject[] = await subjectsResponse.json()
+
+        // Find current subject
+        const subject = subjectsData.find(s => 
+          s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === subjectSlug
+        )
+        setCurrentSubject(subject || null)
+
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setError('Failed to load data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (branchSlug && subjectSlug) {
+      fetchData()
+    }
+  }, [branchSlug, subjectSlug])
   
   // Get question papers
-  const questionPapers = branchData ? getQuestionPapers(subjectName, branchCode) : []
+  const questionPapers = currentSubject ? getQuestionPapers(currentSubject.name, branchData?.code || '') : []
   
   // Filter papers based on search and filters
   const filteredPapers = questionPapers.filter(paper => {
@@ -139,19 +181,23 @@ export default function SubjectPage() {
   const availableYears = [...new Set(questionPapers.map(paper => paper.year))].sort((a, b) => b - a)
   const availableTypes = [...new Set(questionPapers.map(paper => paper.type))]
 
-  if (!branchData) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <BookOpen className="w-10 h-10 text-red-600" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Subject Not Found</h1>
-          <p className="text-gray-600">The requested subject could not be found.</p>
-          <Button onClick={() => router.push(`/dashboard/${branchSlug}/subjects`)}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Subjects
-          </Button>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading subject data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !branchData || !currentSubject) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error || 'Subject not found'}</p>
+          <Button onClick={() => router.back()}>Go Back</Button>
         </div>
       </div>
     )
@@ -204,7 +250,7 @@ export default function SubjectPage() {
             Subjects
           </Button>
           <ChevronRight className="w-4 h-4" />
-          <span className="font-medium text-gray-900">{subjectName}</span>
+          <span className="font-medium text-gray-900">{currentSubject.name}</span>
         </div>
 
         {/* Subject Header */}
@@ -215,12 +261,12 @@ export default function SubjectPage() {
                 <FileText className="w-10 h-10" />
               </div>
               <div className="flex-1">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">{subjectName}</h1>
+                <h1 className="text-4xl font-bold text-gray-900 mb-3">{currentSubject.name}</h1>
                 <p className="text-lg text-gray-600 mb-4">Question Papers and Previous Year Papers</p>
                 <div className="flex items-center gap-4 mb-4">
-                  <Badge variant="default">{branchCode}101</Badge>
-                  <Badge variant="outline">4 Credits</Badge>
-                  <Badge variant="secondary">Core Subject</Badge>
+                  <Badge variant="default">{currentSubject.code}</Badge>
+                  <Badge variant="outline">{currentSubject.credits} Credits</Badge>
+                  <Badge variant="secondary">{currentSubject.type}</Badge>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-white rounded-lg">

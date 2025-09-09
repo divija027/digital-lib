@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft, Save, Eye } from 'lucide-react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 const branchSchema = z.object({
   name: z.string().min(2, 'Branch name must be at least 2 characters'),
@@ -21,7 +22,7 @@ const branchSchema = z.object({
   description: z.string().min(10, 'Description must be at least 10 characters'),
   icon: z.string().optional(),
   color: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().optional(),
 })
 
 type BranchForm = z.infer<typeof branchSchema>
@@ -45,7 +46,6 @@ export default function NewBranchPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const {
     register,
@@ -64,27 +64,44 @@ export default function NewBranchPage() {
 
   const watchedValues = watch()
 
-  const onSubmit = async (data: BranchForm) => {
+  const onSubmit: SubmitHandler<BranchForm> = async (data) => {
     setIsSubmitting(true)
     setError('')
-    setSuccess('')
 
     try {
-      // Mock API call - replace with actual implementation
-      console.log('Creating branch:', data)
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSuccess('Branch created successfully!')
-      
-      // Redirect after a short delay
-      setTimeout(() => {
-        router.push('/admin/branches')
-      }, 1500)
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create branch')
+      const response = await fetch('/api/admin/branches', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        toast.success('Branch created successfully!', {
+          duration: 3000,
+          position: 'top-right',
+        })
+        setTimeout(() => {
+          router.push('/admin/branches')
+        }, 1500)
+      } else {
+        toast.error(result.error || 'Failed to create branch', {
+          duration: 4000,
+          position: 'top-right',
+        })
+        setError(result.error || 'Failed to create branch')
+      }
+    } catch (error) {
+      console.error('Error creating branch:', error)
+      const errorMessage = 'An unexpected error occurred'
+      toast.error(errorMessage, {
+        duration: 4000,
+        position: 'top-right',
+      })
+      setError(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -119,13 +136,7 @@ export default function NewBranchPage() {
               </Alert>
             )}
 
-            {success && (
-              <Alert>
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
               {/* Branch Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">Branch Name</Label>
