@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -21,8 +21,32 @@ import Link from 'next/link'
 import { EnhancedResourceUpload } from '@/components/admin/EnhancedResourceUpload'
 import { QuestionPaperManager } from '@/components/admin/QuestionPaperManager'
 
-export default function UploadResourcePage() {
+export default function EnhancedUploadPage() {
   const [activeTab, setActiveTab] = useState('upload')
+  const [uploadStats, setUploadStats] = useState({
+    todayUploads: 0,
+    weekUploads: 0,
+    totalFiles: 0,
+    pendingReview: 0
+  })
+
+  useEffect(() => {
+    fetchUploadStats()
+  }, [])
+
+  const fetchUploadStats = async () => {
+    try {
+      // Mock data - replace with actual API call
+      setUploadStats({
+        todayUploads: 12,
+        weekUploads: 47,
+        totalFiles: 1250,
+        pendingReview: 8
+      })
+    } catch (error) {
+      console.error('Failed to fetch upload stats:', error)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -36,10 +60,69 @@ export default function UploadResourcePage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Question Paper Management</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Resource Management Center</h1>
             <p className="text-gray-600 mt-2">Upload, manage, and organize question papers by branch and semester</p>
           </div>
         </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Upload className="h-5 w-5 text-white" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-blue-600">Today's Uploads</p>
+                <p className="text-2xl font-bold text-blue-900">{uploadStats.todayUploads}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-green-600">This Week</p>
+                <p className="text-2xl font-bold text-green-900">{uploadStats.weekUploads}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                <BookOpen className="h-5 w-5 text-white" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-purple-600">Total Files</p>
+                <p className="text-2xl font-bold text-purple-900">{uploadStats.totalFiles}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                <Eye className="h-5 w-5 text-white" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-orange-600">Pending Review</p>
+                <p className="text-2xl font-bold text-orange-900">{uploadStats.pendingReview}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Tabs */}
@@ -62,7 +145,7 @@ export default function UploadResourcePage() {
         <TabsContent value="upload" className="space-y-6 mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <EnhancedResourceUpload />
+              <EnhancedResourceUpload onUploadSuccess={fetchUploadStats} />
             </div>
             <div className="space-y-6">
               {/* Upload Guidelines */}
@@ -142,11 +225,7 @@ export default function UploadResourcePage() {
               <div className="text-center py-12 text-gray-500">
                 <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                 <p className="text-lg font-medium">Branch Organization Tool</p>
-                <p className="text-sm mt-2">Reorganize files by branch and semester structure with drag & drop</p>
-                <Button className="mt-4" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Coming Soon
-                </Button>
+                <p className="text-sm mt-2">Coming soon - Organize files by branch and semester structure</p>
               </div>
             </CardContent>
           </Card>

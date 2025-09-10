@@ -12,10 +12,9 @@ import {
   Edit, 
   Trash2, 
   GripVertical,
-  BookOpen,
-  Users,
-  FileText
+  BookOpen
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface Branch {
   id: string
@@ -26,11 +25,7 @@ interface Branch {
   color?: string
   order: number
   isActive: boolean
-  _count: {
-    subjects: number
-    resources: number
-    students: number
-  }
+  subjectCount?: number
 }
 
 export default function BranchesPage() {
@@ -44,78 +39,43 @@ export default function BranchesPage() {
 
   const fetchBranches = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockBranches: Branch[] = [
-        {
-          id: '1',
-          name: 'Computer Science Engineering',
-          code: 'CSE',
-          description: 'Software development, algorithms, and computer systems',
-          icon: '💻',
-          color: 'from-blue-500 to-cyan-600',
-          order: 1,
-          isActive: true,
-          _count: { subjects: 42, resources: 156, students: 89 }
-        },
-        {
-          id: '2',
-          name: 'Information Science Engineering',
-          code: 'ISE',
-          description: 'Information systems, data management, and software engineering',
-          icon: '🌐',
-          color: 'from-cyan-500 to-teal-600',
-          order: 2,
-          isActive: true,
-          _count: { subjects: 38, resources: 142, students: 67 }
-        },
-        {
-          id: '3',
-          name: 'Electronics & Communication',
-          code: 'ECE',
-          description: 'Electronic circuits, communication systems, and signal processing',
-          icon: '📡',
-          color: 'from-purple-500 to-violet-600',
-          order: 3,
-          isActive: true,
-          _count: { subjects: 45, resources: 178, students: 72 }
-        },
-        {
-          id: '4',
-          name: 'Mechanical Engineering',
-          code: 'ME',
-          description: 'Mechanical systems, thermodynamics, and manufacturing',
-          icon: '⚙️',
-          color: 'from-orange-500 to-red-600',
-          order: 4,
-          isActive: true,
-          _count: { subjects: 41, resources: 134, students: 65 }
-        },
-        {
-          id: '5',
-          name: 'Electrical Engineering',
-          code: 'EEE',
-          description: 'Electrical power systems, control systems, and electronics',
-          icon: '⚡',
-          color: 'from-yellow-500 to-orange-600',
-          order: 5,
-          isActive: true,
-          _count: { subjects: 39, resources: 123, students: 58 }
-        },
-        {
-          id: '6',
-          name: 'Civil Engineering',
-          code: 'CE',
-          description: 'Infrastructure, construction, and environmental engineering',
-          icon: '🏗️',
-          color: 'from-emerald-500 to-green-600',
-          order: 6,
-          isActive: true,
-          _count: { subjects: 37, resources: 98, students: 45 }
-        }
-      ]
-      setBranches(mockBranches)
+      setIsLoading(true)
+      // Add cache busting to ensure fresh data
+      const timestamp = Date.now()
+      const response = await fetch(`/api/admin/branches?t=${timestamp}`)
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch branches')
+      }
+      
+      if (data.success) {
+        // Ensure proper sorting by order
+        const sortedBranches = data.branches.sort((a: Branch, b: Branch) => a.order - b.order)
+        
+        // Fetch subject counts for each branch
+        const branchesWithCounts = await Promise.all(
+          sortedBranches.map(async (branch: Branch) => {
+            try {
+              const subjectsResponse = await fetch(`/api/admin/branches/${branch.id}/subjects`)
+              const subjectsData = await subjectsResponse.json()
+              return {
+                ...branch,
+                subjectCount: subjectsData.success ? subjectsData.subjects.length : 0
+              }
+            } catch (error) {
+              console.error(`Error fetching subjects for branch ${branch.id}:`, error)
+              return { ...branch, subjectCount: 0 }
+            }
+          })
+        )
+        
+        setBranches(branchesWithCounts)
+      } else {
+        throw new Error(data.error || 'Failed to fetch branches')
+      }
     } catch (error) {
-      console.error('Failed to fetch branches:', error)
+      console.error('Error fetching branches:', error)
     } finally {
       setIsLoading(false)
     }
@@ -126,18 +86,125 @@ export default function BranchesPage() {
     branch.code.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const activeBranches = filteredBranches.filter(branch => branch.isActive)
+  const inactiveBranches = filteredBranches.filter(branch => !branch.isActive)
+
   const handleToggleActive = async (branchId: string) => {
-    // Toggle branch active status
-    setBranches(prev => prev.map(branch => 
-      branch.id === branchId 
-        ? { ...branch, isActive: !branch.isActive }
-        : branch
-    ))
+    try {
+      const branch = branches.find(b => b.id === branchId)
+      const newStatus = !branch?.isActive
+      
+      const response = await fetch('/api/admin/branches', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          id: branchId, 
+          isActive: newStatus
+        }),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        // Update local state
+        setBranches(prev => prev.map(branch => 
+          branch.id === branchId 
+            ? { ...branch, isActive: newStatus }
+            : branch
+        ))
+        
+        toast.success(`Branch ${newStatus ? 'activated' : 'deactivated'} successfully!`, {
+          duration: 3000,
+          position: 'top-right',
+        })
+      } else {
+        toast.error(data.error || 'Failed to update branch', {
+          duration: 4000,
+          position: 'top-right',
+        })
+        console.error('Failed to update branch:', data.error)
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred', {
+        duration: 4000,
+        position: 'top-right',
+      })
+      console.error('Error updating branch:', error)
+    }
   }
 
-  const handleDelete = async (branchId: string) => {
-    if (confirm('Are you sure you want to delete this branch? This action cannot be undone.')) {
-      setBranches(prev => prev.filter(branch => branch.id !== branchId))
+  const handleDelete = async (branchId: string, permanent = false) => {
+    const branch = branches.find(b => b.id === branchId)
+    
+    if (!permanent) {
+      // First step: Deactivate
+      if (confirm('Are you sure you want to deactivate this branch? It will be hidden from students but can be reactivated later.')) {
+        try {
+          const response = await fetch(`/api/admin/branches?id=${branchId}`, {
+            method: 'DELETE',
+          })
+
+          const data = await response.json()
+          if (data.success) {
+            // Update local state
+            setBranches(prev => prev.map(branch => 
+              branch.id === branchId 
+                ? { ...branch, isActive: false }
+                : branch
+            ))
+            
+            toast.success('Branch deactivated successfully!', {
+              duration: 3000,
+              position: 'top-right',
+            })
+          } else {
+            toast.error(data.error || 'Failed to deactivate branch', {
+              duration: 4000,
+              position: 'top-right',
+            })
+            console.error('Failed to deactivate branch:', data.error)
+          }
+        } catch (error) {
+          toast.error('An unexpected error occurred', {
+            duration: 4000,
+            position: 'top-right',
+          })
+          console.error('Error deactivating branch:', error)
+        }
+      }
+    } else {
+      // Second step: Permanent deletion
+      if (confirm(`Are you sure you want to PERMANENTLY DELETE "${branch?.name}"? This action cannot be undone and all associated data will be lost.`)) {
+        try {
+          const response = await fetch(`/api/admin/branches?id=${branchId}&permanent=true`, {
+            method: 'DELETE',
+          })
+
+          const data = await response.json()
+          if (data.success) {
+            // Remove from local state completely
+            setBranches(prev => prev.filter(branch => branch.id !== branchId))
+            
+            toast.success('Branch permanently deleted!', {
+              duration: 3000,
+              position: 'top-right',
+            })
+          } else {
+            toast.error(data.error || 'Failed to permanently delete branch', {
+              duration: 4000,
+              position: 'top-right',
+            })
+            console.error('Failed to permanently delete branch:', data.error)
+          }
+        } catch (error) {
+          toast.error('An unexpected error occurred', {
+            duration: 4000,
+            position: 'top-right',
+          })
+          console.error('Error permanently deleting branch:', error)
+        }
+      }
     }
   }
 
@@ -188,98 +255,157 @@ export default function BranchesPage() {
         </CardContent>
       </Card>
 
-      {/* Branches Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBranches.map((branch) => (
-          <Card key={branch.id} className={`transition-all duration-200 hover:shadow-lg ${
-            !branch.isActive ? 'opacity-60' : ''
-          }`}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${branch.color} flex items-center justify-center text-white text-xl`}>
-                    {branch.icon}
+      {/* Info Banner */}
+      {inactiveBranches.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 text-amber-600 mt-0.5">ℹ️</div>
+            <div className="text-sm">
+              <p className="font-medium text-amber-800 mb-1">Branch Deletion Process</p>
+              <p className="text-amber-700">
+                Inactive branches can be permanently deleted. Once permanently deleted, all associated data will be lost and cannot be recovered.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Active Branches */}
+      {activeBranches.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">Active Branches</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeBranches.map((branch) => (
+              <Card key={branch.id} className="transition-all duration-200 hover:shadow-lg">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${branch.color} flex items-center justify-center text-white text-xl`}>
+                        {branch.icon}
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{branch.name}</CardTitle>
+                        <p className="text-sm text-gray-500 font-mono">{branch.code}</p>
+                      </div>
+                    </div>
+                    <Badge variant="default">Active</Badge>
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{branch.name}</CardTitle>
-                    <p className="text-sm text-gray-500 font-mono">{branch.code}</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">{branch.description}</p>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <Link href={`/admin/branches/${branch.id}/subjects`}>
+                      <Button variant="default" size="sm" className="flex-1">
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Manage Subjects ({branch.subjectCount || 0})
+                      </Button>
+                    </Link>
                   </div>
-                </div>
-                <Badge variant={branch.isActive ? "default" : "secondary"}>
-                  {branch.isActive ? 'Active' : 'Inactive'}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-gray-600">{branch.description}</p>
-              
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 pt-3 border-t">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <BookOpen className="h-4 w-4 text-blue-600" />
-                    <span className="text-lg font-semibold text-gray-900">
-                      {branch._count.subjects}
-                    </span>
+                  
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-3 border-t">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleToggleActive(branch.id)}
+                      >
+                        Deactivate
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link href={`/admin/branches/${branch.id}/edit`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(branch.id, false)}
+                        className="text-red-600 hover:text-red-700"
+                        title="Deactivate branch"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500">Subjects</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <FileText className="h-4 w-4 text-green-600" />
-                    <span className="text-lg font-semibold text-gray-900">
-                      {branch._count.resources}
-                    </span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Inactive Branches */}
+      {inactiveBranches.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">Inactive Branches</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {inactiveBranches.map((branch) => (
+              <Card key={branch.id} className="transition-all duration-200 hover:shadow-lg opacity-60 border-dashed">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${branch.color} flex items-center justify-center text-white text-xl opacity-70`}>
+                        {branch.icon}
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg text-gray-600">{branch.name}</CardTitle>
+                        <p className="text-sm text-gray-400 font-mono">{branch.code}</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary">Inactive</Badge>
                   </div>
-                  <p className="text-xs text-gray-500">Resources</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <Users className="h-4 w-4 text-purple-600" />
-                    <span className="text-lg font-semibold text-gray-900">
-                      {branch._count.students}
-                    </span>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-500">{branch.description}</p>
+                  
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-3 border-t">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleToggleActive(branch.id)}
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        Reactivate
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link href={`/admin/branches/${branch.id}/edit`}>
+                        <Button variant="outline" size="sm" disabled>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(branch.id, true)}
+                        className="text-red-800 hover:text-red-900 border-red-200 hover:border-red-300"
+                        title="Permanently delete branch"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="ml-1 text-xs">Delete</span>
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500">Students</p>
-                </div>
-              </div>
-              
-              {/* Actions */}
-              <div className="flex items-center justify-between pt-3 border-t">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleToggleActive(branch.id)}
-                  >
-                    {branch.isActive ? 'Deactivate' : 'Activate'}
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link href={`/admin/branches/${branch.id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(branch.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {filteredBranches.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-gray-100 flex items-center justify-center">
+              <span className="text-2xl">📚</span>
+            </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No branches found</h3>
             <p className="text-gray-500 mb-6">
               {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by creating your first branch.'}

@@ -1,16 +1,11 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminToken, createAdminResponse } from '@/lib/admin-auth'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
 
     const user = await prisma.user.findUnique({
       where: { id: params.id },
@@ -43,7 +38,7 @@ export async function GET(
     })
 
     if (!user) {
-      return createAdminResponse('User not found', 404)
+      return Response.json({ error: 'User not found' }, { status: 404 })
     }
 
     return Response.json({
@@ -53,7 +48,7 @@ export async function GET(
 
   } catch (error) {
     console.error('Get user API error:', error)
-    return createAdminResponse('Failed to fetch user', 500)
+    return Response.json({ error: 'Failed to fetch user' }, { status: 500 })
   }
 }
 
@@ -62,11 +57,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
     const body = await request.json()
     const { name, collegeName, role } = body
 
@@ -90,12 +80,12 @@ export async function PUT(
 
     return Response.json(updatedUser)
 
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
-      return createAdminResponse('User not found', 404)
+      return Response.json({ error: 'User not found' }, { status: 404 })
     }
     console.error('Update user API error:', error)
-    return createAdminResponse('Failed to update user', 500)
+    return Response.json({ error: 'Failed to update user' }, { status: 500 })
   }
 }
 
@@ -104,27 +94,17 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
-    // Prevent admin from deleting themselves
-    if (admin.id === params.id) {
-      return createAdminResponse('Cannot delete your own account', 400)
-    }
-
     await prisma.user.delete({
       where: { id: params.id }
     })
 
     return Response.json({ message: 'User deleted successfully' })
 
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
-      return createAdminResponse('User not found', 404)
+      return Response.json({ error: 'User not found' }, { status: 404 })
     }
     console.error('Delete user API error:', error)
-    return createAdminResponse('Failed to delete user', 500)
+    return Response.json({ error: 'Failed to delete user' }, { status: 500 })
   }
 }

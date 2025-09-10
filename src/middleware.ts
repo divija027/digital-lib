@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth'
 
 export function middleware(request: NextRequest) {
   console.log('Middleware called for:', request.nextUrl.pathname)
   
-  // Temporarily disable all middleware protection for debugging
-  console.log('Middleware bypassed for debugging')
+  // Admin routes are now public - no authentication required
+  console.log('Admin authentication disabled - allowing access')
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/resources/:path*', '/api/categories/:path*', '/api/subjects/:path*']
+  matcher: ['/api/resources/:path*', '/api/categories/:path*', '/api/subjects/:path*']
 }

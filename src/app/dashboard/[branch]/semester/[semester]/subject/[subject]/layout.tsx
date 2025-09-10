@@ -1,26 +1,25 @@
 import { Metadata } from 'next'
-import { getBranchByCode, getCycleByCode, getSubjectsBySemester } from '@/lib/vtu-curriculum'
+import { getBranchCodeFromSlug } from '@/lib/branch-utils'
 
-// Branch slug to code mapping
-const BRANCH_SLUG_MAP: Record<string, string> = {
-  'physics': 'PHYSICS',
-  'chemistry': 'CHEMISTRY',
-  'cs': 'CSE',
-  'cse': 'CSE',
-  'is': 'ISE',
-  'ise': 'ISE',
-  'ece': 'ECE',
-  'ai': 'AIML',
-  'aiml': 'AIML',
-  'eee': 'EEE',
-  'civil': 'CE',
-  'ce': 'CE',
-  'mech': 'ME',
-  'me': 'ME'
+interface Subject {
+  id: string
+  name: string
+  code: string
+  credits: number
+  type: string
+  semester: number | null
+  description?: string
+}
+
+interface Branch {
+  id: string
+  name: string
+  code: string
+  isActive: boolean
 }
 
 // Convert subject slug back to name
-const slugToSubjectName = (slug: string, subjects: any[]): string => {
+const slugToSubjectName = (slug: string, subjects: Subject[]): string => {
   const subjectFromSlug = subjects.find(s => 
     s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === slug
   )
@@ -33,46 +32,74 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { branch, semester, subject } = await params
-  const branchCode = BRANCH_SLUG_MAP[branch?.toLowerCase()]
-  const branchData = branchCode ? (getBranchByCode(branchCode) || getCycleByCode(branchCode)) : null
   
-  if (!branchData) {
-    return {
-      title: 'Subject Not Found - BrainReef',
-      description: 'The requested subject could not be found.'
+  try {
+    const branchCode = await getBranchCodeFromSlug(branch)
+    
+    if (!branchCode) {
+      return {
+        title: 'Subject Not Found - BrainReef',
+        description: 'The requested subject could not be found.'
+      }
     }
-  }
 
-  let semesterNumber: number | string
-  if (semester === 'physics-cycle') {
-    semesterNumber = 'Physics Cycle'
-  } else if (semester === 'chemistry-cycle') {
-    semesterNumber = 'Chemistry Cycle'
-  } else {
-    semesterNumber = parseInt(semester)
-  }
+    // Fetch branch data
+    const branchResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches`)
+    const branchesData = await branchResponse.json()
+    const branchData = branchesData.find((b: Branch) => b.code === branchCode)
 
-  const subjects = getSubjectsBySemester(branchCode, semesterNumber)
-  const subjectName = slugToSubjectName(subject, subjects)
-  const currentSubject = subjects.find(s => 
-    s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === subject
-  )
+    if (!branchData) {
+      return {
+        title: 'Branch Not Found - BrainReef',
+        description: 'The requested branch could not be found.'
+      }
+    }
 
-  let semesterDisplay: string
-  if (typeof semesterNumber === 'number') {
-    semesterDisplay = `Semester ${semesterNumber}`
-  } else {
-    semesterDisplay = semesterNumber
-  }
+    // Fetch subjects for this branch
+    const subjectsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches/${branchData.id}/subjects`)
+    const subjects: Subject[] = await subjectsResponse.json()
 
-  return {
-    title: `${subjectName} - ${semesterDisplay} ${branchData.name} | BrainReef`,
-    description: `Study ${subjectName} with comprehensive modules, resources, and materials. ${currentSubject?.description || `${currentSubject?.credits || ''} credits ${currentSubject?.type || ''} subject for VTU students.`}`,
-    keywords: `VTU, ${branchData.name}, ${semesterDisplay}, ${subjectName}, modules, study materials, ${currentSubject?.code || ''}`,
-    openGraph: {
-      title: `${subjectName} - ${semesterDisplay} ${branchData.name}`,
-      description: `Study ${subjectName} with comprehensive modules and resources for VTU students.`,
-      type: 'website',
+    let semesterNumber: number | string
+    let filteredSubjects: Subject[]
+
+    if (semester === 'physics-cycle') {
+      semesterNumber = 'Physics Cycle'
+      filteredSubjects = subjects.filter(s => s.semester === null)
+    } else if (semester === 'chemistry-cycle') {
+      semesterNumber = 'Chemistry Cycle'
+      filteredSubjects = subjects.filter(s => s.semester === null)
+    } else {
+      semesterNumber = parseInt(semester)
+      filteredSubjects = subjects.filter(s => s.semester === semesterNumber)
+    }
+
+    const subjectName = slugToSubjectName(subject, filteredSubjects)
+    const currentSubject = filteredSubjects.find(s => 
+      s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === subject
+    )
+
+    let semesterDisplay: string
+    if (typeof semesterNumber === 'number') {
+      semesterDisplay = `Semester ${semesterNumber}`
+    } else {
+      semesterDisplay = semesterNumber
+    }
+
+    return {
+      title: `${subjectName} - ${semesterDisplay} ${branchData.name} | BrainReef`,
+      description: `Study ${subjectName} with comprehensive question papers and resources. ${currentSubject?.description || `${currentSubject?.credits || ''} credits ${currentSubject?.type || ''} subject for VTU students.`}`,
+      keywords: `VTU, ${branchData.name}, ${semesterDisplay}, ${subjectName}, question papers, previous year papers, ${currentSubject?.code || ''}`,
+      openGraph: {
+        title: `${subjectName} - ${semesterDisplay} ${branchData.name}`,
+        description: `Study ${subjectName} with comprehensive question papers and resources for VTU students.`,
+        type: 'website',
+      }
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Subject - BrainReef',
+      description: 'Study resources for VTU students.'
     }
   }
 }

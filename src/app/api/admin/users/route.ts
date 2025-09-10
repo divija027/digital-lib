@@ -1,13 +1,8 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminToken, createAdminResponse } from '@/lib/admin-auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
 
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -86,23 +81,18 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Users API error:', error)
-    return createAdminResponse('Failed to fetch users', 500)
+    return Response.json({ error: 'Failed to fetch users' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
-
     const body = await request.json()
     const { email, name, collegeName, role, password } = body
 
     // Validate required fields
     if (!email || !name || !password) {
-      return createAdminResponse('Email, name, and password are required', 400)
+      return Response.json({ error: 'Email, name, and password are required' }, { status: 400 })
     }
 
     // Check if user already exists
@@ -111,7 +101,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
-      return createAdminResponse('User with this email already exists', 400)
+      return Response.json({ error: 'User with this email already exists' }, { status: 400 })
     }
 
     // Hash password (using bcryptjs which is already installed)
@@ -141,6 +131,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Create user API error:', error)
-    return createAdminResponse('Failed to create user', 500)
+    return Response.json({ error: 'Failed to create user' }, { status: 500 })
   }
 }

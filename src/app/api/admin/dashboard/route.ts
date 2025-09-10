@@ -1,13 +1,8 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAdminToken, createAdminResponse } from '@/lib/admin-auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = await verifyAdminToken(request)
-    if (!admin) {
-      return createAdminResponse('Admin access required')
-    }
 
     // Get dashboard statistics
     const [
@@ -130,6 +125,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Dashboard API error:', error)
-    return createAdminResponse('Failed to fetch dashboard data', 500)
+    return Response.json({ error: 'Failed to fetch dashboard data' }, { status: 500 })
   }
 }

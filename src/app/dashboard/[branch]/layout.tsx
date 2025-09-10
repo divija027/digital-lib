@@ -1,23 +1,6 @@
-import { Metadata } from 'next'
-import { getBranchByCode, getCycleByCode } from '@/lib/vtu-curriculum'
 
-// Branch slug to code mapping
-const BRANCH_SLUG_MAP: Record<string, string> = {
-  'physics': 'PHYSICS',
-  'chemistry': 'CHEMISTRY',
-  'cs': 'CSE',
-  'cse': 'CSE',
-  'is': 'ISE',
-  'ise': 'ISE',
-  'ece': 'ECE',
-  'ai': 'AIML',
-  'aiml': 'AIML',
-  'eee': 'EEE',
-  'civil': 'CE',
-  'ce': 'CE',
-  'mech': 'ME',
-  'me': 'ME'
-}
+import { Metadata } from 'next'
+import { getBranchCodeFromSlug } from '@/lib/branch-utils'
 
 type Props = {
   params: Promise<{ branch: string }>
@@ -25,24 +8,43 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { branch } = await params
-  const branchCode = BRANCH_SLUG_MAP[branch?.toLowerCase()]
-  const branchData = branchCode ? (getBranchByCode(branchCode) || getCycleByCode(branchCode)) : null
+  const branchCode = await getBranchCodeFromSlug(branch)
   
-  if (!branchData) {
+  if (!branchCode) {
     return {
       title: 'Branch Not Found - BrainReef',
       description: 'The requested branch could not be found.'
     }
   }
 
-  return {
-    title: `${branchData.name} - VTU Study Materials | BrainReef`,
-    description: `Access ${branchData.name} study materials, syllabus, and resources. ${branchData.description}`,
-    keywords: `VTU, ${branchData.name}, ${branchData.code}, study materials, engineering`,
-    openGraph: {
-      title: `${branchData.name} - VTU Study Materials`,
-      description: `Access ${branchData.name} study materials, syllabus, and resources.`,
-      type: 'website',
+  // Fetch branch data from API
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/admin/branches`)
+    const branches = await response.json()
+    const branchData = branches.find((b: any) => b.code === branchCode)
+    
+    if (!branchData) {
+      return {
+        title: 'Branch Not Found - BrainReef',
+        description: 'The requested branch could not be found.'
+      }
+    }
+
+    return {
+      title: `${branchData.name} - VTU Study Materials | BrainReef`,
+      description: `Access ${branchData.name} study materials, syllabus, and resources. ${branchData.description || ''}`,
+      keywords: `VTU, ${branchData.name}, ${branchData.code}, study materials, engineering`,
+      openGraph: {
+        title: `${branchData.name} - VTU Study Materials`,
+        description: `Access ${branchData.name} study materials, syllabus, and resources.`,
+        type: 'website',
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching branch data:', error)
+    return {
+      title: 'Branch - BrainReef',
+      description: 'VTU study materials and resources.'
     }
   }
 }
