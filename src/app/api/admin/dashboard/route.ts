@@ -70,16 +70,17 @@ export async function GET(request: NextRequest) {
         _count: { role: true }
       }),
       
-      // Monthly uploads (last 6 months)
-      prisma.$queryRaw`
-        SELECT 
-          DATE_TRUNC('month', "createdAt") as month,
-          COUNT(*) as uploads
-        FROM resources 
-        WHERE "createdAt" >= CURRENT_DATE - INTERVAL '6 months'
-        GROUP BY DATE_TRUNC('month', "createdAt")
-        ORDER BY month DESC
-      `
+      // Monthly uploads (last 6 months) - using groupBy instead of raw SQL to avoid BigInt issues
+      prisma.resource.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().setMonth(new Date().getMonth() - 6))
+          }
+        },
+        select: {
+          createdAt: true
+        }
+      })
     ])
 
     // Calculate growth percentages (mock data for now - would need historical data)
@@ -106,6 +107,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Process monthly uploads manually to avoid BigInt serialization issues
+    const monthlyUploadsProcessed = monthlyUploads.reduce((acc: any, resource: any) => {
+      const month = new Date(resource.createdAt).toISOString().slice(0, 7) // YYYY-MM format
+      acc[month] = (acc[month] || 0) + 1
+      return acc
+    }, {})
+
     return Response.json({
       stats,
       recentUsers,
@@ -119,7 +127,10 @@ export async function GET(request: NextRequest) {
           role: item.role,
           count: item._count.role
         })),
-        monthlyUploads
+        monthlyUploads: Object.entries(monthlyUploadsProcessed).map(([month, uploads]) => ({
+          month,
+          uploads: Number(uploads)
+        })).sort((a, b) => b.month.localeCompare(a.month))
       }
     })
 

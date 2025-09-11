@@ -15,7 +15,8 @@ import {
   X,
   ChevronDown,
   LogOut,
-  User
+  User,
+  Brain
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -59,6 +60,16 @@ const navigationItems = [
       { title: 'All Resources', href: '/admin/resources' },
       { title: 'Upload Question Papers', href: '/admin/resources/upload' },
       { title: 'Categories', href: '/admin/resources/categories' }
+    ]
+  },
+  {
+    title: 'MCQ Management',
+    href: '/admin/mcq',
+    icon: Brain,
+    children: [
+      { title: 'Overview', href: '/admin/mcq' },
+      { title: 'Question Sets', href: '/admin/mcq?tab=sets' },
+      { title: 'Bulk Upload', href: '/admin/mcq?tab=upload' }
     ]
   },
   {
