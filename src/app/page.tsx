@@ -504,87 +504,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Enhanced Stats Section - Mobile Optimized */}
-        <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
-          {/* Background decoration - Mobile Optimized */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 via-transparent to-purple-50/20"></div>
-          <div className="absolute top-1/2 left-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-          <div className="absolute top-1/3 right-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-              <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                <Badge variant="outline" className="text-indigo-700 border-indigo-200 bg-indigo-50/80 mb-3 sm:mb-4 px-3 sm:px-4 py-1.5 sm:py-2">
-                  <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 mr-1 sm:mr-2 text-yellow-500" />
-                  <span className="text-xs sm:text-sm">Platform Statistics</span>
-                </Badge>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3 sm:mb-4 px-2 sm:px-0">
-                  Trusted by Students Across VTU
-                </h2>
-                <p className="text-sm sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-                  Join the growing community of successful engineering students achieving academic excellence
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
-              {stats.map((stat, index) => (
-                <div 
-                  key={index} 
-                  className={`group cursor-pointer transition-all duration-500 transform ${
-                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-                  } ${hoveredStat === index ? 'scale-105 -translate-y-2' : 'hover:scale-102 hover:-translate-y-1'}`}
-                  style={{ transitionDelay: `${index * 150}ms` }}
-                  onMouseEnter={() => setHoveredStat(index)}
-                  onMouseLeave={() => setHoveredStat(null)}
-                >
-                  <div className={`relative text-center p-3 sm:p-4 lg:p-6 xl:p-8 bg-gradient-to-br ${stat.bgGradient} rounded-2xl sm:rounded-3xl border border-white/60 backdrop-blur-sm shadow-lg group-hover:shadow-2xl transition-all duration-500`}>
-                    {/* Animated background gradient */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 rounded-2xl sm:rounded-3xl transition-opacity duration-500`}></div>
-                    
-                    {/* Icon with enhanced styling - Mobile Optimized */}
-                    <div className={`relative inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 xl:w-18 xl:h-18 bg-gradient-to-br ${stat.gradient} rounded-lg sm:rounded-xl lg:rounded-2xl mb-2 sm:mb-3 lg:mb-4 xl:mb-6 shadow-lg group-hover:shadow-xl transform group-hover:scale-110 transition-all duration-300`}>
-                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 text-white drop-shadow-sm" />
-                      {hoveredStat === index && (
-                        <div className="absolute inset-0 bg-white/20 rounded-lg sm:rounded-xl lg:rounded-2xl animate-ping"></div>
-                      )}
-                    </div>
-                    
-                    {/* Number with enhanced typography - Mobile Optimized */}
-                    <div className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold bg-gradient-to-br ${stat.gradient} bg-clip-text text-transparent mb-1 sm:mb-2 lg:mb-3 group-hover:scale-105 transition-transform duration-300`}>
-                      {stat.number}
-                    </div>
-                    
-                    {/* Label with improved styling - Mobile Optimized */}
-                    <div className="text-gray-700 font-semibold text-xs sm:text-sm lg:text-base xl:text-lg group-hover:text-gray-800 transition-colors duration-300 leading-tight">
-                      {stat.label}
-                    </div>
-                    
-                    {/* Subtle shine effect */}
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 rounded-2xl sm:rounded-3xl"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Additional trust indicators - Mobile Optimized */}
-            <div className="mt-8 sm:mt-12 lg:mt-16 flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 opacity-60 px-4">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-medium">Loved by students</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-medium">Verified content</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-medium">Goal-oriented</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Quiz Section - Technical Assessment Preparation */}
         <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
           {/* Clean Background Elements */}
@@ -750,7 +669,7 @@ export default function Home() {
                       </p>
                     </div>
                     
-                    <Link href="/dashboard/quiz">
+                    <Link href="/quiz">
                       <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         Start Practice Now
                         <ArrowRight className="w-5 h-5 ml-2" />
@@ -783,6 +702,87 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Enhanced Stats Section - Mobile Optimized */}
+        <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+          {/* Background decoration - Mobile Optimized */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 via-transparent to-purple-50/20"></div>
+          <div className="absolute top-1/2 left-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+          <div className="absolute top-1/3 right-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+              <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                <Badge variant="outline" className="text-indigo-700 border-indigo-200 bg-indigo-50/80 mb-3 sm:mb-4 px-3 sm:px-4 py-1.5 sm:py-2">
+                  <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 mr-1 sm:mr-2 text-yellow-500" />
+                  <span className="text-xs sm:text-sm">Platform Statistics</span>
+                </Badge>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3 sm:mb-4 px-2 sm:px-0">
+                  Trusted by Students Across VTU
+                </h2>
+                <p className="text-sm sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
+                  Join the growing community of successful engineering students achieving academic excellence
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
+              {stats.map((stat, index) => (
+                <div 
+                  key={index} 
+                  className={`group cursor-pointer transition-all duration-500 transform ${
+                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+                  } ${hoveredStat === index ? 'scale-105 -translate-y-2' : 'hover:scale-102 hover:-translate-y-1'}`}
+                  style={{ transitionDelay: `${index * 150}ms` }}
+                  onMouseEnter={() => setHoveredStat(index)}
+                  onMouseLeave={() => setHoveredStat(null)}
+                >
+                  <div className={`relative text-center p-3 sm:p-4 lg:p-6 xl:p-8 bg-gradient-to-br ${stat.bgGradient} rounded-2xl sm:rounded-3xl border border-white/60 backdrop-blur-sm shadow-lg group-hover:shadow-2xl transition-all duration-500`}>
+                    {/* Animated background gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 rounded-2xl sm:rounded-3xl transition-opacity duration-500`}></div>
+                    
+                    {/* Icon with enhanced styling - Mobile Optimized */}
+                    <div className={`relative inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 xl:w-18 xl:h-18 bg-gradient-to-br ${stat.gradient} rounded-lg sm:rounded-xl lg:rounded-2xl mb-2 sm:mb-3 lg:mb-4 xl:mb-6 shadow-lg group-hover:shadow-xl transform group-hover:scale-110 transition-all duration-300`}>
+                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 text-white drop-shadow-sm" />
+                      {hoveredStat === index && (
+                        <div className="absolute inset-0 bg-white/20 rounded-lg sm:rounded-xl lg:rounded-2xl animate-ping"></div>
+                      )}
+                    </div>
+                    
+                    {/* Number with enhanced typography - Mobile Optimized */}
+                    <div className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold bg-gradient-to-br ${stat.gradient} bg-clip-text text-transparent mb-1 sm:mb-2 lg:mb-3 group-hover:scale-105 transition-transform duration-300`}>
+                      {stat.number}
+                    </div>
+                    
+                    {/* Label with improved styling - Mobile Optimized */}
+                    <div className="text-gray-700 font-semibold text-xs sm:text-sm lg:text-base xl:text-lg group-hover:text-gray-800 transition-colors duration-300 leading-tight">
+                      {stat.label}
+                    </div>
+                    
+                    {/* Subtle shine effect */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 rounded-2xl sm:rounded-3xl"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Additional trust indicators - Mobile Optimized */}
+            <div className="mt-8 sm:mt-12 lg:mt-16 flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 opacity-60 px-4">
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-medium">Loved by students</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-medium">Verified content</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-medium">Goal-oriented</span>
               </div>
             </div>
           </div>

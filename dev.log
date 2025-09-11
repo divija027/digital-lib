@@ -1,0 +1,29 @@
+
+> adigaproj@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Warning: Found multiple lockfiles. Selecting /home/hx0r/pnpm-lock.yaml.
+   Consider removing the lockfiles at:
+   * /home/hx0r/adigaprojv1/digital-lib/pnpm-lock.yaml
+
+ ⚠ Port 3000 is in use by process 5729, using available port 3001 instead.
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://10.119.126.199:3001
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · serverComponentsExternalPackages
+
+ ✓ Starting...
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'serverComponentsExternalPackages' at "experimental"
+ ⚠     Unrecognized key(s) in object: 'api'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ `experimental.serverComponentsExternalPackages` has been moved to `serverExternalPackages`. Please update your next.config.ts file accordingly.
+[Error: EACCES: permission denied, open '/home/hx0r/adigaprojv1/digital-lib/.next/package.json'] {
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'open',
+  path: '/home/hx0r/adigaprojv1/digital-lib/.next/package.json'
+}
+[?25h

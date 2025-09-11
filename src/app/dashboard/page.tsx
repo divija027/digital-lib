@@ -177,7 +177,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex flex-col items-center gap-4">
                 <Button
-                  onClick={() => router.push('/dashboard/quiz')}
+                  onClick={() => router.push('/quiz')}
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
                 >
