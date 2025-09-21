@@ -136,7 +136,7 @@ export default function NewBranchPage() {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Branch Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">Branch Name</Label>
@@ -318,8 +318,8 @@ export default function NewBranchPage() {
               <div className="text-xs text-gray-500 space-y-2">
                 <h4 className="font-medium text-gray-700">Guidelines:</h4>
                 <ul className="space-y-1">
-                  <li>• Use descriptive branch names (e.g., "Computer Science Engineering")</li>
-                  <li>• Keep codes short and meaningful (e.g., "CSE", "ECE")</li>
+                  <li>• Use descriptive branch names (e.g., &quot;Computer Science Engineering&quot;)</li>
+                  <li>• Keep codes short and meaningful (e.g., &quot;CSE&quot;, &quot;ECE&quot;)</li>
                   <li>• Write clear descriptions for students</li>
                   <li>• Choose colors that reflect the branch identity</li>
                 </ul>

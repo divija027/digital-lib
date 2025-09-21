@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Toaster } from 'react-hot-toast'
@@ -9,17 +9,17 @@ import {
   BookOpen, 
   Users, 
   FileText, 
-  Settings, 
-  History,
   Menu,
   X,
   ChevronDown,
   LogOut,
   User,
-  Brain
+  Brain,
+  PenTool
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+
+import { LogoutConfirmation } from '@/components/LogoutConfirmation'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -63,6 +63,17 @@ const navigationItems = [
     ]
   },
   {
+    title: 'Blog Management',
+    href: '/admin/blog',
+    icon: PenTool,
+    children: [
+      { title: 'All Posts', href: '/admin/blog' },
+      { title: 'Categories', href: '/admin/blog?tab=categories' },
+      { title: 'Tags', href: '/admin/blog?tab=tags' },
+      { title: 'Analytics', href: '/admin/blog?tab=analytics' }
+    ]
+  },
+  {
     title: 'MCQ Management',
     href: '/admin/mcq',
     icon: Brain,
@@ -71,22 +82,14 @@ const navigationItems = [
       { title: 'Question Sets', href: '/admin/mcq?tab=sets' },
       { title: 'Bulk Upload', href: '/admin/mcq?tab=upload' }
     ]
-  },
-  {
-    title: 'Settings',
-    href: '/admin/settings',
-    icon: Settings
-  },
-  {
-    title: 'Audit Logs',
-    href: '/admin/logs',
-    icon: History
   }
 ]
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [user] = useState<{ name: string; email: string; role: string }>({
     name: 'Public Admin',
     email: 'admin@vtu.in',
@@ -103,9 +106,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     )
   }
 
-  const handleLogout = () => {
-    // No-op since there's no authentication
-    console.log('Logout clicked - no authentication system active')
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      // Optional: Call logout API
+      await fetch('/api/auth/logout', { method: 'POST' })
+      // Clear any admin-specific localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user')
+      }
+      // Redirect to main site
+      router.push('/')
+    } catch (error) {
+      console.error('Admin logout error:', error)
+      // Fallback: redirect anyway
+      router.push('/')
+    } finally {
+      setIsLoggingOut(false)
+      setShowLogoutConfirm(false)
+    }
   }
 
   const isActive = (href: string, exact = false) => {
@@ -127,7 +146,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </Button>
           <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleLogout}>
+        <Button variant="ghost" size="sm" onClick={() => setShowLogoutConfirm(true)}>
           <LogOut className="h-4 w-4" />
         </Button>
       </div>
@@ -227,7 +246,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="px-4 py-4 border-t border-gray-200">
           <Button
             variant="ghost"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="w-full justify-start text-gray-600 hover:text-gray-900"
           >
             <LogOut className="h-4 w-4 mr-3" />
@@ -273,6 +292,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             },
           },
         }}
+      />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmation
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        userName={user?.name}
+        isLoading={isLoggingOut}
+        variant="admin"
       />
     </div>
   )

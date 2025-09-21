@@ -203,14 +203,14 @@ export default function SubjectPage() {
     )
   }
 
-  const handleDownload = (paper: any) => {
+  const handleDownload = (paper: { fileName: string }) => {
     // Mock download functionality
     console.log('Downloading:', paper.fileName)
     // Here you would implement actual file download
     alert(`Downloading: ${paper.fileName}`)
   }
 
-  const handlePreview = (paper: any) => {
+  const handlePreview = (paper: { fileName: string }) => {
     // Mock preview functionality
     console.log('Previewing:', paper.fileName)
     // Here you would open PDF viewer

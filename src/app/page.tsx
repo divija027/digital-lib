@@ -28,11 +28,31 @@ import {
   Rocket,
   Heart,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  LogOut,
+  User
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { LogoutConfirmation } from '@/components/LogoutConfirmation'
+
+interface BlogPost {
+  id: string
+  title: string
+  excerpt: string
+  readTime: number
+  featured: boolean
+  publishedAt: string
+  category: {
+    name: string
+    color: string
+  }
+}
 
 export default function Home() {
+  const { user, isAuthenticated, logout } = useAuth()
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
   const [hoveredStat, setHoveredStat] = useState<number | null>(null)
   const [scrollY, setScrollY] = useState(0)
@@ -45,6 +65,8 @@ export default function Home() {
   const [navbarVisible, setNavbarVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isScrollingUp, setIsScrollingUp] = useState(false)
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [blogLoading, setBlogLoading] = useState(true)
 
   const heroWords = ['Master', 'Excel', 'Succeed', 'Dominate', 'Conquer', 'Transform']
   const motivationalPhrases = [
@@ -87,6 +109,92 @@ export default function Home() {
       clearTimeout(wordTimeout)
     }
   }, [typedText, currentWordIndex, isTyping, heroWords])
+
+  // Fetch blog posts for preview section
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        setBlogLoading(true)
+        
+        // First try to get featured posts
+        const featuredResponse = await fetch('/api/blog?limit=3&featured=true')
+        let posts: BlogPost[] = []
+        
+        if (featuredResponse.ok) {
+          const featuredData = await featuredResponse.json()
+          if (featuredData.success && featuredData.data.posts.length > 0) {
+            posts = featuredData.data.posts
+            console.log(`Found ${posts.length} featured posts`)
+          }
+        }
+        
+        // If we don't have enough featured posts, fill with recent posts
+        if (posts.length < 3) {
+          console.log(`Need ${3 - posts.length} more posts, fetching recent posts`)
+          const recentResponse = await fetch(`/api/blog?limit=10`) // Fetch more to ensure we have enough after filtering
+          if (recentResponse.ok) {
+            const recentData = await recentResponse.json()
+            if (recentData.success) {
+              // Filter out posts we already have (in case some featured posts are also recent)
+              const newPosts = recentData.data.posts.filter(
+                (newPost: BlogPost) => !posts.some((existingPost: BlogPost) => existingPost.id === newPost.id)
+              )
+              posts = [...posts, ...newPosts].slice(0, 3) // Ensure exactly 3 posts
+              console.log(`Added ${newPosts.length} recent posts, total: ${posts.length}`)
+            }
+          }
+        }
+        
+        console.log(`Final posts count: ${posts.length}`, posts)
+        
+        // If we still don't have 3 posts, create fallback posts
+        if (posts.length < 3) {
+          const fallbackPosts: BlogPost[] = [
+            {
+              id: 'fallback-1',
+              title: 'How to Prepare for VTU Exams: A Complete Guide',
+              excerpt: 'Master your VTU examinations with proven strategies, time management tips, and effective study techniques used by top performers.',
+              readTime: 5,
+              featured: false,
+              publishedAt: new Date().toISOString(),
+              category: { name: 'Study Tips', color: '#10b981' }
+            },
+            {
+              id: 'fallback-2', 
+              title: 'Top Tech Companies Hiring VTU Graduates in 2025',
+              excerpt: 'Discover the latest opportunities and what top tech companies are looking for in fresh engineering graduates.',
+              readTime: 7,
+              featured: false,
+              publishedAt: new Date().toISOString(),
+              category: { name: 'Career', color: '#3b82f6' }
+            },
+            {
+              id: 'fallback-3',
+              title: 'AI and Machine Learning: Essential Skills for Engineers', 
+              excerpt: 'Learn about the most in-demand skills in AI and ML that every engineering student should know about.',
+              readTime: 8,
+              featured: false,
+              publishedAt: new Date().toISOString(),
+              category: { name: 'Technology', color: '#8b5cf6' }
+            }
+          ]
+          
+          // Add fallback posts to fill up to 3 total
+          const neededFallbacks = fallbackPosts.slice(posts.length)
+          posts = [...posts, ...neededFallbacks].slice(0, 3)
+          console.log(`Added ${neededFallbacks.length} fallback posts, final total: ${posts.length}`)
+        }
+        
+        setBlogPosts(posts)
+      } catch (error) {
+        console.error('Error fetching blog posts:', error)
+      } finally {
+        setBlogLoading(false)
+      }
+    }
+
+    fetchBlogPosts()
+  }, [])
 
   // Cursor blinking effect
   useEffect(() => {
@@ -211,6 +319,20 @@ export default function Home() {
     'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Information Science', 'Electrical'
   ]
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      // Optional: Call logout API
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch (error) {
+      console.error('Logout API error:', error)
+    } finally {
+      logout() // This handles the client-side logout
+      setIsLoggingOut(false)
+      setShowLogoutConfirm(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Discord-Style Header - Mobile Optimized */}
@@ -251,18 +373,53 @@ export default function Home() {
 
               {/* Mobile and Desktop Action Buttons */}
               <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
-                <Link href="/login">
-                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-sm sm:text-base">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 lg:py-2.5 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-xs sm:text-sm lg:text-base">
-                    <span className="hidden sm:inline">Get Started Free</span>
-                    <span className="sm:hidden">Start</span>
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    {/* Authenticated User Menu */}
+                    <div className="hidden sm:flex items-center gap-3">
+                      <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                        <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                          <User className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-blue-700 max-w-24 truncate">
+                          {user?.name}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Mobile User Icon */}
+                    <div className="sm:hidden flex items-center">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => setShowLogoutConfirm(true)}
+                      variant="ghost" 
+                      className="text-gray-700 hover:text-red-600 font-medium hover:bg-red-50 transition-all duration-200 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-sm sm:text-base"
+                    >
+                      <LogOut className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Logout</span>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    {/* Unauthenticated User Menu */}
+                    <Link href="/login">
+                      <Button variant="ghost" className="text-gray-700 hover:text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-sm sm:text-base">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/register">
+                      <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 lg:py-2.5 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-xs sm:text-sm lg:text-base">
+                        <span className="hidden sm:inline">Get Started Free</span>
+                        <span className="sm:hidden">Start</span>
+                        <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -337,19 +494,39 @@ export default function Home() {
 
                 {/* Enhanced Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-                  <Link href="/register" className="group">
-                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group-hover:-translate-y-1">
-                      <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-                      Start Learning Free
-                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard" className="group">
-                    <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg">
-                      <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                      Explore Resources
-                    </Button>
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link href="/dashboard" className="group">
+                        <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group-hover:-translate-y-1">
+                          <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                          Go to Dashboard
+                          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                        </Button>
+                      </Link>
+                      <Link href="/quiz" className="group">
+                        <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg">
+                          <Brain className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                          Practice Quiz
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/register" className="group">
+                        <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group-hover:-translate-y-1">
+                          <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                          Start Learning Free
+                          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard" className="group">
+                        <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg">
+                          <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                          Explore Resources
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
 
                 {/* Enhanced Key Features Grid */}
@@ -872,6 +1049,121 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Blog Preview Section - Mobile Responsive */}
+        <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50/30 relative overflow-hidden">
+          {/* Subtle background elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-1/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-green-100 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16">
+              <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50/80 mb-2 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm">
+                <BookOpen className="w-3 h-3 mr-1 sm:mr-2" />
+                <span>Latest Insights</span>
+              </Badge>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 px-2 sm:px-3 md:px-0 leading-tight">
+                From Our <span className="text-green-600">Learning Blog</span>
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light px-3 sm:px-4 md:px-6 lg:px-0 leading-relaxed">
+                Stay updated with study tips, career guidance, and the latest trends in engineering education
+              </p>
+            </div>
+
+            {/* Blog Preview Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 mb-8 sm:mb-10 md:mb-12">
+              {blogLoading ? (
+                // Loading skeleton cards
+                [...Array(3)].map((_, index) => (
+                  <div key={index} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-lg border border-gray-100 animate-pulse">
+                    <div className="relative mb-4">
+                      <div className="w-full h-32 sm:h-36 md:h-40 bg-gray-200 rounded-xl sm:rounded-2xl" />
+                      <div className="absolute top-2 left-2 w-16 h-6 bg-gray-200 rounded" />
+                    </div>
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="h-4 bg-gray-200 rounded" />
+                      <div className="h-4 bg-gray-200 rounded w-3/4" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2" />
+                      <div className="flex items-center justify-between">
+                        <div className="h-3 bg-gray-200 rounded w-1/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/4" />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : blogPosts.length > 0 ? (
+                blogPosts.map((post, index) => (
+                  <Link key={post.id} href={`/blog/${post.id}`}>
+                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 group cursor-pointer hover:-translate-y-1">
+                      <div className="relative mb-4">
+                        <div className={`w-full h-32 sm:h-36 md:h-40 rounded-xl sm:rounded-2xl flex items-center justify-center ${
+                          index === 0 ? 'bg-gradient-to-br from-green-100 to-green-200' :
+                          index === 1 ? 'bg-gradient-to-br from-blue-100 to-blue-200' :
+                          'bg-gradient-to-br from-purple-100 to-purple-200'
+                        }`}>
+                          <BookOpen className={`w-8 h-8 sm:w-10 sm:h-10 ${
+                            index === 0 ? 'text-green-600' :
+                            index === 1 ? 'text-blue-600' :
+                            'text-purple-600'
+                          }`} />
+                        </div>
+                        <Badge 
+                          className="absolute top-2 left-2 text-xs"
+                          style={{ backgroundColor: post.category.color, color: 'white' }}
+                        >
+                          {post.category.name}
+                        </Badge>
+                        {post.featured && (
+                          <Badge className="absolute top-2 right-2 bg-orange-500 text-white text-xs">
+                            ⭐ Featured
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="space-y-2 sm:space-y-3">
+                        <h3 className={`font-bold text-sm sm:text-base md:text-lg text-gray-900 transition-colors leading-tight line-clamp-2 ${
+                          index === 0 ? 'group-hover:text-green-600' :
+                          index === 1 ? 'group-hover:text-blue-600' :
+                          'group-hover:text-purple-600'
+                        }`}>
+                          {post.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>{post.readTime} min read</span>
+                          <span>{post.featured ? '⭐ Featured' : new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                // This should rarely be reached now due to fallback posts
+                <div className="col-span-full text-center py-12">
+                  <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">No blog posts available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Blog CTA */}
+            <div className="text-center">
+              <Link href="/blog">
+                <Button variant="outline" className="bg-white/80 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-medium transition-all duration-300 hover:shadow-md">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Explore All Articles
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              <p className="text-xs sm:text-sm text-gray-500 mt-2">
+                Weekly updates • Study tips • Career guidance
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Subjects Section - Highly Mobile Responsive */}
         <section id="subjects" className="py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-b from-gray-50/50 to-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
@@ -964,20 +1256,41 @@ export default function Home() {
               </div>
               
               <div className="flex flex-col gap-3 sm:gap-4 justify-center pt-2 sm:pt-4 max-w-md mx-auto lg:max-w-none lg:flex-row">
-                <Link href="/register" className="w-full lg:w-auto">
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 w-full group">
-                    <span className="hidden sm:inline">Create Free Account</span>
-                    <span className="sm:hidden">Get Started Free</span>
-                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                  </Button>
-                </Link>
-                <Link href="/dashboard" className="w-full lg:w-auto">
-                  <Button variant="outline" size="lg" className="border-2 border-white/80 text-white hover:bg-white hover:text-blue-600 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-medium backdrop-blur-sm w-full transition-all duration-300">
-                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                    <span className="hidden sm:inline">Browse Resources</span>
-                    <span className="sm:hidden">Browse</span>
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link href="/dashboard" className="w-full lg:w-auto">
+                      <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 w-full group">
+                        <span className="hidden sm:inline">Go to Dashboard</span>
+                        <span className="sm:hidden">Dashboard</span>
+                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                      </Button>
+                    </Link>
+                    <Link href="/quiz" className="w-full lg:w-auto">
+                      <Button variant="outline" size="lg" className="border-2 border-white/80 text-white hover:bg-white hover:text-blue-600 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-medium backdrop-blur-sm w-full transition-all duration-300">
+                        <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                        <span className="hidden sm:inline">Practice Quiz</span>
+                        <span className="sm:hidden">Quiz</span>
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/register" className="w-full lg:w-auto">
+                      <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 w-full group">
+                        <span className="hidden sm:inline">Create Free Account</span>
+                        <span className="sm:hidden">Get Started Free</span>
+                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard" className="w-full lg:w-auto">
+                      <Button variant="outline" size="lg" className="border-2 border-white/80 text-white hover:bg-white hover:text-blue-600 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 text-sm sm:text-base font-medium backdrop-blur-sm w-full transition-all duration-300">
+                        <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                        <span className="hidden sm:inline">Browse Resources</span>
+                        <span className="sm:hidden">Browse</span>
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
               
               <div className="pt-6 sm:pt-8 border-t border-blue-400/30">
@@ -1047,6 +1360,16 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmation
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        userName={user?.name}
+        isLoading={isLoggingOut}
+        variant="main"
+      />
     </div>
   )
 }

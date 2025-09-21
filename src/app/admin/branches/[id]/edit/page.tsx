@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -55,11 +55,7 @@ export default function EditBranchPage() {
     isActive: true
   })
 
-  useEffect(() => {
-    fetchBranch()
-  }, [branchId])
-
-  const fetchBranch = async () => {
+  const fetchBranch = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await fetch('/api/admin/branches')
@@ -94,7 +90,11 @@ export default function EditBranchPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [branchId])
+
+  useEffect(() => {
+    fetchBranch()
+  }, [fetchBranch])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

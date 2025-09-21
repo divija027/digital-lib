@@ -11,12 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
   Save, 
-  Settings as SettingsIcon,
   Globe,
   Shield,
-  Mail,
   Database,
-  Palette,
   Upload,
   Download,
   Users
@@ -47,7 +44,6 @@ export default function SettingsPage() {
   // Security Settings
   const [enableRateLimit, setEnableRateLimit] = useState(true)
   const [sessionTimeout, setSessionTimeout] = useState(24)
-  const [enableAuditLog, setEnableAuditLog] = useState(true)
   const [enableTwoFactor, setEnableTwoFactor] = useState(false)
 
   const handleSaveSettings = async (section: string) => {
@@ -336,19 +332,6 @@ export default function SettingsPage() {
                 <Switch
                   checked={enableRateLimit}
                   onCheckedChange={setEnableRateLimit}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Enable Audit Logging</Label>
-                  <p className="text-sm text-gray-500">
-                    Log all admin actions for security monitoring
-                  </p>
-                </div>
-                <Switch
-                  checked={enableAuditLog}
-                  onCheckedChange={setEnableAuditLog}
                 />
               </div>
 

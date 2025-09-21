@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+ import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useAdminUsers } from '@/hooks/useAdminApi'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -22,17 +23,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { 
   UserPlus, 
   Search, 
   Filter, 
-  MoreHorizontal,
   Shield,
   User,
-  Mail,
-  Calendar,
   Edit,
-  Trash2
+  Trash2,
+  RefreshCw
 } from 'lucide-react'
 
 interface User {
@@ -50,131 +56,116 @@ interface User {
   }
 }
 
-export default function UsersPage() {
+function UsersPageContent() {
   const searchParams = useSearchParams()
   const roleFilter = searchParams.get('role')
   
-  const [users, setUsers] = useState<User[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [selectedRole, setSelectedRole] = useState<string>(roleFilter || 'all')
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
-  const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [createUserData, setCreateUserData] = useState({
+    name: '',
+    email: '',
+    collegeName: '',
+    role: 'STUDENT',
+    password: ''
+  })
+  const limit = 10
 
+  // Debounce search term
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+      setCurrentPage(1) // Reset to first page when searching
+    }, 500)
 
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Reset page when filters change
   useEffect(() => {
-    filterUsers()
-  }, [users, searchTerm, selectedRole, selectedStatus])
+    setCurrentPage(1)
+  }, [selectedRole, selectedStatus])
 
-  const fetchUsers = async () => {
-    try {
-      // Mock data for now - replace with actual API call
-      const mockUsers: User[] = [
-        {
-          id: '1',
-          name: 'Admin User',
-          email: 'admin@vtu.in',
-          role: 'ADMIN',
-          createdAt: '2024-01-15T10:30:00Z',
-          lastLoginAt: '2024-08-30T09:15:00Z',
-          isActive: true,
-          _count: { resources: 156 }
-        },
-        {
-          id: '2',
-          name: 'John Doe',
-          email: 'john@student.vtu.ac.in',
-          role: 'STUDENT',
-          collegeName: 'BMS College of Engineering',
-          createdAt: '2024-03-20T14:22:00Z',
-          lastLoginAt: '2024-08-29T18:45:00Z',
-          isActive: true,
-          _count: { downloads: 45 }
-        },
-        {
-          id: '3',
-          name: 'Jane Smith',
-          email: 'jane@student.vtu.ac.in',
-          role: 'STUDENT',
-          collegeName: 'RV College of Engineering',
-          createdAt: '2024-02-10T11:15:00Z',
-          lastLoginAt: '2024-08-28T16:30:00Z',
-          isActive: true,
-          _count: { downloads: 32 }
-        },
-        {
-          id: '4',
-          name: 'Mike Johnson',
-          email: 'mike@student.vtu.ac.in',
-          role: 'STUDENT',
-          collegeName: 'PES University',
-          createdAt: '2024-04-05T09:45:00Z',
-          lastLoginAt: '2024-08-25T12:20:00Z',
-          isActive: false,
-          _count: { downloads: 12 }
-        },
-        {
-          id: '5',
-          name: 'Sarah Wilson',
-          email: 'sarah@student.vtu.ac.in',
-          role: 'STUDENT',
-          collegeName: 'JSS Science and Technology University',
-          createdAt: '2024-05-12T16:30:00Z',
-          lastLoginAt: '2024-08-30T08:10:00Z',
-          isActive: true,
-          _count: { downloads: 28 }
-        }
-      ]
-      setUsers(mockUsers)
-    } catch (error) {
-      console.error('Failed to fetch users:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Memoize the params object to prevent infinite re-renders
+  const apiParams = useMemo(() => ({
+    page: currentPage,
+    limit,
+    search: debouncedSearchTerm || undefined,
+    role: selectedRole === 'all' ? undefined : selectedRole,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
+  }), [currentPage, limit, debouncedSearchTerm, selectedRole])
 
-  const filterUsers = () => {
-    let filtered = users
+  // Use the dynamic hook
+  const { data, loading, error, refetch, deleteUser, updateUser } = useAdminUsers(apiParams)
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.collegeName?.toLowerCase().includes(searchTerm.toLowerCase())
+  const users = data?.users || []
+  const pagination = data?.pagination || { currentPage: 1, totalPages: 1, totalUsers: 0 }
+  const statsData = data?.stats || { totalUsers: 0, totalStudents: 0, totalAdmins: 0 }
+
+  // Filter users locally for status (since API doesn't handle this yet)
+  const filteredUsers = selectedStatus === 'all' 
+    ? users 
+    : users.filter((user: any) => 
+        selectedStatus === 'active' ? user.isActive !== false : user.isActive === false
       )
-    }
-
-    // Role filter
-    if (selectedRole !== 'all') {
-      filtered = filtered.filter(user => user.role === selectedRole)
-    }
-
-    // Status filter
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(user => 
-        selectedStatus === 'active' ? user.isActive : !user.isActive
-      )
-    }
-
-    setFilteredUsers(filtered)
-  }
 
   const handleToggleStatus = async (userId: string) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, isActive: !user.isActive }
-        : user
-    ))
+    // This would need to be implemented in the API
+    console.log('Toggle status for user:', userId)
+    // For now, just refetch the data
+    refetch()
   }
 
   const handleDeleteUser = async (userId: string) => {
     if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      setUsers(prev => prev.filter(user => user.id !== userId))
+      const success = await deleteUser(userId)
+      if (success) {
+        // Data will be automatically refreshed by the hook
+      }
     }
+  }
+
+  const handleCreateUser = async () => {
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(createUserData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        alert(errorData.error || 'Failed to create user')
+        return
+      }
+
+      // Reset form and close modal
+      setCreateUserData({
+        name: '',
+        email: '',
+        collegeName: '',
+        role: 'STUDENT',
+        password: ''
+      })
+      setShowCreateModal(false)
+      
+      // Refresh data
+      refetch()
+    } catch (error) {
+      console.error('Error creating user:', error)
+      alert('Failed to create user')
+    }
+  }
+
+  const handleEditUser = async (userId: string, updates: any) => {
+    await updateUser(userId, updates)
   }
 
   const formatDate = (dateString: string) => {
@@ -187,21 +178,45 @@ export default function UsersPage() {
     })
   }
 
-  const getStats = () => {
-    const totalUsers = users.length
-    const activeUsers = users.filter(u => u.isActive).length
-    const admins = users.filter(u => u.role === 'ADMIN').length
-    const students = users.filter(u => u.role === 'STUDENT').length
-
-    return { totalUsers, activeUsers, admins, students }
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+            <p className="text-gray-600 mt-2">Manage admin and student accounts</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span>Loading users...</span>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  const stats = getStats()
-
-  if (isLoading) {
+  if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+            <p className="text-gray-600 mt-2">Manage admin and student accounts</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="text-red-500 text-center">
+              <h3 className="text-lg font-semibold">Error Loading Users</h3>
+              <p className="text-sm">{error}</p>
+            </div>
+            <Button onClick={refetch} variant="outline">
+              Try Again
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -214,10 +229,86 @@ export default function UsersPage() {
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-2">Manage admin and student accounts</p>
         </div>
-        <Button size="sm">
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={refetch}
+            disabled={loading}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add User
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Create New User</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Full Name</Label>
+                  <Input
+                    value={createUserData.name}
+                    onChange={(e) => setCreateUserData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    value={createUserData.email}
+                    onChange={(e) => setCreateUserData(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>College Name</Label>
+                  <Input
+                    value={createUserData.collegeName}
+                    onChange={(e) => setCreateUserData(prev => ({ ...prev, collegeName: e.target.value }))}
+                    placeholder="Enter college name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Select value={createUserData.role} onValueChange={(value) => setCreateUserData(prev => ({ ...prev, role: value }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STUDENT">Student</SelectItem>
+                      <SelectItem value="ADMIN">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Password</Label>
+                  <Input
+                    type="password"
+                    value={createUserData.password}
+                    onChange={(e) => setCreateUserData(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="Enter password"
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={handleCreateUser} className="flex-1">
+                    Create User
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowCreateModal(false)} className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -230,7 +321,7 @@ export default function UsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-2xl font-bold text-gray-900">{statsData.totalUsers}</p>
               </div>
             </div>
           </CardContent>
@@ -244,7 +335,7 @@ export default function UsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeUsers}</p>
+                <p className="text-2xl font-bold text-gray-900">{filteredUsers.filter((u: any) => u.isActive !== false).length}</p>
               </div>
             </div>
           </CardContent>
@@ -258,7 +349,7 @@ export default function UsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Admins</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.admins}</p>
+                <p className="text-2xl font-bold text-gray-900">{statsData.totalAdmins}</p>
               </div>
             </div>
           </CardContent>
@@ -272,7 +363,7 @@ export default function UsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Students</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.students}</p>
+                <p className="text-2xl font-bold text-gray-900">{statsData.totalStudents}</p>
               </div>
             </div>
           </CardContent>
@@ -334,6 +425,64 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {((pagination.currentPage - 1) * limit) + 1} to {Math.min(pagination.currentPage * limit, pagination.totalUsers)} of {pagination.totalUsers} users
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(pageNum)}
+                      >
+                        {pageNum}
+                      </Button>
+                    )
+                  })}
+                  {pagination.totalPages > 5 && (
+                    <>
+                      <span className="text-gray-400">...</span>
+                      <Button
+                        variant={currentPage === pagination.totalPages ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(pagination.totalPages)}
+                      >
+                        {pagination.totalPages}
+                      </Button>
+                    </>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage >= pagination.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Users Table */}
       <Card>
         <CardHeader>
@@ -354,7 +503,7 @@ export default function UsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((user) => (
+                {filteredUsers.map((user: any) => (
                   <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -385,22 +534,22 @@ export default function UsersPage() {
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant={user.isActive ? 'default' : 'secondary'}
+                        variant={user.isActive !== false ? 'default' : 'secondary'}
                       >
-                        {user.isActive ? 'Active' : 'Inactive'}
+                        {user.isActive !== false ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
                         {user.role === 'ADMIN' ? (
-                          <span>{user._count.resources} resources</span>
+                          <span>{user.resourceCount || 0} resources</span>
                         ) : (
-                          <span>{user._count.downloads} downloads</span>
+                          <span>Student</span>
                         )}
                         <p className="text-xs text-gray-500">
-                          {user.lastLoginAt 
-                            ? `Last: ${formatDate(user.lastLoginAt)}`
-                            : 'Never logged in'
+                          {user.updatedAt 
+                            ? `Updated: ${formatDate(user.updatedAt)}`
+                            : 'No recent activity'
                           }
                         </p>
                       </div>
@@ -453,5 +602,28 @@ export default function UsersPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function UsersPage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+            <p className="text-gray-600 mt-2">Manage admin and student accounts</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span>Loading users...</span>
+          </div>
+        </div>
+      </div>
+    }>
+      <UsersPageContent />
+    </Suspense>
   )
 }

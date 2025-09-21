@@ -83,9 +83,7 @@ export async function POST(request: NextRequest) {
           data: {
             name: subject,
             code: subject.replace(/\s+/g, '').toUpperCase(),
-            semester: parseInt(semester),
-            credits: 4, // Default credits
-            branch: branch
+            semester: parseInt(semester)
           }
         })
       }
@@ -102,24 +100,13 @@ export async function POST(request: NextRequest) {
           categoryId: category.id,
           subjectId: subjectRecord.id,
           type: questionType === 'Question Paper' ? 'QUESTION_PAPER' : 
-                questionType === 'Answer Key' ? 'ANSWER_KEY' :
-                questionType === 'Question Bank' ? 'QUESTION_BANK' :
+                questionType === 'Previous Year Paper' ? 'PREVIOUS_YEAR_PAPER' :
                 questionType === 'Study Material' ? 'STUDY_MATERIAL' :
                 questionType === 'Notes' ? 'NOTES' :
                 questionType === 'Syllabus' ? 'SYLLABUS' : 'OTHER',
-          uploaderId: 'admin_user', // Since we removed auth, use a default admin ID
+          uploadedBy: 'admin_user', // Since we removed auth, use a default admin ID
           isActive: true,
-          // Additional metadata for question papers
-          metadata: {
-            branch,
-            semester: parseInt(semester),
-            subject,
-            examYear,
-            examMonth,
-            schemeYear,
-            paperType,
-            questionType
-          }
+          semester: parseInt(semester)
         }
       })
 

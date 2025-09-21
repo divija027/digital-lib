@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const difficulty = searchParams.get('difficulty')
     const featured = searchParams.get('featured')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     if (status && status !== 'ALL') {
       where.status = status

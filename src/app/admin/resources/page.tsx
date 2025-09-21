@@ -30,9 +30,7 @@ import {
   Edit,
   Trash2,
   FileText,
-  Calendar,
-  User,
-  TrendingDown
+  Calendar
 } from 'lucide-react'
 import Link from 'next/link'
 

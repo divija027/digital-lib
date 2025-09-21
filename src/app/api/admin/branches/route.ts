@@ -54,7 +54,7 @@ async function ensureBranchesExist() {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Ensure branches exist in database
     await ensureBranchesExist()
@@ -70,13 +70,13 @@ export async function GET(request: NextRequest) {
         const curriculumBranch = VTU_CURRICULUM.find(b => b.code === category.name) ||
                                  FIRST_YEAR_CYCLES.find(c => c.code === category.name)
         
-        let metadata: any = { isActive: true, order: 999, type: 'branch' }
+        let metadata: Record<string, unknown> = { isActive: true, order: 999, type: 'branch' }
         try {
           if (category.description) {
             const parsed = JSON.parse(category.description)
             metadata = { ...metadata, ...parsed }
           }
-        } catch (e) {
+        } catch {
           // If JSON parsing fails, treat as regular description
           metadata.originalDescription = category.description
         }
@@ -196,12 +196,12 @@ export async function PUT(request: NextRequest) {
     }
 
     // Parse existing metadata
-    let metadata: any = {}
+    let metadata: Record<string, unknown> = {}
     try {
       if (category.description) {
         metadata = JSON.parse(category.description)
       }
-    } catch (e) {
+    } catch {
       metadata = { originalDescription: category.description }
     }
 
@@ -214,7 +214,7 @@ export async function PUT(request: NextRequest) {
     if (typeof order !== 'undefined') metadata.order = order
 
     // Update the category name if code is provided
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       description: JSON.stringify(metadata)
     }
 
@@ -300,7 +300,7 @@ export async function DELETE(request: NextRequest) {
       })
     } else {
       // Mark as inactive (soft delete)
-      let metadata: any = {}
+      let metadata: Record<string, unknown> = {}
       try {
         if (category.description) {
           metadata = JSON.parse(category.description)

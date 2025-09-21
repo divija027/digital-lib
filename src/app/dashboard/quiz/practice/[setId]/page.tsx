@@ -68,9 +68,9 @@ interface MCQQuestion {
 }
 
 interface MCQPracticeProps {
-  params: {
+  params: Promise<{
     setId: string
-  }
+  }>
 }
 
 export default function MCQPractice({ params }: MCQPracticeProps) {
@@ -97,15 +97,17 @@ export default function MCQPractice({ params }: MCQPracticeProps) {
       try {
         setIsLoading(true)
         
+        const { setId } = await params
+        
         // Fetch MCQ set details
-        const setResponse = await fetch(`/api/mcq/sets/${params.setId}`)
+        const setResponse = await fetch(`/api/mcq/sets/${setId}`)
         if (!setResponse.ok) {
           throw new Error('MCQ set not found')
         }
         const setData = await setResponse.json()
         
         // Fetch questions for this set
-        const questionsResponse = await fetch(`/api/mcq/questions?mcqSetId=${params.setId}`)
+        const questionsResponse = await fetch(`/api/mcq/questions?mcqSetId=${setId}`)
         if (!questionsResponse.ok) {
           throw new Error('Questions not found')
         }
@@ -125,13 +127,13 @@ export default function MCQPractice({ params }: MCQPracticeProps) {
           difficulty: setData.difficulty,
           category: setData.category,
           timeLimit: setData.timeLimit,
-          questions: questionsData.map((q: any) => ({
+          questions: questionsData.map((q: { id: string; question: string; options: string[]; correctAnswer: number; explanation?: string; difficulty?: string }) => ({
             id: q.id,
             question: q.question,
             options: q.options,
             correctAnswer: q.correctAnswer,
             explanation: q.explanation,
-            difficulty: q.difficulty,
+            difficulty: q.difficulty || 'Medium',
             // Map to legacy properties for compatibility
             text: q.question,
             choices: q.options,
@@ -154,7 +156,7 @@ export default function MCQPractice({ params }: MCQPracticeProps) {
     
     fetchMCQSet()
     setIsVisible(true)
-  }, [params.setId])
+  }, [params])
 
   useEffect(() => {
     let timer: NodeJS.Timeout

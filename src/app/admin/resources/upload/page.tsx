@@ -9,12 +9,8 @@ import {
   Upload, 
   FileText, 
   BookOpen, 
-  Trash2, 
-  Edit, 
   Eye,
   Plus,
-  Search,
-  Filter,
   Download
 } from 'lucide-react'
 import Link from 'next/link'

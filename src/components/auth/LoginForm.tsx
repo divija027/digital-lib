@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Eye, EyeOff, Mail, Lock, GraduationCap, XCircle, ArrowRight, KeyRound } from 'lucide-react'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -21,6 +22,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>
 
 export function LoginForm() {
+  const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -55,9 +57,9 @@ export function LoginForm() {
         throw new Error(result.error || 'Login failed')
       }
 
-      // Store user data in localStorage (optional)
+      // Store user data using the auth hook
       if (result.user) {
-        localStorage.setItem('user', JSON.stringify(result.user))
+        login(result.user)
       }
 
       router.push('/dashboard')

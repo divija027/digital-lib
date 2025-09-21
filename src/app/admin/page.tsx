@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { ResourceUpload } from '@/components/admin/ResourceUpload'
 import { useAdminDashboard } from '@/hooks/useAdminApi'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -12,8 +11,6 @@ import {
   FileText, 
   Users, 
   BookOpen, 
-  TrendingUp,
-  Settings,
   RefreshCw,
   Activity,
   AlertCircle,
@@ -78,10 +75,6 @@ export default function AdminDashboard() {
           <Button onClick={refetch} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
-          </Button>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
           </Button>
         </div>
       </div>
@@ -191,10 +184,6 @@ export default function AdminDashboard() {
               <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
                 <Users className="h-5 w-5" />
                 <span className="text-sm">Manage Users</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
-                <Settings className="h-5 w-5" />
-                <span className="text-sm">System Settings</span>
               </Button>
             </div>
           </CardContent>
