@@ -109,7 +109,9 @@ model MCQSet {
   description String
   difficulty  Difficulty
   category    String
-  timeLimit   Int      @default(30) // in minutes
+  timerMode   TimerMode @default(TOTAL_TIME) // TOTAL_TIME or PER_QUESTION
+  totalTimeLimit Int?  // Total time for entire quiz in minutes (Option 1)
+  questionTimeLimit Int? // Time per question in seconds (Option 2)
   tags        String[] // Array of tags
   companies   String[] // Array of companies
   featured    Boolean  @default(false)
@@ -181,6 +183,11 @@ enum MCQStatus {
   DRAFT
   ACTIVE
   ARCHIVED
+}
+
+enum TimerMode {
+  TOTAL_TIME    // Option 1: Time limit for entire quiz set
+  PER_QUESTION  // Option 2: Time limit per individual question
 }
 
 // Blog Models

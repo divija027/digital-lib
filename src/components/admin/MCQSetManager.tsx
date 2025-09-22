@@ -55,7 +55,9 @@ interface MCQSetData {
   difficulty: string
   category: string
   questions: number
-  timeLimit: number
+  timerMode: 'TOTAL_TIME' | 'PER_QUESTION'
+  totalTimeLimit?: number      // Total time for entire quiz in minutes
+  questionTimeLimit?: number   // Time per question in seconds
   averageScore: number
   attempts: number
   status: string
@@ -464,7 +466,10 @@ export function MCQSetManager() {
                       </div>
                       <div className="flex items-center gap-1 text-sm">
                         <Clock className="h-3 w-3" />
-                        {set.timeLimit} minutes
+                        {set.timerMode === 'TOTAL_TIME' 
+                          ? `${set.totalTimeLimit || 30} min total`
+                          : `${set.questionTimeLimit || 90}s per question`
+                        }
                       </div>
                     </div>
                   </TableCell>
