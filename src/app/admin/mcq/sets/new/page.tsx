@@ -32,7 +32,9 @@ interface MCQSet {
   description: string
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
   category: string
-  timeLimit: number
+  timerMode: 'TOTAL_TIME' | 'PER_QUESTION'
+  totalTimeLimit?: number      // Total time for entire quiz in minutes (Option 1)
+  questionTimeLimit?: number   // Time per question in seconds (Option 2)
   tags: string[]
   featured: boolean
   companies: string[]
@@ -48,7 +50,9 @@ export default function CreateMCQSetPage() {
     description: '',
     difficulty: 'Beginner',
     category: 'Technical',
-    timeLimit: 30,
+    timerMode: 'TOTAL_TIME',
+    totalTimeLimit: 30,
+    questionTimeLimit: 90,
     tags: [],
     featured: false,
     companies: []
@@ -303,18 +307,63 @@ export default function CreateMCQSetPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Timer Mode Selection */}
                 <div>
-                  <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
-                  <Input
-                    id="timeLimit"
-                    type="number"
-                    min="5"
-                    max="180"
-                    value={formData.timeLimit}
-                    onChange={(e) => handleInputChange('timeLimit', parseInt(e.target.value) || 30)}
-                    className="mt-1"
-                  />
+                  <Label>Timer Mode</Label>
+                  <Select 
+                    value={formData.timerMode} 
+                    onValueChange={(value: 'TOTAL_TIME' | 'PER_QUESTION') => handleInputChange('timerMode', value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TOTAL_TIME">Total Time for Entire Quiz</SelectItem>
+                      <SelectItem value="PER_QUESTION">Time Per Individual Question</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.timerMode === 'TOTAL_TIME' 
+                      ? 'Users can spend any time on each question within the total limit'
+                      : 'Each question will have the same time limit'
+                    }
+                  </p>
                 </div>
+
+                {/* Timer Value Input */}
+                {formData.timerMode === 'TOTAL_TIME' ? (
+                  <div>
+                    <Label htmlFor="totalTimeLimit">Total Time Limit (minutes)</Label>
+                    <Input
+                      id="totalTimeLimit"
+                      type="number"
+                      min="5"
+                      max="180"
+                      value={formData.totalTimeLimit || 30}
+                      onChange={(e) => handleInputChange('totalTimeLimit', parseInt(e.target.value) || 30)}
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Total time allowed for the entire quiz
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Label htmlFor="questionTimeLimit">Time Per Question (seconds)</Label>
+                    <Input
+                      id="questionTimeLimit"
+                      type="number"
+                      min="10"
+                      max="300"
+                      value={formData.questionTimeLimit || 90}
+                      onChange={(e) => handleInputChange('questionTimeLimit', parseInt(e.target.value) || 90)}
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Time allowed for each individual question
+                    </p>
+                  </div>
+                )}
 
                 <div className="flex items-center space-x-2">
                   <input
@@ -357,7 +406,10 @@ export default function CreateMCQSetPage() {
                     )}
                   </div>
                   <div className="text-sm text-gray-500">
-                    <p>⏱️ {formData.timeLimit} minutes</p>
+                    <p>⏱️ {formData.timerMode === 'TOTAL_TIME' 
+                      ? `${formData.totalTimeLimit || 30} minutes total`
+                      : `${formData.questionTimeLimit || 90} seconds per question`
+                    }</p>
                     <p>🏷️ {formData.tags.length} tags</p>
                     <p>🏢 {formData.companies.length} companies</p>
                   </div>

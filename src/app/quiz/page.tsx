@@ -39,7 +39,9 @@ interface MCQSet {
   description: string
   difficulty: string
   category: string
-  timeLimit: number
+  timerMode: 'TOTAL_TIME' | 'PER_QUESTION'
+  totalTimeLimit?: number      // Total time for entire quiz in minutes (Option 1)
+  questionTimeLimit?: number   // Time per question in seconds (Option 2)
   tags: string[]
   companies: string[]
   featured: boolean
@@ -50,6 +52,25 @@ interface MCQSet {
   questions: number
   attempts: number
   averageScore: number
+}
+
+// Helper function to get time display for MCQ set
+const getTimeDisplay = (set: MCQSet) => {
+  if (set.timerMode === 'TOTAL_TIME') {
+    const totalTime = set.totalTimeLimit || 30
+    return {
+      time: totalTime,
+      unit: 'min',
+      label: 'Total Time'
+    }
+  } else {
+    const timePerQuestion = set.questionTimeLimit || 90
+    return {
+      time: timePerQuestion,
+      unit: 'sec',
+      label: 'Per Question'
+    }
+  }
 }
 
 // Icon mapping for categories
@@ -117,6 +138,10 @@ export default function MCQSelectPage() {
   const [mcqSets, setMcqSets] = useState<MCQSet[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Scroll tracking state for navbar visibility
+  const [navbarVisible, setNavbarVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
 
   // Fetch MCQ sets from API
   const fetchMCQSets = async () => {
@@ -139,6 +164,38 @@ export default function MCQSelectPage() {
   useEffect(() => {
     setIsVisible(true)
     fetchMCQSets()
+  }, [])
+
+  // Scroll handling for navbar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      
+      // Navbar visibility logic (Discord-style)
+      if (currentScrollY < 100) {
+        // At the top of the page - always show navbar
+        setNavbarVisible(true)
+      } else if (currentScrollY > lastScrollY && currentScrollY > 200) {
+        // Scrolling down and past threshold - hide navbar
+        setNavbarVisible(false)
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setNavbarVisible(true)
+      }
+      
+      setLastScrollY(currentScrollY)
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [lastScrollY])
+
+  // Animation visibility effect
+  useEffect(() => {
+    setTimeout(() => setIsVisible(true), 100)
   }, [])
 
   const categories = [
@@ -172,68 +229,75 @@ export default function MCQSelectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/60 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                <Home className="w-5 h-5" />
-                <span className="text-sm font-medium">Dashboard</span>
-              </Link>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <div className="flex items-center gap-2">
-                <Brain className="w-5 h-5 text-blue-600" />
-                <span className="text-sm font-semibold text-gray-900">Quiz Center</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40">
+      {/* Header with smooth scroll animation */}
+      <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        navbarVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
+        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-4">
+                <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <Home className="w-5 h-5" />
+                  <span className="text-sm font-medium">Home</span>
+                </Link>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-semibold text-gray-900">Quiz Center</span>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Removed stats display */}
+              
+              <div className="flex items-center gap-4">
+                <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-3 py-1.5 font-medium">
+                  {filteredSets.length} Available
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content - Add top padding to account for fixed header */}
+      <div className="pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <div className={`text-center mb-12 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="inline-flex items-center gap-2 bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm font-medium text-blue-700">Choose Your Challenge</span>
+        <div className={`text-center mb-16 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full px-6 py-2.5 mb-8 shadow-sm">
+            <Sparkles className="w-5 h-5 text-blue-600" />
+            <span className="text-sm font-semibold text-blue-700">Choose Your Challenge</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
             <span className="text-gray-900">Master Your</span>
             <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Interview Skills
             </span>
           </h1>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
-            Select from our curated collection of MCQ sets designed to help you excel in technical interviews and company assessments
-          </p>
         </div>
 
         {/* Category Filter */}
-        <div className={`mb-8 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '200ms' }}>
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                    : 'bg-white/70 text-gray-600 hover:bg-white hover:text-blue-600 border border-gray-200/60'
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                {category.label}
-              </button>
-            ))}
+        <div className={`mb-12 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '200ms' }}>
+          <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 shadow-sm max-w-4xl mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Filter by Category</h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    selectedCategory === category.id
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25 transform scale-105'
+                      : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600 border border-gray-200 hover:border-blue-200 hover:shadow-md'
+                  }`}
+                >
+                  <category.icon className="w-5 h-5" />
+                  {category.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -280,7 +344,7 @@ export default function MCQSelectPage() {
                   onMouseEnter={() => setHoveredSet(set.id)}
                   onMouseLeave={() => setHoveredSet(null)}
                 >
-                  <Card className={`relative border-0 shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden bg-gradient-to-br ${categoryColors.backgroundColor} ${categoryColors.borderColor} h-full`}>
+                  <Card className={`relative border-0 shadow-xl group-hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white rounded-2xl h-full`}>
                     {/* Featured Badge */}
                     {set.featured && (
                       <div className="absolute top-4 right-4 z-10">
@@ -291,36 +355,36 @@ export default function MCQSelectPage() {
                       </div>
                     )}
 
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`p-3 rounded-xl ${categoryColors.backgroundColor} border ${categoryColors.borderColor} shadow-sm`}>
-                          <IconComponent className={`w-6 h-6 ${categoryColors.iconColor}`} />
+                    <CardHeader className="pb-6">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className={`p-4 rounded-2xl bg-gradient-to-br ${categoryColors.backgroundColor} border ${categoryColors.borderColor} shadow-sm`}>
+                          <IconComponent className={`w-8 h-8 ${categoryColors.iconColor}`} />
                         </div>
                         
                         <div className="text-right">
-                          <div className="flex items-center gap-1 mb-1">
-                            <TrendingUp className="w-3 h-3 text-gray-500" />
-                            <span className="text-xs text-gray-600">{set.attempts} attempts</span>
+                          <div className="flex items-center gap-1 mb-2">
+                            <TrendingUp className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm text-gray-600 font-medium">{set.attempts} attempts</span>
                           </div>
-                          <Badge variant="outline" className={getDifficultyColor(set.difficulty)}>
+                          <Badge variant="outline" className={`${getDifficultyColor(set.difficulty)} font-medium px-3 py-1`}>
                             {set.difficulty}
                           </Badge>
                         </div>
                       </div>
 
-                      <CardTitle className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                      <CardTitle className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
                         {set.title}
                       </CardTitle>
                       
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      <p className="text-gray-600 leading-relaxed mb-6">
                         {set.description}
                       </p>
 
                       {/* Tags */}
                       {set.tags && set.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-4">
+                        <div className="flex flex-wrap gap-2 mb-6">
                           {set.tags.map((tag, tagIndex) => (
-                            <Badge key={tagIndex} variant="secondary" className="text-xs bg-white/60 text-gray-700">
+                            <Badge key={tagIndex} variant="secondary" className="text-xs bg-gray-100 text-gray-700 border border-gray-200">
                               {tag}
                             </Badge>
                           ))}
@@ -330,24 +394,31 @@ export default function MCQSelectPage() {
 
                     <CardContent className="pt-0">
                       {/* Stats */}
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="bg-white/60 rounded-lg p-3 text-center">
-                          <div className="text-lg font-bold text-gray-900">{set.questions}</div>
-                          <div className="text-xs text-gray-600">Questions</div>
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                          <div className="text-2xl font-bold text-gray-900">{set.questions}</div>
+                          <div className="text-sm text-gray-600 font-medium">Questions</div>
                         </div>
-                        <div className="bg-white/60 rounded-lg p-3 text-center">
-                          <div className="text-lg font-bold text-gray-900">{set.timeLimit}min</div>
-                          <div className="text-xs text-gray-600">Time Limit</div>
+                        <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                          {(() => {
+                            const timeDisplay = getTimeDisplay(set)
+                            return (
+                              <>
+                                <div className="text-2xl font-bold text-gray-900">{timeDisplay.time}{timeDisplay.unit}</div>
+                                <div className="text-sm text-gray-600 font-medium">{timeDisplay.label}</div>
+                              </>
+                            )
+                          })()}
                         </div>
                       </div>
 
                       {/* Companies */}
                       {set.companies && set.companies.length > 0 && (
-                        <div className="mb-6">
-                          <div className="text-xs text-gray-600 mb-2">Asked by:</div>
-                          <div className="flex flex-wrap gap-1">
+                        <div className="mb-8">
+                          <div className="text-sm text-gray-600 font-medium mb-3">Asked by companies:</div>
+                          <div className="flex flex-wrap gap-2">
                             {set.companies.map((company, companyIndex) => (
-                              <Badge key={companyIndex} className={`text-xs ${categoryColors.badgeColor}`}>
+                              <Badge key={companyIndex} className={`text-xs ${categoryColors.badgeColor} border border-gray-200`}>
                                 {company}
                               </Badge>
                             ))}
@@ -358,24 +429,24 @@ export default function MCQSelectPage() {
                       {/* Action Button */}
                       <Button
                         onClick={() => handleStartQuiz(set.id)}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:scale-105"
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 py-3 text-base font-semibold rounded-xl"
                       >
-                        <Play className="w-4 h-4 mr-2" />
+                        <Play className="w-5 h-5 mr-2" />
                         Start Practice
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
 
                       {/* Quick Info */}
-                      <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <BarChart3 className="w-3 h-3" />
-                          <span>{set.averageScore}% avg score</span>
+                      <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <BarChart3 className="w-4 h-4" />
+                          <span className="font-medium">{set.averageScore}% avg score</span>
                         </div>
                       </div>
                     </CardContent>
 
                     {/* Hover Effect Shine */}
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                   </Card>
                 </div>
               )
@@ -400,20 +471,28 @@ export default function MCQSelectPage() {
         )}
 
         {/* Bottom CTA */}
-        <div className={`text-center mt-12 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/60 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Excel?</h3>
-            <p className="text-gray-600 mb-6">
-              Join thousands of students who have improved their interview skills with our comprehensive practice tests.
+        <div className={`text-center mt-16 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200 max-w-4xl mx-auto shadow-xl">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Trophy className="w-8 h-8 text-blue-600" />
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Ready to Excel?</h3>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Join thousands of students who have improved their interview skills with our comprehensive practice tests and detailed explanations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3">
-                <Target className="w-4 h-4 mr-2" />
+              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Target className="w-5 h-5 mr-2" />
                 Take Assessment
+              </Button>
+              <Button variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2 border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-300">
+                <Brain className="w-5 h-5 mr-2" />
+                Browse All Quizzes
               </Button>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

@@ -40,7 +40,7 @@ interface Branch {
 }
 
 // Convert subject slug back to name (simplified matching)
-const slugToSubjectName = (slug: string, subjects: any[]): string => {
+const slugToSubjectName = (slug: string, subjects: { name: string }[]): string => {
   const subjectFromSlug = subjects.find(s => 
     s.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-') === slug
   )
@@ -218,13 +218,13 @@ export default function SubjectPage() {
     )
   }
 
-  const handleDownload = (paper: any) => {
+  const handleDownload = (paper: { fileName: string }) => {
     // Mock download functionality
     console.log('Downloading:', paper.fileName)
     alert(`Downloading: ${paper.fileName}`)
   }
 
-  const handlePreview = (paper: any) => {
+  const handlePreview = (paper: { fileName: string }) => {
     // Mock preview functionality
     console.log('Previewing:', paper.fileName)
     alert(`Opening preview for: ${paper.fileName}`)

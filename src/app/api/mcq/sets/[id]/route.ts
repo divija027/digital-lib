@@ -4,11 +4,12 @@ import { prisma } from '@/lib/prisma'
 // GET /api/mcq/sets/[id] - Get a specific MCQ set
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const mcqSet = await prisma.mCQSet.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         creator: {
           select: {
@@ -76,9 +77,10 @@ export async function GET(
 // PUT /api/mcq/sets/[id] - Update a specific MCQ set
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const {
       title,
@@ -93,7 +95,7 @@ export async function PUT(
     } = body
 
     const mcqSet = await prisma.mCQSet.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -131,11 +133,12 @@ export async function PUT(
 // DELETE /api/mcq/sets/[id] - Delete a specific MCQ set
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.mCQSet.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'MCQ set deleted successfully' })

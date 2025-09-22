@@ -30,7 +30,7 @@ export async function GET(
         ? `inline; filename="${filename}"`
         : `attachment; filename="${filename}"`
 
-      return new NextResponse(fileBuffer, {
+      return new NextResponse(fileBuffer.buffer as ArrayBuffer, {
         headers: {
           'Content-Type': contentType,
           'Content-Disposition': disposition,

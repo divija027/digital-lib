@@ -69,12 +69,10 @@ export default function MCQAdminPage() {
     totalAttempts: 0,
     averageScore: 0
   })
-  const [isLoading, setIsLoading] = useState(true)
 
   // Fetch MCQ statistics
   const fetchStats = async () => {
     try {
-      setIsLoading(true)
       const response = await fetch('/api/mcq/stats')
       if (!response.ok) {
         throw new Error('Failed to fetch statistics')
@@ -88,8 +86,6 @@ export default function MCQAdminPage() {
       })
     } catch (error) {
       console.error('Error fetching statistics:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 

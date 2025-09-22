@@ -8,14 +8,34 @@ interface AdminStats {
   pendingResources: { count: number; growth: number }
 }
 
+interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  createdAt: string
+}
+
+interface Resource {
+  id: string
+  title: string
+  type: string
+  createdAt: string
+}
+
+interface MonthlyUpload {
+  month: string
+  count: number
+}
+
 interface DashboardData {
   stats: AdminStats
-  recentUsers: any[]
-  recentResources: any[]
+  recentUsers: User[]
+  recentResources: Resource[]
   analytics: {
     resourcesByType: Array<{ type: string; count: number }>
     usersByRole: Array<{ role: string; count: number }>
-    monthlyUploads: any[]
+    monthlyUploads: MonthlyUpload[]
   }
 }
 
@@ -64,11 +84,13 @@ export function useAdminUsers(params?: {
 
   useEffect(() => {
     fetchUsers()
-  }, [params])
+  }, [JSON.stringify(params)])
 
   const fetchUsers = async () => {
     try {
       setLoading(true)
+      console.log('fetchUsers called with params:', params)
+      
       const searchParams = new URLSearchParams()
       
       if (params?.page) searchParams.set('page', params.page.toString())
@@ -78,18 +100,25 @@ export function useAdminUsers(params?: {
       if (params?.sortBy) searchParams.set('sortBy', params.sortBy)
       if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder)
 
-      const response = await fetch(`/api/admin/users?${searchParams}`)
+      const url = `/api/admin/users?${searchParams}`
+      console.log('Fetching from URL:', url)
+
+      const response = await fetch(url)
+      console.log('Response status:', response.status, response.statusText)
       
       if (!response.ok) {
-        throw new Error('Failed to fetch users')
+        throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`)
       }
       
       const usersData = await response.json()
+      console.log('Users data received:', usersData)
       setData(usersData)
       setError(null)
     } catch (err) {
+      console.error('Error in fetchUsers:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
+      console.log('Setting loading to false')
       setLoading(false)
     }
   }
@@ -112,7 +141,7 @@ export function useAdminUsers(params?: {
     }
   }
 
-  const updateUser = async (userId: string, updates: any) => {
+  const updateUser = async (userId: string, updates: Partial<User>) => {
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
@@ -203,126 +232,4 @@ export function useAdminResources(params?: {
   }
 
   return { data, loading, error, refetch: fetchResources, bulkAction }
-}
-
-export function useAdminLogs(params?: {
-  page?: number
-  limit?: number
-  search?: string
-  action?: string
-  entityType?: string
-  status?: string
-  dateFrom?: string
-  dateTo?: string
-}) {
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchLogs()
-  }, [params])
-
-  const fetchLogs = async () => {
-    try {
-      setLoading(true)
-      const searchParams = new URLSearchParams()
-      
-      Object.entries(params || {}).forEach(([key, value]) => {
-        if (value) searchParams.set(key, value.toString())
-      })
-
-      const response = await fetch(`/api/admin/logs?${searchParams}`)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch audit logs')
-      }
-      
-      const logsData = await response.json()
-      setData(logsData)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return { data, loading, error, refetch: fetchLogs }
-}
-
-export function useAdminSettings() {
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchSettings()
-  }, [])
-
-  const fetchSettings = async (section?: string) => {
-    try {
-      setLoading(true)
-      const url = section ? `/api/admin/settings?section=${section}` : '/api/admin/settings'
-      const response = await fetch(url)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch settings')
-      }
-      
-      const settingsData = await response.json()
-      setData(settingsData)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const updateSettings = async (section: string, settings: any) => {
-    try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ section, settings })
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to update settings')
-      }
-      
-      await fetchSettings() // Refresh settings
-      return true
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update settings')
-      return false
-    }
-  }
-
-  const performAction = async (action: string) => {
-    try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ action })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Failed to ${action}`)
-      }
-      
-      return true
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Failed to ${action}`)
-      return false
-    }
-  }
-
-  return { data, loading, error, refetch: fetchSettings, updateSettings, performAction }
 }

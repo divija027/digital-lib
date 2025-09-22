@@ -26,7 +26,9 @@ const mockMCQSet = {
   difficulty: 'Beginner',
   category: 'Technical',
   questions: 25,
-  timeLimit: 30,
+  timerMode: 'TOTAL_TIME' as const,
+  totalTimeLimit: 30,
+  questionTimeLimit: undefined,
   averageScore: 78,
   attempts: 450,
   status: 'active',
@@ -193,7 +195,15 @@ export default function MCQSetDetailPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Time Limit</p>
-                <p className="text-2xl font-bold text-gray-900">{mcqSet.timeLimit}min</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {mcqSet.timerMode === 'TOTAL_TIME' 
+                    ? `${mcqSet.totalTimeLimit}min`
+                    : `${mcqSet.questionTimeLimit}s/q`
+                  }
+                </p>
+                <p className="text-xs text-gray-500">
+                  {mcqSet.timerMode === 'TOTAL_TIME' ? 'Total time for entire quiz' : 'Time per question'}
+                </p>
               </div>
             </div>
           </CardContent>

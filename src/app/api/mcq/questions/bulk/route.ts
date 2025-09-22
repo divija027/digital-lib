@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Validate each question
     const validatedQuestions: any[] = []
-    const errors: any[] = []
+    const errors: { index: number; message: string; questionIndex?: number; errors?: string[] }[] = []
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i]
@@ -66,6 +66,8 @@ export async function POST(request: NextRequest) {
 
       if (questionErrors.length > 0) {
         errors.push({
+          index: i,
+          message: `Question ${i + 1} validation failed`,
           questionIndex: i + 1,
           errors: questionErrors
         })

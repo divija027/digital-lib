@@ -3,12 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-
+    const { id } = await params
     const resource = await prisma.resource.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         category: {
           select: { id: true, name: true }
@@ -36,9 +36,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { 
       title, 
@@ -52,7 +53,7 @@ export async function PUT(
     } = body
 
     const updatedResource = await prisma.resource.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(description && { description }),
@@ -89,12 +90,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // Get resource info before deletion for file cleanup
     const resource = await prisma.resource.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { filePath: true }
     })
 
@@ -103,7 +105,7 @@ export async function DELETE(
     }
 
     await prisma.resource.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // TODO: Delete physical file from storage

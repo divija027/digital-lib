@@ -1,9 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 export function LogoutButton() {
   const router = useRouter()
+  const { logout } = useAuth()
 
   const handleLogout = async () => {
     try {
@@ -12,15 +14,14 @@ export function LogoutButton() {
       })
       
       if (response.ok) {
-        // Clear local storage
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('user')
-        }
+        // Use the auth hook logout function
+        logout()
         router.push('/login')
       }
     } catch (error) {
       console.error('Logout error:', error)
-      // Fallback: redirect anyway
+      // Fallback: logout anyway
+      logout()
       router.push('/login')
     }
   }

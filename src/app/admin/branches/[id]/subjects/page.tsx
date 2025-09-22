@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -42,7 +42,6 @@ interface Branch {
 }
 
 export default function BranchSubjectsPage() {
-  const router = useRouter()
   const params = useParams()
   const branchId = params.id as string
 
@@ -65,15 +64,7 @@ export default function BranchSubjectsPage() {
     isCore: true
   })
 
-  useEffect(() => {
-    fetchBranchAndSubjects()
-  }, [branchId])
-
-  useEffect(() => {
-    filterSubjects()
-  }, [subjects, searchTerm, selectedSemester])
-
-  const fetchBranchAndSubjects = async () => {
+  const fetchBranchAndSubjects = useCallback(async () => {
     try {
       setIsLoading(true)
       
@@ -101,9 +92,9 @@ export default function BranchSubjectsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [branchId])
 
-  const filterSubjects = () => {
+  const filterSubjects = useCallback(() => {
     let filtered = subjects.filter(subject =>
       subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subject.code.toLowerCase().includes(searchTerm.toLowerCase())
@@ -114,7 +105,15 @@ export default function BranchSubjectsPage() {
     }
 
     setFilteredSubjects(filtered)
-  }
+  }, [subjects, searchTerm, selectedSemester])
+
+  useEffect(() => {
+    fetchBranchAndSubjects()
+  }, [fetchBranchAndSubjects])
+
+  useEffect(() => {
+    filterSubjects()
+  }, [filterSubjects])
 
   const resetForm = () => {
     setFormData({

@@ -439,8 +439,26 @@ export function ResourceCategories({ subject, semester, branch }: ResourceCatego
   )
 }
 
+interface ResourceType {
+  id: string
+  title: string
+  type: string
+  description?: string
+  fileUrl?: string
+  createdAt?: string
+  subject?: string
+  format?: string
+  size?: string
+  uploadDate?: string
+  downloads?: number
+  rating?: number
+  year?: number
+  examType?: string
+  tags?: string[]
+}
+
 // Resource Card Component
-function ResourceCard({ resource }: { resource: any }) {
+function ResourceCard({ resource }: { resource: ResourceType }) {
   const category = RESOURCE_CATEGORIES.find(c => c.id === resource.type)
   const Icon = category?.icon || FileText
 
@@ -474,14 +492,14 @@ function ResourceCard({ resource }: { resource: any }) {
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">{resource.description}</p>
             
             <div className="flex flex-wrap gap-1 mb-3">
-              {resource.tags.slice(0, 3).map((tag: string) => (
+              {resource.tags?.slice(0, 3).map((tag: string) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
-              {resource.tags.length > 3 && (
+              {resource.tags && resource.tags.length > 3 && (
                 <Badge variant="outline" className="text-xs">
-                  +{resource.tags.length - 3}
+                  +{resource.tags?.length - 3}
                 </Badge>
               )}
             </div>
@@ -492,14 +510,14 @@ function ResourceCard({ resource }: { resource: any }) {
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1">
                 <Download className="w-3 h-3" />
-                {resource.downloads.toLocaleString()}
+                {resource.downloads?.toLocaleString() || '0'}
               </span>
               <span>{resource.size}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {new Date(resource.uploadDate).toLocaleDateString()}
+                {resource.uploadDate ? new Date(resource.uploadDate).toLocaleDateString() : 'N/A'}
               </span>
               <span className="uppercase">{resource.format}</span>
             </div>
@@ -525,7 +543,7 @@ function ResourceCard({ resource }: { resource: any }) {
 }
 
 // Resource List Item Component
-function ResourceListItem({ resource }: { resource: any }) {
+function ResourceListItem({ resource }: { resource: ResourceType }) {
   const category = RESOURCE_CATEGORIES.find(c => c.id === resource.type)
   const Icon = category?.icon || FileText
 
@@ -564,25 +582,25 @@ function ResourceListItem({ resource }: { resource: any }) {
             <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-2">
               <span className="flex items-center gap-1">
                 <Download className="w-3 h-3" />
-                {resource.downloads.toLocaleString()} downloads
+                {resource.downloads?.toLocaleString() || '0'} downloads
               </span>
               <span>{resource.size}</span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {new Date(resource.uploadDate).toLocaleDateString()}
+                {resource.uploadDate ? new Date(resource.uploadDate).toLocaleDateString() : 'N/A'}
               </span>
               <span className="uppercase font-medium">{resource.format}</span>
             </div>
 
             <div className="flex flex-wrap gap-1">
-              {resource.tags.slice(0, 4).map((tag: string) => (
+              {resource.tags?.slice(0, 4).map((tag: string) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
-              {resource.tags.length > 4 && (
+              {resource.tags && resource.tags.length > 4 && (
                 <Badge variant="outline" className="text-xs">
-                  +{resource.tags.length - 4} more
+                  +{resource.tags?.length - 4} more
                 </Badge>
               )}
             </div>

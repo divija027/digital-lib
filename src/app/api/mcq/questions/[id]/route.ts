@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma'
 // GET /api/mcq/questions/[id] - Get a specific MCQ question
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const question = await prisma.mCQQuestion.findUnique({
       where: { id },
@@ -50,10 +50,10 @@ export async function GET(
 // PUT /api/mcq/questions/[id] - Update a specific MCQ question
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const {
       question,
@@ -93,7 +93,7 @@ export async function PUT(
     }
 
     // Prepare update data
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     if (question !== undefined) updateData.question = question
     if (options !== undefined) updateData.options = options
     if (correctAnswer !== undefined) updateData.correctAnswer = correctAnswer
@@ -136,10 +136,10 @@ export async function PUT(
 // DELETE /api/mcq/questions/[id] - Delete a specific MCQ question
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Check if question exists
     const existingQuestion = await prisma.mCQQuestion.findUnique({
