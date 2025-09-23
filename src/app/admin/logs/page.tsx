@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -49,7 +49,7 @@ interface AuditLog {
   userAgent: string
   status: 'SUCCESS' | 'FAILURE' | 'WARNING'
   details?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, string | number | boolean>
 }
 
 export default function AuditLogsPage() {
@@ -62,13 +62,44 @@ export default function AuditLogsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('7d')
   const [isLoading, setIsLoading] = useState(true)
 
+  const filterLogs = useCallback(() => {
+    let filtered = logs
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(log =>
+        log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.details?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.resource.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    // Action filter
+    if (selectedAction !== 'all') {
+      filtered = filtered.filter(log => log.action === selectedAction)
+    }
+
+    // User filter
+    if (selectedUser !== 'all') {
+      filtered = filtered.filter(log => log.userRole === selectedUser)
+    }
+
+    // Status filter
+    if (selectedStatus !== 'all') {
+      filtered = filtered.filter(log => log.status === selectedStatus)
+    }
+
+    setFilteredLogs(filtered)
+  }, [logs, searchTerm, selectedAction, selectedUser, selectedStatus])
+
   useEffect(() => {
     fetchLogs()
   }, [selectedPeriod])
 
   useEffect(() => {
     filterLogs()
-  }, [logs, searchTerm, selectedAction, selectedUser, selectedStatus])
+  }, [filterLogs])
 
   const fetchLogs = async () => {
     try {
@@ -179,39 +210,8 @@ export default function AuditLogsPage() {
     }
   }
 
-  const filterLogs = () => {
-    let filtered = logs
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(log =>
-        log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.details?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.resource.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    // Action filter
-    if (selectedAction !== 'all') {
-      filtered = filtered.filter(log => log.action === selectedAction)
-    }
-
-    // User filter
-    if (selectedUser !== 'all') {
-      filtered = filtered.filter(log => log.userRole === selectedUser)
-    }
-
-    // Status filter
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(log => log.status === selectedStatus)
-    }
-
-    setFilteredLogs(filtered)
-  }
-
   const getActionIcon = (action: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, React.ComponentType<{ className?: string }>> = {
       LOGIN: User,
       LOGOUT: User,
       UPLOAD_RESOURCE: FileText,

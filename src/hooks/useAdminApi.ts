@@ -25,7 +25,7 @@ interface Resource {
 
 interface MonthlyUpload {
   month: string
-  count: number
+  uploads: number
 }
 
 interface DashboardData {

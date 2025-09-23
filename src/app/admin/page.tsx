@@ -17,6 +17,50 @@ import {
   Download
 } from 'lucide-react'
 
+type User = {
+  id: string
+  name: string
+  email: string
+  createdAt: string
+  collegeName?: string
+  role?: string
+}
+
+type Resource = {
+  id: string
+  title: string
+  createdAt: string
+  type: string
+  downloads?: number
+  category?: {
+    name: string
+  }
+  uploader?: {
+    name: string
+  }
+}
+
+type AnalyticsItem = {
+  name: string
+  value: number
+  downloads?: number
+}
+
+type ResourceTypeItem = {
+  type: string
+  count: number
+}
+
+type UserRoleItem = {
+  role: string
+  count: number
+}
+
+type MonthData = {
+  month: string
+  uploads: number
+}
+
 export default function AdminDashboard() {
   const { data, loading, error, refetch } = useAdminDashboard()
   const [activeTab, setActiveTab] = useState('overview')
@@ -197,7 +241,7 @@ export default function AdminDashboard() {
             <div className="space-y-4 max-h-80 overflow-y-auto">
               {recentUsers.length > 0 || recentResources.length > 0 ? (
                 <>
-                  {recentUsers.slice(0, 3).map((user: any) => (
+                  {recentUsers.slice(0, 3).map((user: User) => (
                     <div key={user.id} className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                       <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                         <Users className="h-4 w-4 text-green-600" />
@@ -210,7 +254,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
-                  {recentResources.slice(0, 2).map((resource: any) => (
+                  {recentResources.slice(0, 2).map((resource: Resource) => (
                     <div key={resource.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <FileText className="h-4 w-4 text-blue-600" />
@@ -255,7 +299,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {analytics.resourcesByType.map((item: any) => (
+                      {analytics.resourcesByType.map((item: ResourceTypeItem) => (
                         <div key={item.type} className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">{item.type.replace('_', ' ')}</span>
                           <span className="text-sm font-medium">{item.count}</span>
@@ -274,7 +318,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {analytics.usersByRole.map((item: any) => (
+                      {analytics.usersByRole.map((item: UserRoleItem) => (
                         <div key={item.role} className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">{item.role}</span>
                           <span className="text-sm font-medium">{item.count}</span>
@@ -305,7 +349,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {analytics.monthlyUploads.map((month: any, index: number) => (
+                      {analytics.monthlyUploads.map((month, index: number) => (
                         <div key={index} className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">
                             {new Date(month.month).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
@@ -327,9 +371,9 @@ export default function AdminDashboard() {
                   <CardContent>
                     <div className="space-y-3">
                       {recentResources
-                        .sort((a: any, b: any) => b.downloads - a.downloads)
+                        .sort((a: Resource, b: Resource) => (b.downloads || 0) - (a.downloads || 0))
                         .slice(0, 5)
-                        .map((resource: any) => (
+                        .map((resource: Resource) => (
                           <div key={resource.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                             <span className="text-sm font-medium truncate">{resource.title}</span>
                             <Badge variant="secondary">{resource.downloads} downloads</Badge>
@@ -377,7 +421,7 @@ export default function AdminDashboard() {
               <Card>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {recentResources.map((resource: any) => (
+                    {recentResources.map((resource: Resource) => (
                       <div key={resource.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">{resource.title}</h4>
@@ -419,7 +463,7 @@ export default function AdminDashboard() {
               <Card>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {recentUsers.map((user: any) => (
+                    {recentUsers.map((user: User) => (
                       <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">{user.name}</h4>

@@ -242,10 +242,18 @@ export default function BlogPostPage() {
               </Button>
             </div>
 
-            {/* Featured Image Placeholder */}
-            <div className="h-64 md:h-80 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-8">
-              <BookOpen className="w-16 h-16 text-white opacity-60" />
-            </div>
+            {/* Featured Image */}
+            {blogPost.imageUrl ? (
+              <img 
+                src={blogPost.imageUrl} 
+                alt={blogPost.title}
+                className="h-64 md:h-80 w-full object-cover rounded-lg mb-8"
+              />
+            ) : (
+              <div className="h-64 md:h-80 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-8">
+                <BookOpen className="w-16 h-16 text-white opacity-60" />
+              </div>
+            )}
           </header>
 
           {/* Blog Content */}

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { getCurrentUser } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
@@ -37,7 +36,7 @@ export async function GET(
           'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
         },
       })
-    } catch (fileError) {
+    } catch {
       return NextResponse.json(
         { error: 'File not found' },
         { status: 404 }

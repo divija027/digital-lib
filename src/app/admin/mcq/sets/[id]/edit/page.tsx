@@ -70,7 +70,7 @@ export default function EditMCQSetPage() {
     console.log('Loading MCQ set for editing:', params.id)
   }, [params.id])
 
-  const handleInputChange = (field: keyof MCQSet, value: any) => {
+  const handleInputChange = (field: keyof MCQSet, value: string | number | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -203,7 +203,7 @@ export default function EditMCQSetPage() {
 
                   <div>
                     <Label htmlFor="difficulty">Difficulty Level</Label>
-                    <Select value={formData.difficulty} onValueChange={(value: any) => handleInputChange('difficulty', value)}>
+                    <Select value={formData.difficulty} onValueChange={(value: string) => handleInputChange('difficulty', value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>

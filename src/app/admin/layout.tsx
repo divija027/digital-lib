@@ -15,11 +15,12 @@ import {
   LogOut,
   User,
   Brain,
-  PenTool
+  PenTool,
+  Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
 import { LogoutConfirmation } from '@/components/LogoutConfirmation'
+import { useAdminAuth } from '@/hooks/useAdminAuth'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -90,13 +91,28 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [user] = useState<{ name: string; email: string; role: string }>({
-    name: 'Public Admin',
-    email: 'admin@vtu.in',
-    role: 'admin'
-  })
   const router = useRouter()
   const pathname = usePathname()
+  
+  // Use admin authentication hook
+  const { user, isLoading, isAuthenticated } = useAdminAuth()
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <p className="text-gray-600">Verifying access...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated, the hook will redirect to 404
+  if (!isAuthenticated || !user) {
+    return null
+  }
 
   const toggleExpanded = (title: string) => {
     setExpandedItems(prev => 
@@ -182,8 +198,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <User className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">{user.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+              <p className="text-sm font-medium text-gray-900">{user.name || 'Admin'}</p>
+              <p className="text-xs text-gray-500 capitalize">{user.role.toLowerCase()}</p>
             </div>
           </div>
         </div>
@@ -299,7 +315,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogout}
-        userName={user?.name}
+        userName={user?.name || 'Admin'}
         isLoading={isLoggingOut}
         variant="admin"
       />

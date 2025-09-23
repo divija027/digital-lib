@@ -50,12 +50,12 @@ export async function PUT(request: NextRequest) {
       }
 
       // Parse existing metadata
-      let metadata: any = {}
+      let metadata: Record<string, any> = {}
       try {
         if (category.description) {
           metadata = JSON.parse(category.description)
         }
-      } catch (e) {
+      } catch {
         metadata = { originalDescription: category.description }
       }
 

@@ -1,6 +1,18 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+interface SubjectMetadata {
+  subjectName?: string
+  subjectCode?: string
+  subjectDescription?: string
+  semester?: number
+  credits?: number
+  isCore?: boolean
+  isActive?: boolean
+  branchId?: string
+  originalDescription?: string
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -23,12 +35,12 @@ export async function GET(
     })
 
     const formattedSubjects = subjects.map(subject => {
-      let metadata: any = {}
+      let metadata: SubjectMetadata = {}
       try {
         if (subject.description) {
           metadata = JSON.parse(subject.description)
         }
-      } catch (e) {
+      } catch {
         metadata = {}
       }
 
@@ -192,12 +204,12 @@ export async function PUT(
     }
 
     // Parse existing metadata
-    let metadata: any = {}
+    let metadata: SubjectMetadata = {}
     try {
       if (existingSubject.description) {
         metadata = JSON.parse(existingSubject.description)
       }
-    } catch (e) {
+    } catch {
       metadata = {}
     }
 
@@ -210,6 +222,7 @@ export async function PUT(
       semester: parseInt(semester) || 1,
       credits: parseInt(credits) || 3,
       isCore: isCore !== false,
+      isActive: metadata.isActive !== false,
       branchId: branchId
     }
 
@@ -249,8 +262,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest
 ) {
   try {
     const body = await request.json()

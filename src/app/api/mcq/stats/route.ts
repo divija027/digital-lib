@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/mcq/stats - Get MCQ statistics
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get total counts
     const [totalSets, totalQuestions, totalAttempts] = await Promise.all([

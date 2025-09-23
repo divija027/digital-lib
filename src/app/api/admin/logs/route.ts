@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
 // First, let's add an audit log model to track admin actions
 // For now, we'll create mock data, but in production you'd want to add this to your schema

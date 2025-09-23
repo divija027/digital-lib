@@ -32,7 +32,7 @@ import {
 } from 'lucide-react'
 
 // Custom component imports
-import { MarkdownEditor } from '@/components/ui/markdown-editor'
+import { MarkdownEditorWithImages } from '@/components/ui/markdown-editor-with-images'
 import CategoryManager from '@/components/admin/CategoryManager'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -685,22 +685,13 @@ export default function AdminBlogPage() {
               {/* Content Section */}
               <div>
                 <Label htmlFor="content">Content (Markdown)</Label>
-                <MarkdownEditor
+                <MarkdownEditorWithImages
                   value={formData.content}
-                  onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                  onChange={(value: string) => setFormData(prev => ({ ...prev, content: value }))}
                   placeholder="Write your blog post content in Markdown format..."
                   minHeight="500px"
-                />
-              </div>
-
-              {/* Media Section */}
-              <div>
-                <Label htmlFor="imageUrl">Featured Image URL</Label>
-                <Input
-                  id="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
+                  featuredImageUrl={formData.imageUrl}
+                  onFeaturedImageChange={(imageUrl) => setFormData(prev => ({ ...prev, imageUrl: imageUrl || '' }))}
                 />
               </div>
 

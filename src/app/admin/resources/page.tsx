@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -72,13 +72,46 @@ export default function ResourcesPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [isLoading, setIsLoading] = useState(true)
 
+  const filterResources = useCallback(() => {
+    let filtered = resources
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(resource =>
+        resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.subject?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    // Type filter
+    if (selectedType !== 'all') {
+      filtered = filtered.filter(resource => resource.type === selectedType)
+    }
+
+    // Category filter
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(resource => resource.category.id === selectedCategory)
+    }
+
+    // Status filter
+    if (selectedStatus !== 'all') {
+      filtered = filtered.filter(resource => 
+        selectedStatus === 'approved' ? resource.isApproved : !resource.isApproved
+      )
+    }
+
+    setFilteredResources(filtered)
+  }, [resources, searchTerm, selectedType, selectedCategory, selectedStatus])
+
   useEffect(() => {
     fetchResources()
   }, [])
 
   useEffect(() => {
     filterResources()
-  }, [resources, searchTerm, selectedType, selectedCategory, selectedStatus])
+  }, [filterResources])
 
   const fetchResources = async () => {
     try {
@@ -162,39 +195,6 @@ export default function ResourcesPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const filterResources = () => {
-    let filtered = resources
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(resource =>
-        resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.subject?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    // Type filter
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(resource => resource.type === selectedType)
-    }
-
-    // Category filter
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(resource => resource.category.id === selectedCategory)
-    }
-
-    // Status filter
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(resource => 
-        selectedStatus === 'approved' ? resource.isApproved : !resource.isApproved
-      )
-    }
-
-    setFilteredResources(filtered)
   }
 
   const handleApprove = async (resourceId: string) => {
