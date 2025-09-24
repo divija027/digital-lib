@@ -305,7 +305,7 @@ export async function DELETE(request: NextRequest) {
         if (category.description) {
           metadata = JSON.parse(category.description)
         }
-      } catch (e) {
+      } catch {
         metadata = { originalDescription: category.description }
       }
 

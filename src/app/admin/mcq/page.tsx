@@ -23,7 +23,7 @@ import { MCQBulkUpload } from '@/components/admin/MCQBulkUpload'
 
 // Stats Card Component for reusability
 const StatCard = ({ icon: Icon, iconColor, bgColor, label, value }: {
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   iconColor: string
   bgColor: string
   label: string
@@ -46,7 +46,7 @@ const StatCard = ({ icon: Icon, iconColor, bgColor, label, value }: {
 
 // Quick Action Button Component
 const QuickActionButton = ({ icon: Icon, label, onClick }: {
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   label: string
   onClick: () => void
 }) => (

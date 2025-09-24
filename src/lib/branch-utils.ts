@@ -1,15 +1,7 @@
 // Utility functions for branch code/slug conversion
 
-interface Branch {
-  id: string
-  code: string
-  name: string
-  isActive: boolean
-  order: number
-}
-
 // Cache for branch data to avoid repeated API calls
-let branchCache: Branch[] | null = null
+let branchCache: any = null
 let cacheTimestamp = 0
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
@@ -43,7 +35,7 @@ async function fetchBranchData() {
 export async function getBranchCodeFromSlug(slug: string): Promise<string | null> {
   console.log(`[getBranchCodeFromSlug] Looking for slug: ${slug}`)
   const branches = await fetchBranchData()
-  console.log(`[getBranchCodeFromSlug] Fetched ${branches.length} branches:`, branches.map((b: Branch) => ({ code: b.code, isActive: b.isActive })))
+  console.log(`[getBranchCodeFromSlug] Fetched ${branches.length} branches:`, branches.map((b: any) => ({ code: b.code, isActive: b.isActive })))
   
   // Default mapping for known branches
   const defaultMapping: Record<string, string> = {
@@ -70,7 +62,7 @@ export async function getBranchCodeFromSlug(slug: string): Promise<string | null
   }
   
   // Then check if any branch code matches the slug (case insensitive)
-  const branch = branches.find((b: Branch) => 
+  const branch = branches.find((b: any) => 
     b.code.toLowerCase() === slug.toLowerCase() && b.isActive
   )
   

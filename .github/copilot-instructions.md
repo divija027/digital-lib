@@ -1,31 +1,73 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
+# VTU Digital Library - AI Coding Agent Instructions
 
-# VTU University Student Resources Website
+## Architecture Overview
 
-This is a Next.js project built with TypeScript, Tailwind CSS, Prisma, PostgreSQL, and Shadcn UI for VTU University students to access study resources.
+This Next.js 15 + TypeScript project follows a domain-driven design with clear separation:
+- **Frontend**: App Router with server/client components, Shadcn UI + Tailwind
+- **Backend**: API routes with JWT authentication, Prisma ORM + PostgreSQL
+- **Domain**: VTU curriculum-based academic resource management system
 
-## Project Context
+## Critical Patterns & Conventions
 
-- **Purpose**: Provide VTU students with easy access to question papers, study materials, and previous year papers
-- **Tech Stack**: Next.js, TypeScript, PostgreSQL, Prisma ORM, Tailwind CSS, Shadcn UI
-- **Key Features**: User authentication, admin dashboard, resource management, file uploads/downloads
+### Authentication & RBAC
+- JWT tokens in HTTP-only cookies (`auth-token`)
+- Admin whitelist in `src/lib/admin-rbac.ts` - only `admin@gmail.com` and `superadmin@gmail.com` can access `/admin`
+- Use `isAdminAllowed(email, role)` for access control
+- Middleware protects `/admin/*` routes (returns 404 for unauthorized users)
 
-## Code Style Guidelines
+### Database Schema Knowledge
+- **MCQ System**: `MCQSet` has `totalTimeLimit`/`questionTimeLimit` fields (NOT `timeLimit`)
+- **VTU Curriculum**: Comprehensive branch/semester structure in `src/lib/vtu-curriculum.ts`
+- **File Storage**: Local filesystem with structured paths `uploads/branch/semester/subject/`
 
-- Use TypeScript for type safety
-- Follow Next.js App Router conventions
-- Use Tailwind CSS for styling with Shadcn UI components
-- Implement secure authentication with JWT
-- Use Prisma for database operations
-- Follow RESTful API design patterns
-- Implement proper error handling and validation
-- Use server-side rendering where appropriate
-- Optimize for performance and accessibility
+### Component Architecture
+- Use Shadcn UI components from `src/components/ui/`
+- Follow the `Card`, `Button`, `Input` pattern with consistent styling
+- Admin components in `src/components/admin/`
+- Form validation with Zod + React Hook Form
 
-## Database Schema Focus
+### API Route Patterns
+```typescript
+// Standard error handling pattern
+try {
+  // Business logic
+  return NextResponse.json(data)
+} catch (error) {
+  console.error('Context-specific error:', error)
+  return NextResponse.json({ error: 'Descriptive message' }, { status: 500 })
+}
+```
 
-- Users table with authentication data
-- Resources table for study materials
-- Categories for organizing content
-- Admin roles and permissions
-- File metadata tracking
+## Development Workflow
+
+### Essential Commands
+```bash
+pnpm db:generate    # After schema changes
+pnpm db:push        # Deploy schema to DB
+pnpm db:seed        # Seed with admin users
+pnpm dev --turbopack # Development with Turbopack
+```
+
+### File Upload System
+- 25MB limit for PDFs, 10MB for other files
+- Validation in both client (`src/components/admin/ResourceUpload.tsx`) and API (`src/app/api/admin/resources/upload/route.ts`)
+- Structured storage: `uploads/{branch}/{semester}/{subject}/{timestamp}-{filename}`
+
+### Admin Dashboard Integration
+- All admin features use custom hooks from `src/hooks/useAdminApi.ts`
+- Dashboard stats from `src/app/api/admin/dashboard/route.ts`
+- Always use RBAC checks in admin API routes
+
+## Project-Specific Gotchas
+
+1. **Schema Field Names**: MCQ sets use `totalTimeLimit` not `timeLimit` in database
+2. **Admin Access**: Return 404 (not 401/403) for unauthorized admin access
+3. **VTU Branches**: Use curriculum data from `vtu-curriculum.ts` for branch/semester logic
+4. **File Serving**: Route through `/api/uploads/[filename]` for access control
+5. **Authentication State**: Check both cookie and payload validation in protected routes
+
+## Key Directories
+- `src/app/admin/` - Admin dashboard pages
+- `src/app/api/admin/` - Admin-only API endpoints  
+- `src/lib/vtu-curriculum.ts` - Complete VTU academic structure
+- `prisma/schema.prisma` - Database schema with MCQ, Blog, Resource models

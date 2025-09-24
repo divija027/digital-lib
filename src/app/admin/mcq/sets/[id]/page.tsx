@@ -43,7 +43,7 @@ const mockMCQSet = {
 export default function MCQSetDetailPage() {
   const router = useRouter()
   const params = useParams()
-  const [mcqSet, setMCQSet] = useState(mockMCQSet)
+  const [mcqSet] = useState(mockMCQSet)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {

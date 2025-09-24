@@ -70,7 +70,7 @@ export default function EnhancedUploadPage() {
                 <Upload className="h-5 w-5 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-blue-600">Today's Uploads</p>
+                <p className="text-sm font-medium text-blue-600">Today&apos;s Uploads</p>
                 <p className="text-2xl font-bold text-blue-900">{uploadStats.todayUploads}</p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 'use client'
 
- import { useState, useEffect, useMemo, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAdminUsers } from '@/hooks/useAdminApi'
 import { Button } from '@/components/ui/button'
@@ -8,6 +8,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+type UserWithStatus = {
+  id: string
+  name: string
+  email: string
+  role: string
+  createdAt: string
+  isActive?: boolean
+}
 import { 
   Select,
   SelectContent,
@@ -101,7 +110,7 @@ function UsersPageContent() {
   }), [currentPage, limit, debouncedSearchTerm, selectedRole])
 
   // Use the dynamic hook
-  const { data, loading, error, refetch, deleteUser, updateUser } = useAdminUsers(apiParams)
+  const { data, loading, error, refetch, deleteUser } = useAdminUsers(apiParams)
 
   const users = data?.users || []
   const pagination = data?.pagination || { currentPage: 1, totalPages: 1, totalUsers: 0 }
@@ -110,7 +119,7 @@ function UsersPageContent() {
   // Filter users locally for status (since API doesn't handle this yet)
   const filteredUsers = selectedStatus === 'all' 
     ? users 
-    : users.filter((user: any) => 
+    : users.filter((user: UserWithStatus) =>
         selectedStatus === 'active' ? user.isActive !== false : user.isActive === false
       )
 
@@ -162,10 +171,6 @@ function UsersPageContent() {
       console.error('Error creating user:', error)
       alert('Failed to create user')
     }
-  }
-
-  const handleEditUser = async (userId: string, updates: any) => {
-    await updateUser(userId, updates)
   }
 
   const formatDate = (dateString: string) => {

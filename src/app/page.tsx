@@ -35,19 +35,9 @@ import {
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { LogoutConfirmation } from '@/components/LogoutConfirmation'
+import { BlogSection, SubjectsSection } from '@/components/blog'
 
-interface BlogPost {
-  id: string
-  title: string
-  excerpt: string
-  readTime: number
-  featured: boolean
-  publishedAt: string
-  category: {
-    name: string
-    color: string
-  }
-}
+
 
 export default function Home() {
   const { user, isAuthenticated, logout } = useAuth()
@@ -65,9 +55,6 @@ export default function Home() {
   const [navbarVisible, setNavbarVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isScrollingUp, setIsScrollingUp] = useState(false)
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
-  const [blogLoading, setBlogLoading] = useState(true)
-
   const heroWords = ['Master', 'Excel', 'Succeed', 'Dominate', 'Conquer', 'Transform']
   const motivationalPhrases = [
     'Your Success Story Starts Here',
@@ -110,91 +97,7 @@ export default function Home() {
     }
   }, [typedText, currentWordIndex, isTyping, heroWords])
 
-  // Fetch blog posts for preview section
-  useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
-        setBlogLoading(true)
-        
-        // First try to get featured posts
-        const featuredResponse = await fetch('/api/blog?limit=3&featured=true')
-        let posts: BlogPost[] = []
-        
-        if (featuredResponse.ok) {
-          const featuredData = await featuredResponse.json()
-          if (featuredData.success && featuredData.data.posts.length > 0) {
-            posts = featuredData.data.posts
-            console.log(`Found ${posts.length} featured posts`)
-          }
-        }
-        
-        // If we don't have enough featured posts, fill with recent posts
-        if (posts.length < 3) {
-          console.log(`Need ${3 - posts.length} more posts, fetching recent posts`)
-          const recentResponse = await fetch(`/api/blog?limit=10`) // Fetch more to ensure we have enough after filtering
-          if (recentResponse.ok) {
-            const recentData = await recentResponse.json()
-            if (recentData.success) {
-              // Filter out posts we already have (in case some featured posts are also recent)
-              const newPosts = recentData.data.posts.filter(
-                (newPost: BlogPost) => !posts.some((existingPost: BlogPost) => existingPost.id === newPost.id)
-              )
-              posts = [...posts, ...newPosts].slice(0, 3) // Ensure exactly 3 posts
-              console.log(`Added ${newPosts.length} recent posts, total: ${posts.length}`)
-            }
-          }
-        }
-        
-        console.log(`Final posts count: ${posts.length}`, posts)
-        
-        // If we still don't have 3 posts, create fallback posts
-        if (posts.length < 3) {
-          const fallbackPosts: BlogPost[] = [
-            {
-              id: 'fallback-1',
-              title: 'How to Prepare for VTU Exams: A Complete Guide',
-              excerpt: 'Master your VTU examinations with proven strategies, time management tips, and effective study techniques used by top performers.',
-              readTime: 5,
-              featured: false,
-              publishedAt: new Date().toISOString(),
-              category: { name: 'Study Tips', color: '#10b981' }
-            },
-            {
-              id: 'fallback-2', 
-              title: 'Top Tech Companies Hiring VTU Graduates in 2025',
-              excerpt: 'Discover the latest opportunities and what top tech companies are looking for in fresh engineering graduates.',
-              readTime: 7,
-              featured: false,
-              publishedAt: new Date().toISOString(),
-              category: { name: 'Career', color: '#3b82f6' }
-            },
-            {
-              id: 'fallback-3',
-              title: 'AI and Machine Learning: Essential Skills for Engineers', 
-              excerpt: 'Learn about the most in-demand skills in AI and ML that every engineering student should know about.',
-              readTime: 8,
-              featured: false,
-              publishedAt: new Date().toISOString(),
-              category: { name: 'Technology', color: '#8b5cf6' }
-            }
-          ]
-          
-          // Add fallback posts to fill up to 3 total
-          const neededFallbacks = fallbackPosts.slice(posts.length)
-          posts = [...posts, ...neededFallbacks].slice(0, 3)
-          console.log(`Added ${neededFallbacks.length} fallback posts, final total: ${posts.length}`)
-        }
-        
-        setBlogPosts(posts)
-      } catch (error) {
-        console.error('Error fetching blog posts:', error)
-      } finally {
-        setBlogLoading(false)
-      }
-    }
 
-    fetchBlogPosts()
-  }, [])
 
   // Cursor blinking effect
   useEffect(() => {
@@ -313,10 +216,6 @@ export default function Home() {
       iconColor: 'text-purple-600',
       accent: 'bg-purple-600'
     }
-  ]
-
-  const subjects = [
-    'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Information Science', 'Electrical'
   ]
 
   const handleLogout = async () => {
@@ -1049,182 +948,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Blog Preview Section - Mobile Responsive */}
-        <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50/30 relative overflow-hidden">
-          {/* Subtle background elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-green-100 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-          </div>
+        {/* Blog Preview Section */}
+        <BlogSection />
 
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16">
-              <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50/80 mb-2 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm">
-                <BookOpen className="w-3 h-3 mr-1 sm:mr-2" />
-                <span>Latest Insights</span>
-              </Badge>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 px-2 sm:px-3 md:px-0 leading-tight">
-                From Our <span className="text-green-600">Learning Blog</span>
-              </h2>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto font-light px-3 sm:px-4 md:px-6 lg:px-0 leading-relaxed">
-                Stay updated with study tips, career guidance, and the latest trends in engineering education
-              </p>
-            </div>
-
-            {/* Blog Preview Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 mb-8 sm:mb-10 md:mb-12">
-              {blogLoading ? (
-                // Loading skeleton cards
-                [...Array(3)].map((_, index) => (
-                  <div key={index} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-lg border border-gray-100 animate-pulse">
-                    <div className="relative mb-4">
-                      <div className="w-full h-32 sm:h-36 md:h-40 bg-gray-200 rounded-xl sm:rounded-2xl" />
-                      <div className="absolute top-2 left-2 w-16 h-6 bg-gray-200 rounded" />
-                    </div>
-                    <div className="space-y-2 sm:space-y-3">
-                      <div className="h-4 bg-gray-200 rounded" />
-                      <div className="h-4 bg-gray-200 rounded w-3/4" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      <div className="flex items-center justify-between">
-                        <div className="h-3 bg-gray-200 rounded w-1/4" />
-                        <div className="h-3 bg-gray-200 rounded w-1/4" />
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : blogPosts.length > 0 ? (
-                blogPosts.map((post, index) => (
-                  <Link key={post.id} href={`/blog/${post.id}`}>
-                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 group cursor-pointer hover:-translate-y-1">
-                      <div className="relative mb-4">
-                        <div className={`w-full h-32 sm:h-36 md:h-40 rounded-xl sm:rounded-2xl flex items-center justify-center ${
-                          index === 0 ? 'bg-gradient-to-br from-green-100 to-green-200' :
-                          index === 1 ? 'bg-gradient-to-br from-blue-100 to-blue-200' :
-                          'bg-gradient-to-br from-purple-100 to-purple-200'
-                        }`}>
-                          <BookOpen className={`w-8 h-8 sm:w-10 sm:h-10 ${
-                            index === 0 ? 'text-green-600' :
-                            index === 1 ? 'text-blue-600' :
-                            'text-purple-600'
-                          }`} />
-                        </div>
-                        <Badge 
-                          className="absolute top-2 left-2 text-xs"
-                          style={{ backgroundColor: post.category.color, color: 'white' }}
-                        >
-                          {post.category.name}
-                        </Badge>
-                        {post.featured && (
-                          <Badge className="absolute top-2 right-2 bg-orange-500 text-white text-xs">
-                            ⭐ Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="space-y-2 sm:space-y-3">
-                        <h3 className={`font-bold text-sm sm:text-base md:text-lg text-gray-900 transition-colors leading-tight line-clamp-2 ${
-                          index === 0 ? 'group-hover:text-green-600' :
-                          index === 1 ? 'group-hover:text-blue-600' :
-                          'group-hover:text-purple-600'
-                        }`}>
-                          {post.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">
-                          {post.excerpt}
-                        </p>
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <span>{post.readTime} min read</span>
-                          <span>{post.featured ? '⭐ Featured' : new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                // This should rarely be reached now due to fallback posts
-                <div className="col-span-full text-center py-12">
-                  <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No blog posts available</p>
-                </div>
-              )}
-            </div>
-
-            {/* Blog CTA */}
-            <div className="text-center">
-              <Link href="/blog">
-                <Button variant="outline" className="bg-white/80 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-medium transition-all duration-300 hover:shadow-md">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Explore All Articles
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-              <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                Weekly updates • Study tips • Career guidance
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Subjects Section - Highly Mobile Responsive */}
-        <section id="subjects" className="py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-b from-gray-50/50 to-white">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-            <div className="text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16">
-              <Badge variant="outline" className="text-purple-700 border-purple-200 bg-purple-50/80 mb-2 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm">
-                <span>All Engineering Branches</span>
-              </Badge>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4 lg:mb-6 px-2 sm:px-3 md:px-0 leading-tight">
-                Study Materials for <br className="block sm:hidden" />
-                <span className="text-purple-600">Every Branch</span>
-              </h2>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto font-light px-3 sm:px-4 md:px-6 lg:px-0 leading-relaxed">
-                Choose your engineering branch and access tailored study resources, notes, and question papers
-              </p>
-            </div>
-            
-            {/* Mobile-First Grid Layout for Subjects */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-              {subjects.map((subject, index) => (
-                <Link key={index} href="/dashboard" className="block h-full">
-                  <Card className="border-gray-200/80 hover:border-purple-200 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full hover:-translate-y-1 min-h-[140px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px]">
-                    <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 text-center h-full flex flex-col justify-center items-center">
-                      {/* Icon Container - Mobile Optimized */}
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 group-hover:from-purple-200 group-hover:to-purple-300 transition-all duration-300 shadow-md sm:shadow-lg">
-                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-purple-600" />
-                      </div>
-                      
-                      {/* Subject Title - Mobile Optimized */}
-                      <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 group-hover:text-purple-600 transition-colors mb-1 sm:mb-1.5 md:mb-2 leading-tight text-center px-1">
-                        {subject}
-                      </h3>
-                      
-                      {/* Description - Mobile Optimized */}
-                      <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-600 transition-colors leading-relaxed text-center px-1">
-                        Complete study materials & papers
-                      </p>
-                      
-                      {/* Arrow Indicator */}
-                      <div className="mt-2 sm:mt-3 md:mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 mx-auto" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-            
-            {/* Mobile Call-to-Action */}
-            <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 text-center">
-              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 px-3">
-                Can't find your branch? We're constantly adding new subjects.
-              </p>
-              <Link href="/dashboard">
-                <Button variant="outline" className="w-full sm:w-auto px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base border-purple-200 text-purple-600 hover:bg-purple-50">
-                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Browse All Subjects
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Subjects Section */}
+        <SubjectsSection />
 
         {/* CTA Section - Mobile Optimized */}
         <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden">

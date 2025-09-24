@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -10,8 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Eye, EyeOff, Mail, Lock, GraduationCap, XCircle, ArrowRight, KeyRound } from 'lucide-react'
-import Link from 'next/link'
+import { Eye, EyeOff, Mail, Lock, GraduationCap, XCircle, ArrowRight, KeyRound, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 const loginSchema = z.object({
@@ -30,7 +30,24 @@ export function LoginForm() {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('')
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false)
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [needsEmailVerification, setNeedsEmailVerification] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Check for email verification status on component mount
+  useEffect(() => {
+    const verified = searchParams.get('verified')
+    const verificationError = searchParams.get('error')
+
+    if (verified === 'true') {
+      setSuccessMessage('Email verified successfully! You can now log in.')
+    } else if (verificationError) {
+      setError(verificationError === 'token-expired' 
+        ? 'Email verification link has expired. Please register again.' 
+        : 'Email verification failed. Please try again.')
+    }
+  }, [searchParams])
 
   const {
     register,
@@ -43,6 +60,7 @@ export function LoginForm() {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true)
     setError('')
+    setNeedsEmailVerification(false)
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -54,6 +72,12 @@ export function LoginForm() {
       const result = await response.json()
 
       if (!response.ok) {
+        // Handle email verification error specifically
+        if (result.code === 'EMAIL_NOT_VERIFIED') {
+          setError(result.error)
+          setNeedsEmailVerification(true)
+          return
+        }
         throw new Error(result.error || 'Login failed')
       }
 
@@ -62,7 +86,7 @@ export function LoginForm() {
         login(result.user)
       }
 
-      router.push('/dashboard')
+      router.push('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
@@ -213,7 +237,26 @@ export function LoginForm() {
         {error && (
           <Alert variant="destructive" className="border-red-200 bg-red-50">
             <XCircle className="h-4 w-4" />
-            <AlertDescription className="text-red-700 text-sm">{error}</AlertDescription>
+            <AlertDescription className="text-red-700 text-sm">
+              {error}
+              {needsEmailVerification && (
+                <div className="mt-2">
+                  <Link 
+                    href="/resend-verification" 
+                    className="text-blue-600 hover:text-blue-800 underline font-medium"
+                  >
+                    Click here to resend verification email
+                  </Link>
+                </div>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {successMessage && (
+          <Alert className="border-green-200 bg-green-50">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-700 text-sm">{successMessage}</AlertDescription>
           </Alert>
         )}
         

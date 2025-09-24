@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
 // Mock settings structure - in production, you'd want a settings table
 interface SystemSettings {

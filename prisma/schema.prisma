@@ -19,6 +19,15 @@ model User {
   role        Role     @default(STUDENT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  // Email verification fields
+  emailVerified      Boolean   @default(false)
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  
+  // Password reset fields
+  passwordResetToken String?
+  passwordResetExpires DateTime?
 
   // Relations
   uploadedResources Resource[]
@@ -92,6 +101,7 @@ model Resource {
 enum Role {
   STUDENT
   ADMIN
+  SUPERADMIN
 }
 
 enum ResourceType {

@@ -61,7 +61,7 @@ export default function CreateMCQSetPage() {
   const [currentCompany, setCurrentCompany] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleInputChange = (field: keyof MCQSet, value: any) => {
+  const handleInputChange = (field: keyof MCQSet, value: string | number | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -205,7 +205,7 @@ export default function CreateMCQSetPage() {
 
                   <div>
                     <Label htmlFor="difficulty">Difficulty Level</Label>
-                    <Select value={formData.difficulty} onValueChange={(value: any) => handleInputChange('difficulty', value)}>
+                    <Select value={formData.difficulty} onValueChange={(value: string) => handleInputChange('difficulty', value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>

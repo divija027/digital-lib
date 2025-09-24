@@ -6,21 +6,37 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // Create specific admin user as requested
-  const hashedPassword = await bcrypt.hash('password123', 12)
+  // Create admin@gmail.com user
+  const adminPassword = await bcrypt.hash('Password123@', 12)
   
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin1@gmail.com' },
+    where: { email: 'admin@gmail.com' },
     update: {},
     create: {
-      email: 'admin1@gmail.com',
-      password: hashedPassword,
+      email: 'admin@gmail.com',
+      password: adminPassword,
       name: 'Admin User',
       role: 'ADMIN'
     }
   })
 
   console.log('✅ Admin user created:', adminUser.email)
+
+  // Create superadmin@gmail.com user
+  const superAdminPassword = await bcrypt.hash('Password123@', 12)
+  
+  const superAdminUser = await prisma.user.upsert({
+    where: { email: 'superadmin@gmail.com' },
+    update: {},
+    create: {
+      email: 'superadmin@gmail.com',
+      password: superAdminPassword,
+      name: 'Super Admin User',
+      role: 'SUPERADMIN'
+    }
+  })
+
+  console.log('✅ Super Admin user created:', superAdminUser.email)
 
   // Create sample student user
   const studentPassword = await bcrypt.hash('student123', 12)
@@ -89,7 +105,8 @@ async function main() {
 
   console.log('🎉 Database seeded successfully!')
   console.log('\n📋 Login Credentials:')
-  console.log('👨‍💼 Admin: admin1@gmail.com / password123')
+  console.log('👨‍💼 Admin: admin@gmail.com / Password123@')
+  console.log('👑 Super Admin: superadmin@gmail.com / Password123@')
   console.log('👨‍🎓 Student: student@example.com / student123')
 }
 

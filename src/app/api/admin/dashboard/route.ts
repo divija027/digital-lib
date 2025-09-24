@@ -1,7 +1,6 @@
-import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
 
     // Get dashboard statistics
@@ -108,7 +107,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Process monthly uploads manually to avoid BigInt serialization issues
-    const monthlyUploadsProcessed = monthlyUploads.reduce((acc: any, resource: any) => {
+    const monthlyUploadsProcessed = monthlyUploads.reduce((acc: Record<string, number>, resource: { createdAt: string }) => {
       const month = new Date(resource.createdAt).toISOString().slice(0, 7) // YYYY-MM format
       acc[month] = (acc[month] || 0) + 1
       return acc
