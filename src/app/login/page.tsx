@@ -1,6 +1,7 @@
 import { LoginForm } from '@/components/auth/LoginForm'
 import { GraduationCap } from 'lucide-react'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 export default function LoginPage() {
   return (
@@ -44,7 +45,13 @@ export default function LoginPage() {
           </div>
 
           {/* Login Form */}
-          <LoginForm />
+          <Suspense fallback={
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          }>
+            <LoginForm />
+          </Suspense>
 
           {/* Back to Home Link */}
           <div className="text-center">
