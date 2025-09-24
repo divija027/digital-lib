@@ -268,6 +268,10 @@ export const sendVerificationEmail = async (
   token: string
 ): Promise<EmailResult> => {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  console.log('🔍 Email Debug - NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+  console.log('🔍 Email Debug - baseUrl being used:', baseUrl)
+  console.log('🔍 Email Debug - NODE_ENV:', process.env.NODE_ENV)
+  
   const template = createEmailTemplate('verification', { name, token, baseUrl })
   
   const result = await sendEmail(template, email)
@@ -294,6 +298,10 @@ export const sendPasswordResetEmail = async (
   token: string
 ): Promise<EmailResult> => {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  console.log('🔍 Password Reset Debug - NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+  console.log('🔍 Password Reset Debug - baseUrl being used:', baseUrl)
+  console.log('🔍 Password Reset Debug - NODE_ENV:', process.env.NODE_ENV)
+  
   const template = createEmailTemplate('reset', { name, token, baseUrl })
   
   const result = await sendEmail(template, email)

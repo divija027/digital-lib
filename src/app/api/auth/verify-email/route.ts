@@ -9,6 +9,12 @@ import { findUserByVerificationToken, verifyUserEmail } from '@/lib/auth-tokens'
  * @returns Redirects to login page with success/error status
  */
 export async function GET(request: NextRequest) {
+  // Get the correct base URL for redirects
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  console.log('🔍 Verification API Debug - NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+  console.log('🔍 Verification API Debug - baseUrl being used:', baseUrl)
+  console.log('🔍 Verification API Debug - request.url:', request.url)
+  
   try {
     const { searchParams } = new URL(request.url)
     const token = searchParams.get('token')
@@ -17,7 +23,7 @@ export async function GET(request: NextRequest) {
     if (!token) {
       console.log('Email verification failed: Missing token')
       return NextResponse.redirect(
-        new URL('/login?error=missing-token', request.url)
+        new URL('/login?error=missing-token', baseUrl)
       )
     }
 
@@ -27,7 +33,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       console.log('Email verification failed: Invalid or expired token')
       return NextResponse.redirect(
-        new URL('/login?error=invalid-token', request.url)
+        new URL('/login?error=invalid-token', baseUrl)
       )
     }
 
@@ -38,13 +44,13 @@ export async function GET(request: NextRequest) {
     
     // Redirect to login with success message
     return NextResponse.redirect(
-      new URL('/login?verified=true', request.url)
+      new URL('/login?verified=true', baseUrl)
     )
 
   } catch (error) {
     console.error('Email verification error:', error)
     return NextResponse.redirect(
-      new URL('/login?error=verification-failed', request.url)
+      new URL('/login?error=verification-failed', baseUrl)
     )
   }
 }
