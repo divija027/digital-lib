@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
     const mcqSetId = searchParams.get('mcqSetId')
     const difficulty = searchParams.get('difficulty')
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    // For specific MCQ sets, return all questions by default (no pagination)
+    // For general queries, use pagination
+    const defaultLimit = mcqSetId ? '999999' : '20'
+    const limit = parseInt(searchParams.get('limit') || defaultLimit)
 
     const where: Record<string, unknown> = {}
     
