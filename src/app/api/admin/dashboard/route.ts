@@ -107,8 +107,8 @@ export async function GET() {
     }
 
     // Process monthly uploads manually to avoid BigInt serialization issues
-    const monthlyUploadsProcessed = monthlyUploads.reduce((acc: Record<string, number>, resource: { createdAt: string }) => {
-      const month = new Date(resource.createdAt).toISOString().slice(0, 7) // YYYY-MM format
+    const monthlyUploadsProcessed = monthlyUploads.reduce((acc: Record<string, number>, resource: { createdAt: Date }) => {
+      const month = resource.createdAt.toISOString().slice(0, 7) // YYYY-MM format
       acc[month] = (acc[month] || 0) + 1
       return acc
     }, {})
