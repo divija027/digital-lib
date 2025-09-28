@@ -17,22 +17,30 @@ export async function GET(
         role: true,
         createdAt: true,
         updatedAt: true,
-        uploadedResources: {
+        createdMCQSets: {
           select: {
             id: true,
             title: true,
-            type: true,
-            downloads: true,
-            createdAt: true,
-            category: {
-              select: { name: true }
-            }
+            difficulty: true,
+            status: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        },
+        blogPosts: {
+          select: {
+            id: true,
+            title: true,
+            published: true,
+            views: true,
+            createdAt: true
           },
           orderBy: { createdAt: 'desc' },
           take: 10
         },
         _count: {
-          select: { uploadedResources: true }
+          select: { createdMCQSets: true, blogPosts: true }
         }
       }
     })
@@ -43,7 +51,8 @@ export async function GET(
 
     return Response.json({
       ...user,
-      resourceCount: user._count.uploadedResources
+      mcqSetsCount: user._count.createdMCQSets,
+      blogPostsCount: user._count.blogPosts
     })
 
   } catch (error) {

@@ -20,9 +20,7 @@ export async function GET(request: NextRequest) {
     const subjects = await prisma.subject.findMany({
       where,
       include: {
-        _count: {
-          select: { resources: true }
-        }
+
       },
       orderBy: [{ semester: 'asc' }, { name: 'asc' }]
     })
