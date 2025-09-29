@@ -19,9 +19,6 @@ export async function GET(request: NextRequest) {
 
     const subjects = await prisma.subject.findMany({
       where,
-      include: {
-
-      },
       orderBy: [{ semester: 'asc' }, { name: 'asc' }]
     })
 

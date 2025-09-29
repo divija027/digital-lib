@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Download, 
-  Users, 
-  Shield, 
+import {
+  BookOpen,
+  Download,
+  Users,
+  Shield,
   FileText,
   GraduationCap,
   Award,
@@ -67,9 +67,9 @@ export default function Home() {
   useEffect(() => {
     let typingTimeout: NodeJS.Timeout
     let wordTimeout: NodeJS.Timeout
-    
+
     const currentWord = heroWords[currentWordIndex]
-    
+
     if (isTyping) {
       if (typedText.length < currentWord.length) {
         typingTimeout = setTimeout(() => {
@@ -111,7 +111,7 @@ export default function Home() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
       setScrollY(currentScrollY)
-      
+
       // Navbar visibility logic (Discord-style)
       if (currentScrollY < 100) {
         // At the top of the page - always show navbar
@@ -126,17 +126,17 @@ export default function Home() {
         setNavbarVisible(true)
         setIsScrollingUp(true)
       }
-      
+
       setLastScrollY(currentScrollY)
     }
-    
+
     const handleVisibility = () => setIsVisible(true)
     const handleHeroVisibility = () => setHeroVisible(true)
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true })
     setTimeout(handleVisibility, 100)
     setTimeout(handleHeroVisibility, 300)
-    
+
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY])
 
@@ -161,30 +161,30 @@ export default function Home() {
   }, [typedText, currentWordIndex, heroWords])
 
   const stats = [
-    { 
-      number: '10,000+', 
-      label: 'Study Materials', 
+    {
+      number: '10,000+',
+      label: 'Study Materials',
       icon: FileText,
       gradient: 'from-blue-500 to-cyan-500',
       bgGradient: 'from-blue-50 to-cyan-50'
     },
-    { 
-      number: '25,000+', 
-      label: 'Active Students', 
+    {
+      number: '25,000+',
+      label: 'Active Students',
       icon: Users,
       gradient: 'from-emerald-500 to-teal-500',
       bgGradient: 'from-emerald-50 to-teal-50'
     },
-    { 
-      number: '500+', 
-      label: 'Question Papers', 
+    {
+      number: '500+',
+      label: 'Question Papers',
       icon: BookMarked,
       gradient: 'from-purple-500 to-indigo-500',
       bgGradient: 'from-purple-50 to-indigo-50'
     },
-    { 
-      number: '98%', 
-      label: 'Success Rate', 
+    {
+      number: '98%',
+      label: 'Success Rate',
       icon: TrendingUp,
       gradient: 'from-orange-500 to-red-500',
       bgGradient: 'from-orange-50 to-red-50'
@@ -235,9 +235,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Discord-Style Header - Mobile Optimized */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-        navbarVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${navbarVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
         {/* Main Navbar */}
         <div className="bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-gray-100/25">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
@@ -253,7 +252,7 @@ export default function Home() {
                   <p className="text-[9px] sm:text-xs text-gray-500 font-medium tracking-wider uppercase hidden sm:block">VTU Learning Hub</p>
                 </div>
               </div>
-              
+
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-6 xl:space-x-10">
                 <Link href="#features" className="text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium text-base relative group">
@@ -285,17 +284,17 @@ export default function Home() {
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Mobile User Icon */}
                     <div className="sm:hidden flex items-center">
                       <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       onClick={() => setShowLogoutConfirm(true)}
-                      variant="ghost" 
+                      variant="ghost"
                       className="text-gray-700 hover:text-red-600 font-medium hover:bg-red-50 transition-all duration-200 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-sm sm:text-base"
                     >
                       <LogOut className="w-4 h-4 sm:mr-2" />
@@ -326,9 +325,8 @@ export default function Home() {
       </header>
 
       {/* Persistent Logo (Shows when navbar is hidden) - Mobile Optimized */}
-      <div className={`fixed top-2 sm:top-3 lg:top-4 left-2 sm:left-3 lg:left-4 z-40 transition-all duration-500 ease-in-out ${
-        !navbarVisible && scrollY > 200 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-      }`}>
+      <div className={`fixed top-2 sm:top-3 lg:top-4 left-2 sm:left-3 lg:left-4 z-40 transition-all duration-500 ease-in-out ${!navbarVisible && scrollY > 200 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+        }`}>
         <div className="flex items-center group cursor-pointer">
           <div className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg sm:shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
             <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white drop-shadow-sm" />
@@ -352,7 +350,7 @@ export default function Home() {
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_40%,rgba(59,130,246,0.08),transparent_50%)]"></div>
             <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.06),transparent_50%)]"></div>
           </div>
-          
+
           {/* Subtle Grid Pattern */}
           <div className="absolute inset-0 opacity-[0.02]" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -361,34 +359,21 @@ export default function Home() {
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
             <div className="flex flex-col lg:flex-row items-center justify-between min-h-[85vh] lg:min-h-[90vh] py-16 lg:py-20 gap-12 lg:gap-16">
-              
+
               {/* Content Section - Enhanced */}
               <div className={`flex-1 text-center lg:text-left transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                
-                {/* Enhanced Trust Badge */}
-                <div className="inline-flex items-center gap-2 bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-full px-4 py-2.5 mb-8 shadow-sm hover:shadow-md transition-all duration-300">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current animate-pulse" />
-                  <span className="text-sm font-medium text-blue-700">Trusted by 25,000+ VTU Students</span>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                </div>
+
+
 
                 {/* Enhanced Hero Title */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">
-                  <span className="text-gray-900 block">
-                    <span className="inline-block">
-                      {typedText}
-                      <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100 text-blue-600`}>|</span>
-                    </span>
-                  </span>
-                  <span className="text-gray-900 block mt-2">Your Academic</span>
-                  <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent block mt-2">
-                    Success Story
-                  </span>
+                  <span className="text-gray-900 block">Dive into Knowledge,</span>
+                  <span className="block mt-2" style={{ color: '#1D4ED8' }}>Rise with Skills</span>
                 </h1>
 
                 {/* Enhanced Subtitle */}
                 <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                  Access premium study materials, previous year papers, and AI-powered learning tools designed exclusively for VTU engineering students.
+                  Your one-stop student hub for learning, practice, and growth
                 </p>
 
                 {/* Enhanced Action Buttons */}
@@ -439,7 +424,7 @@ export default function Home() {
                       <p className="text-xs text-gray-500">Forever & Always</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-sm">
                       <Zap className="w-5 h-5 text-blue-600" />
@@ -449,7 +434,7 @@ export default function Home() {
                       <p className="text-xs text-gray-500">No Waiting</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center shadow-sm">
                       <Brain className="w-5 h-5 text-purple-600" />
@@ -464,10 +449,10 @@ export default function Home() {
 
               {/* Enhanced Visual Section */}
               <div className={`flex-1 w-full max-w-xl mx-auto lg:mx-0 transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
-                
+
                 {/* Enhanced Dashboard Preview */}
                 <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100/80 overflow-hidden backdrop-blur-sm hover:shadow-3xl transition-all duration-500">
-                  
+
                   {/* Enhanced Browser Header */}
                   <div className="flex items-center gap-2 px-5 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200/80">
                     <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
@@ -614,7 +599,7 @@ export default function Home() {
             {/* Main Quiz Dashboard Preview */}
             <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                
+
                 {/* Quiz Categories */}
                 <div className="lg:col-span-2 space-y-6">
                   <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-gray-200/60 shadow-lg">
@@ -622,7 +607,7 @@ export default function Home() {
                       <Target className="w-7 h-7 text-blue-600" />
                       Assessment Categories
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Technical Aptitude */}
                       <div className="group bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200/60 hover:border-blue-300/80 transition-all duration-300 hover:scale-105 cursor-pointer hover:shadow-md">
@@ -744,14 +729,14 @@ export default function Home() {
                         Join VTU students preparing for their dream careers
                       </p>
                     </div>
-                    
+
                     <Link href="/quiz">
                       <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         Start Practice Now
                         <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
                     </Link>
-                    
+
                     <p className="text-gray-500 text-xs mt-3">Free • No Registration Required</p>
                   </div>
 
@@ -789,7 +774,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 via-transparent to-purple-50/20"></div>
           <div className="absolute top-1/2 left-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
           <div className="absolute top-1/3 right-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-10 sm:mb-12 lg:mb-16">
               <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
@@ -805,14 +790,13 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
               {stats.map((stat, index) => (
-                <div 
-                  key={index} 
-                  className={`group cursor-pointer transition-all duration-500 transform ${
-                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-                  } ${hoveredStat === index ? 'scale-105 -translate-y-2' : 'hover:scale-102 hover:-translate-y-1'}`}
+                <div
+                  key={index}
+                  className={`group cursor-pointer transition-all duration-500 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+                    } ${hoveredStat === index ? 'scale-105 -translate-y-2' : 'hover:scale-102 hover:-translate-y-1'}`}
                   style={{ transitionDelay: `${index * 150}ms` }}
                   onMouseEnter={() => setHoveredStat(index)}
                   onMouseLeave={() => setHoveredStat(null)}
@@ -820,7 +804,7 @@ export default function Home() {
                   <div className={`relative text-center p-3 sm:p-4 lg:p-6 xl:p-8 bg-gradient-to-br ${stat.bgGradient} rounded-2xl sm:rounded-3xl border border-white/60 backdrop-blur-sm shadow-lg group-hover:shadow-2xl transition-all duration-500`}>
                     {/* Animated background gradient */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 rounded-2xl sm:rounded-3xl transition-opacity duration-500`}></div>
-                    
+
                     {/* Icon with enhanced styling - Mobile Optimized */}
                     <div className={`relative inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 xl:w-18 xl:h-18 bg-gradient-to-br ${stat.gradient} rounded-lg sm:rounded-xl lg:rounded-2xl mb-2 sm:mb-3 lg:mb-4 xl:mb-6 shadow-lg group-hover:shadow-xl transform group-hover:scale-110 transition-all duration-300`}>
                       <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 xl:w-9 xl:h-9 text-white drop-shadow-sm" />
@@ -828,24 +812,24 @@ export default function Home() {
                         <div className="absolute inset-0 bg-white/20 rounded-lg sm:rounded-xl lg:rounded-2xl animate-ping"></div>
                       )}
                     </div>
-                    
+
                     {/* Number with enhanced typography - Mobile Optimized */}
                     <div className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold bg-gradient-to-br ${stat.gradient} bg-clip-text text-transparent mb-1 sm:mb-2 lg:mb-3 group-hover:scale-105 transition-transform duration-300`}>
                       {stat.number}
                     </div>
-                    
+
                     {/* Label with improved styling - Mobile Optimized */}
                     <div className="text-gray-700 font-semibold text-xs sm:text-sm lg:text-base xl:text-lg group-hover:text-gray-800 transition-colors duration-300 leading-tight">
                       {stat.label}
                     </div>
-                    
+
                     {/* Subtle shine effect */}
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 rounded-2xl sm:rounded-3xl"></div>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {/* Additional trust indicators - Mobile Optimized */}
             <div className="mt-8 sm:mt-12 lg:mt-16 flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 opacity-60 px-4">
               <div className="flex items-center space-x-2 text-gray-600">
@@ -871,7 +855,7 @@ export default function Home() {
             <div className="absolute top-1/4 left-1/4 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 sm:opacity-30 animate-pulse"></div>
             <div className="absolute bottom-1/4 right-1/4 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 sm:opacity-30 animate-pulse" style={{ animationDelay: '3s' }}></div>
           </div>
-          
+
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-8 sm:mb-10 md:mb-14 lg:mb-20">
               <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
@@ -884,20 +868,19 @@ export default function Home() {
                   <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Succeed</span>
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed px-3 sm:px-4 md:px-6 lg:px-0">
-                  Comprehensive learning resources designed specifically for VTU engineering students, 
+                  Comprehensive learning resources designed specifically for VTU engineering students,
                   curated by experts and verified by top performers.
                 </p>
               </div>
             </div>
-            
+
             {/* Mobile-First Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 xl:gap-10">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`group cursor-pointer transition-all duration-700 transform ${
-                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-                  } ${hoveredFeature === index ? 'scale-105 -translate-y-3' : 'hover:scale-102 hover:-translate-y-1'}`}
+                  className={`group cursor-pointer transition-all duration-700 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+                    } ${hoveredFeature === index ? 'scale-105 -translate-y-3' : 'hover:scale-102 hover:-translate-y-1'}`}
                   style={{ transitionDelay: `${index * 200}ms` }}
                   onMouseEnter={() => setHoveredFeature(index)}
                   onMouseLeave={() => setHoveredFeature(null)}
@@ -906,10 +889,10 @@ export default function Home() {
                     {/* Animated gradient background */}
                     <div className={`absolute inset-0 ${feature.color} opacity-70 group-hover:opacity-90 transition-opacity duration-500`}></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 group-hover:from-white/30 group-hover:to-white/20 transition-all duration-500"></div>
-                    
+
                     {/* Floating accent element */}
                     <div className={`absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 ${feature.accent} rounded-full group-hover:w-1.5 group-hover:h-1.5 sm:group-hover:w-2 sm:group-hover:h-2 md:group-hover:w-3 md:group-hover:h-3 transition-all duration-300`}></div>
-                    
+
                     <CardHeader className="text-center pb-3 sm:pb-4 md:pb-6 pt-4 sm:pt-6 md:pt-8 lg:pt-10 relative z-10 px-3 sm:px-4 md:px-6">
                       {/* Enhanced icon with animations - Mobile Optimized */}
                       <div className="relative mx-auto mb-3 sm:mb-4 md:mb-6">
@@ -920,17 +903,17 @@ export default function Home() {
                           <div className="absolute inset-0 bg-white/30 rounded-xl sm:rounded-2xl md:rounded-3xl animate-ping"></div>
                         )}
                       </div>
-                      
+
                       <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-800 mb-2 sm:mb-3 md:mb-4 group-hover:text-gray-900 transition-colors duration-300 leading-tight">
                         {feature.title}
                       </CardTitle>
                     </CardHeader>
-                    
+
                     <CardContent className="text-center px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 md:pb-8 lg:pb-10 relative z-10">
                       <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors duration-300 line-clamp-3 sm:line-clamp-none">
                         {feature.description}
                       </p>
-                      
+
                       {/* Call to action that appears on hover - Mobile Optimized */}
                       <div className={`mt-3 sm:mt-4 md:mt-6 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300`}>
                         <div className="flex items-center justify-center text-xs sm:text-sm font-semibold text-blue-600">
@@ -938,7 +921,7 @@ export default function Home() {
                         </div>
                       </div>
                     </CardContent>
-                    
+
                     {/* Shine effect */}
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                   </Card>
@@ -963,7 +946,7 @@ export default function Home() {
               backgroundRepeat: 'repeat'
             }} />
           </div>
-          
+
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
             <div className="space-y-6 sm:space-y-8">
               <div className="space-y-4 sm:space-y-6">
@@ -971,18 +954,18 @@ export default function Home() {
                   <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-yellow-300 fill-current" />
                   <span className="text-xs sm:text-sm">Join the Success Story</span>
                 </Badge>
-                
+
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight px-2 sm:px-0">
                   Ready to Excel in <br />
                   <span className="text-blue-200">Your Studies?</span>
                 </h2>
-                
+
                 <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed font-light px-4 sm:px-0">
-                  Join thousands of VTU students who are already using BrainReef to achieve academic success. 
+                  Join thousands of VTU students who are already using BrainReef to achieve academic success.
                   Start your learning journey today, completely free.
                 </p>
               </div>
-              
+
               <div className="flex flex-col gap-3 sm:gap-4 justify-center pt-2 sm:pt-4 max-w-md mx-auto lg:max-w-none lg:flex-row">
                 {isAuthenticated ? (
                   <>
@@ -1020,7 +1003,7 @@ export default function Home() {
                   </>
                 )}
               </div>
-              
+
               <div className="pt-6 sm:pt-8 border-t border-blue-400/30">
                 <p className="text-blue-200 text-xs sm:text-sm font-medium px-4 sm:px-0">
                   No credit card required • Instant access • 100% free forever
@@ -1049,7 +1032,7 @@ export default function Home() {
                 Empowering VTU engineering students with quality educational resources and study materials.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Quick Links</h4>
               <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
@@ -1059,7 +1042,7 @@ export default function Home() {
                 <li><Link href="/register" className="hover:text-white transition-colors">Sign Up</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Subjects</h4>
               <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
@@ -1069,7 +1052,7 @@ export default function Home() {
                 <li><Link href="/dashboard" className="hover:text-white transition-colors">Civil Engineering</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h4>
               <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
@@ -1080,7 +1063,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
             <p className="text-gray-400 text-xs sm:text-sm px-4 sm:px-0">
               © 2025 BrainReef. All rights reserved. Made with ❤️ for VTU students.
