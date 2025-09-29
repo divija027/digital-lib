@@ -534,7 +534,7 @@ function CollegeDropdown({ value, onChange, error }: CollegeDropdownProps) {
         <Building2 className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10" />
         <Input
           ref={inputRef}
-          placeholder="🧠 Smart search: college name, code, or keywords"
+          placeholder="college name, code, or keywords"
           className="pl-9 sm:pl-10 pr-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-white/80 text-sm sm:text-base"
           value={isOpen ? searchTerm : value}
           onChange={handleInputChange}
@@ -749,9 +749,7 @@ export function RegisterForm() {
           <div className="space-y-2">
             <Label htmlFor="collegeName" className="text-gray-700 font-medium flex items-center gap-2 text-sm">
               College Name
-              <span className="text-xs text-gray-500 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-2 py-1 rounded-full hidden sm:inline">
-                🧠 AI-Powered Search
-              </span>
+              
             </Label>
             <Controller
               name="collegeName"

@@ -113,7 +113,7 @@ const createEmailTemplate = (
     const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
     
     return {
-      subject: 'Verify Your Email - VTU Digital Library',
+      subject: 'Verify Your Email - Brainreef',
       html: `
         <!DOCTYPE html>
         <html>
@@ -125,15 +125,15 @@ const createEmailTemplate = (
         <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
           <div style="${baseStyles.container}">
             <div style="${baseStyles.header}">
-              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">VTU Digital Library</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Verify Your Email Address</p>
+              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">Brainreef</h1>
+              
             </div>
             
             <div style="${baseStyles.content}">
               <h2 style="color: #333; margin: 0 0 20px 0; font-size: 24px;">Hello ${name}!</h2>
               
               <p style="color: #666; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">
-                Thank you for signing up for VTU Digital Library! To complete your registration, please verify your email address by clicking the button below.
+                Thank you for signing up for Brainreef! Please verify your email address.
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
@@ -153,7 +153,7 @@ const createEmailTemplate = (
             </div>
             
             <div style="${baseStyles.footer}">
-              <p style="color: #888; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} VTU Digital Library. All rights reserved.</p>
+              <p style="color: #888; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} Brainreef. All rights reserved.</p>
               <p style="color: #888; margin: 5px 0 0 0; font-size: 12px;">This email was sent to ${name}.</p>
             </div>
           </div>
@@ -167,7 +167,7 @@ const createEmailTemplate = (
   const resetUrl = `${baseUrl}/reset-password?token=${token}`
   
   return {
-    subject: 'Reset Your Password - VTU Digital Library',
+    subject: 'Reset Your Password - Brainreef',
     html: `
       <!DOCTYPE html>
       <html>
@@ -179,7 +179,7 @@ const createEmailTemplate = (
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
         <div style="${baseStyles.container}">
           <div style="${baseStyles.header}">
-            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">VTU Digital Library</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">Brainreef</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Password Reset Request</p>
           </div>
           
@@ -207,7 +207,7 @@ const createEmailTemplate = (
           </div>
           
           <div style="${baseStyles.footer}">
-            <p style="color: #888; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} VTU Digital Library. All rights reserved.</p>
+            <p style="color: #888; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} Brainreef. All rights reserved.</p>
             <p style="color: #888; margin: 5px 0 0 0; font-size: 12px;">This email was sent to ${name}.</p>
           </div>
         </div>
@@ -234,7 +234,7 @@ const sendEmail = async (template: EmailTemplate, to: string): Promise<EmailResu
     }
     
     const result = await transporter.sendMail({
-      from: `"VTU Digital Library" <${process.env.EMAIL_USER}>`,
+      from: `"Brainreef" <${process.env.EMAIL_USER}>`,
       to,
       subject: template.subject,
       html: template.html

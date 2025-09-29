@@ -12,7 +12,7 @@ export async function generateMetadata({
   
   if (!branchCode) {
     return {
-      title: 'Subjects Not Found - VTU Digital Library',
+      title: 'Subjects Not Found - Brainreef',
       description: 'The requested subjects could not be found.'
     }
   }
@@ -25,13 +25,13 @@ export async function generateMetadata({
     
     if (!branchData) {
       return {
-        title: 'Subjects Not Found - VTU Digital Library',
+        title: 'Subjects Not Found - Brainreef',
         description: 'The requested subjects could not be found.'
       }
     }
 
-    const title = `${branchData.name} Subjects | VTU Digital Library`
-    const description = `Browse all subjects and study materials for ${branchData.name} at VTU Digital Library. Access comprehensive notes, question papers, and resources.`
+    const title = `${branchData.name} Subjects | Brainreef`
+    const description = `Browse all subjects and study materials for ${branchData.name} at Brainreef. Access comprehensive notes, question papers, and resources.`
 
     return {
       title,
@@ -48,9 +48,9 @@ export async function generateMetadata({
         'Karnataka',
         'university'
       ],
-      authors: [{ name: 'VTU Digital Library' }],
-      creator: 'VTU Digital Library',
-      publisher: 'VTU Digital Library',
+      authors: [{ name: 'Brainreef' }],
+      creator: 'Brainreef',
+      publisher: 'Brainreef',
       formatDetection: {
         email: false,
         address: false,
@@ -60,13 +60,13 @@ export async function generateMetadata({
       title,
       description,
       url: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects`,
-      siteName: 'VTU Digital Library',
+      siteName: 'Brainreef',
       images: [
         {
           url: 'https://vtu-digital-library.com/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: `${branchData.name} Subjects - VTU Digital Library`,
+          alt: `${branchData.name} Subjects - Brainreef`,
         },
       ],
       locale: 'en_US',
@@ -99,7 +99,7 @@ export async function generateMetadata({
   } catch (error) {
     console.error('Error fetching branch data:', error)
     return {
-      title: 'Subjects - VTU Digital Library',
+      title: 'Subjects - Brainreef',
       description: 'VTU study materials and resources.'
     }
   }

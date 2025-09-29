@@ -677,12 +677,9 @@ export function RegisterForm() {
 
           {/* Intelligent College Selection */}
           <div className="space-y-2">
-            <Label htmlFor="collegeName" className="text-gray-700 font-medium flex items-center gap-2">
-              College Name
-              <span className="text-xs text-gray-500 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-2 py-1 rounded-full">
-                🧠 AI-Powered Search
-              </span>
-            </Label>
+            
+              
+              
             <Controller
               name="collegeName"
               control={control}

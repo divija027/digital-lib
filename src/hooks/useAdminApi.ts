@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 
 interface AdminStats {
   totalUsers: { count: number; growth: number }
-  totalResources: { count: number; growth: number }
   totalSubjects: { count: number; growth: number }
   totalCategories: { count: number; growth: number }
-  pendingResources: { count: number; growth: number }
+  totalMCQSets: { count: number; growth: number }
+  totalBlogPosts: { count: number; growth: number }
 }
 
 interface User {
@@ -16,12 +16,7 @@ interface User {
   createdAt: string
 }
 
-interface Resource {
-  id: string
-  title: string
-  type: string
-  createdAt: string
-}
+
 
 interface MonthlyUpload {
   month: string
@@ -31,11 +26,9 @@ interface MonthlyUpload {
 interface DashboardData {
   stats: AdminStats
   recentUsers: User[]
-  recentResources: Resource[]
   analytics: {
-    resourcesByType: Array<{ type: string; count: number }>
     usersByRole: Array<{ role: string; count: number }>
-    monthlyUploads: MonthlyUpload[]
+    monthlySignups: Array<{ month: string; signups: number }>
   }
 }
 
@@ -166,70 +159,4 @@ export function useAdminUsers(params?: {
   return { data, loading, error, refetch: fetchUsers, deleteUser, updateUser }
 }
 
-export function useAdminResources(params?: {
-  page?: number
-  limit?: number
-  search?: string
-  type?: string
-  category?: string
-  status?: string
-  sortBy?: string
-  sortOrder?: string
-}) {
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchResources()
-  }, [params])
-
-  const fetchResources = async () => {
-    try {
-      setLoading(true)
-      const searchParams = new URLSearchParams()
-      
-      Object.entries(params || {}).forEach(([key, value]) => {
-        if (value) searchParams.set(key, value.toString())
-      })
-
-      const response = await fetch(`/api/admin/resources?${searchParams}`)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch resources')
-      }
-      
-      const resourcesData = await response.json()
-      setData(resourcesData)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const bulkAction = async (action: string, resourceIds: string[]) => {
-    try {
-      const response = await fetch('/api/admin/resources', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ action, resourceIds })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} resources`)
-      }
-      
-      await fetchResources() // Refresh the list
-      return true
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Failed to ${action} resources`)
-      return false
-    }
-  }
-
-  return { data, loading, error, refetch: fetchResources, bulkAction }
-}

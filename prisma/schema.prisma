@@ -30,7 +30,6 @@ model User {
   passwordResetExpires DateTime?
 
   // Relations
-  uploadedResources Resource[]
   createdMCQSets    MCQSet[]
   createdMCQQuestions MCQQuestion[]
   mcqAttempts       MCQAttempt[]
@@ -48,9 +47,6 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  resources Resource[]
-
   @@map("categories")
 }
 
@@ -63,40 +59,10 @@ model Subject {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  resources Resource[]
-
   @@map("subjects")
 }
 
-model Resource {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  fileName    String
-  filePath    String
-  fileSize    Int
-  mimeType    String
-  type        ResourceType
-  semester    Int?
-  year        Int?
-  downloads   Int          @default(0)
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 
-  // Foreign keys
-  categoryId String
-  subjectId  String?
-  uploadedBy String
-
-  // Relations
-  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  uploader  User     @relation(fields: [uploadedBy], references: [id])
-
-  @@map("resources")
-}
 
 enum Role {
   STUDENT
@@ -104,14 +70,7 @@ enum Role {
   SUPERADMIN
 }
 
-enum ResourceType {
-  QUESTION_PAPER
-  STUDY_MATERIAL
-  PREVIOUS_YEAR_PAPER
-  SYLLABUS
-  NOTES
-  OTHER
-}
+
 
 model MCQSet {
   id          String   @id @default(cuid())

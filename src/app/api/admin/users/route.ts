@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           updatedAt: true,
           _count: {
-            select: { uploadedResources: true }
+            select: { createdMCQSets: true, blogPosts: true }
           }
         }
       }),
@@ -63,7 +63,8 @@ export async function GET(request: NextRequest) {
     return Response.json({
       users: users.map(user => ({
         ...user,
-        resourceCount: user._count.uploadedResources
+        mcqSetsCount: user._count.createdMCQSets,
+        blogPostsCount: user._count.blogPosts
       })),
       pagination: {
         currentPage: page,

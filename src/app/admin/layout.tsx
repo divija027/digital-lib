@@ -8,7 +8,6 @@ import {
   LayoutDashboard, 
   BookOpen, 
   Users, 
-  FileText, 
   Menu,
   X,
   ChevronDown,
@@ -53,16 +52,7 @@ const navigationItems = [
       { title: 'Students', href: '/admin/users?role=student' }
     ]
   },
-  {
-    title: 'Resources',
-    href: '/admin/resources',
-    icon: FileText,
-    children: [
-      { title: 'All Resources', href: '/admin/resources' },
-      { title: 'Upload Question Papers', href: '/admin/resources/upload' },
-      { title: 'Categories', href: '/admin/resources/categories' }
-    ]
-  },
+
   {
     title: 'Blog Management',
     href: '/admin/blog',
