@@ -1,4 +1,4 @@
-# VTU Digital Library - AI Coding Agent Instructions
+# Brainreef - AI Coding Agent Instructions
 
 ## Architecture Overview
 

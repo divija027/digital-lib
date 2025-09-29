@@ -29,7 +29,7 @@ export default function RegisterPage() {
                 <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
                   BrainReef
                 </h1>
-                <p className="text-xs text-gray-500 font-medium tracking-wide uppercase">VTU Learning Hub</p>
+                
               </div>
             </Link>
             

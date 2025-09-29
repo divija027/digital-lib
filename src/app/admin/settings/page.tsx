@@ -25,7 +25,7 @@ export default function SettingsPage() {
   const [error, setError] = useState('')
 
   // General Settings
-  const [siteName, setSiteName] = useState('VTU Digital Library')
+  const [siteName, setSiteName] = useState('Brainreef')
   const [siteDescription, setSiteDescription] = useState('Comprehensive VTU study materials and resources')
   const [supportEmail, setSupportEmail] = useState('support@vtu-digital-lib.com')
   const [maintenanceMode, setMaintenanceMode] = useState(false)

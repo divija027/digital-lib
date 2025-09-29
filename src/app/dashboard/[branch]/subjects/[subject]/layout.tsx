@@ -38,7 +38,7 @@ export async function generateMetadata({
     
     if (!branchCode) {
       return {
-        title: 'Subject Not Found - VTU Digital Library',
+        title: 'Subject Not Found - Brainreef',
         description: 'The requested subject could not be found.'
       }
     }
@@ -50,7 +50,7 @@ export async function generateMetadata({
 
     if (!branchData) {
       return {
-        title: 'Branch Not Found - VTU Digital Library',
+        title: 'Branch Not Found - Brainreef',
         description: 'The requested branch could not be found.'
       }
     }
@@ -66,8 +66,8 @@ export async function generateMetadata({
     
     const subjectName = currentSubject?.name || slugToSubject(subjectSlug)
     
-    const title = `${subjectName} - ${branchData.name} | VTU Digital Library`
-    const description = `Access comprehensive study materials, notes, question papers, and resources for ${subjectName} in ${branchData.name} at VTU Digital Library.`
+    const title = `${subjectName} - ${branchData.name} | Brainreef`
+    const description = `Access comprehensive study materials, notes, question papers, and resources for ${subjectName} in ${branchData.name} at Brainreef.`
 
     return {
       title,
@@ -84,9 +84,9 @@ export async function generateMetadata({
         'Karnataka',
         'university'
       ],
-      authors: [{ name: 'VTU Digital Library' }],
-      creator: 'VTU Digital Library',
-      publisher: 'VTU Digital Library',
+      authors: [{ name: 'Brainreef' }],
+      creator: 'Brainreef',
+      publisher: 'Brainreef',
       formatDetection: {
         email: false,
         address: false,
@@ -96,7 +96,7 @@ export async function generateMetadata({
         title,
         description,
         url: `https://vtu-digital-library.com/dashboard/${branchSlug}/subjects/${subjectSlug}`,
-        siteName: 'VTU Digital Library',
+        siteName: 'Brainreef',
         images: [
           {
             url: 'https://vtu-digital-library.com/og-image.jpg',
@@ -135,7 +135,7 @@ export async function generateMetadata({
   } catch (error) {
     console.error('Error generating metadata:', error)
     return {
-      title: 'Subject - VTU Digital Library',
+      title: 'Subject - Brainreef',
       description: 'Study resources for VTU students.'
     }
   }

@@ -161,7 +161,7 @@ export default function AdminLogin() {
         <div className="text-center">
           <div className="flex items-center justify-center space-x-2 text-blue-200 text-sm">
             <BookOpen className="w-4 h-4" />
-            <span>VTU Digital Library - Admin Portal</span>
+            <span>Brainreef - Admin Portal</span>
           </div>
           <p className="text-xs text-blue-300 mt-2">
             Authorized access only. All activities are monitored.

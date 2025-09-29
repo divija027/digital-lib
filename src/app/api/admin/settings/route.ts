@@ -43,7 +43,7 @@ interface SystemSettings {
 // Mock default settings
 const defaultSettings: SystemSettings = {
   general: {
-    siteName: 'VTU Digital Library',
+    siteName: 'Brainreef',
     siteDescription: 'Digital resource library for VTU students',
     adminEmail: 'admin@vtu-digital-lib.com',
     maintenanceMode: false,

@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your VTU Digital Library</p>
+          <p className="text-gray-600 mt-1">Manage your Brainreef </p>
         </div>
         <Button 
           onClick={handleRefresh} 

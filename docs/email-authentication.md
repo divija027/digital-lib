@@ -1,7 +1,7 @@
 # Email Authentication System Documentation
 
 ## Overview
-This document describes the refactored email authentication system for the VTU Digital Library. The system handles email verification during registration and password reset functionality.
+This document describes the refactored email authentication system for the Brainreef. The system handles email verification during registration and password reset functionality.
 
 ## Architecture
 
