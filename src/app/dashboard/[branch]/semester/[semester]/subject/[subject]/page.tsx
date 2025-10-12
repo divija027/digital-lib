@@ -39,6 +39,28 @@ interface Branch {
   isActive: boolean
 }
 
+interface PDF {
+  id: string
+  title: string
+  description: string | null
+  fileName: string
+  fileSize: number
+  r2Key: string
+  branch: string
+  semester: number
+  subjectId: string
+  downloads: number
+  views: number
+  featured: boolean
+  createdAt: string
+  updatedAt: string
+  subject: {
+    id: string
+    name: string
+    code: string
+  }
+}
+
 // Convert subject slug back to name (simplified matching)
 const slugToSubjectName = (slug: string, subjects: any[]): string => {
   const subjectFromSlug = subjects.find(s => 
@@ -115,7 +137,9 @@ export default function SubjectPage() {
   const [branchData, setBranchData] = useState<Branch | null>(null)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null)
+  const [pdfs, setPdfs] = useState<PDF[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingPdfs, setLoadingPdfs] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const branchSlug = params?.branch as string
@@ -179,8 +203,63 @@ export default function SubjectPage() {
     }
   }, [branchSlug, semester, subjectSlug])
 
-  // Get question papers
-  const questionPapers = currentSubject ? getQuestionPapers(currentSubject.name, branchData?.code || '', semester) : []
+  // Fetch PDFs when subject is loaded
+  useEffect(() => {
+    const fetchPDFs = async () => {
+      if (!currentSubject || !branchData) return
+
+      try {
+        setLoadingPdfs(true)
+        const branchCode = branchData.code
+        const semesterNum = semester === 'physics-cycle' || semester === 'chemistry-cycle' ? '1' : semester
+        
+        // Fetch PDFs for this subject
+        const response = await fetch(`/api/admin/pdfs?branch=${branchCode}&semester=${semesterNum}&subjectId=${currentSubject.id}`)
+        
+        if (response.ok) {
+          const data = await response.json()
+          setPdfs(data || [])
+        } else {
+          console.error('Failed to fetch PDFs')
+          setPdfs([])
+        }
+      } catch (error) {
+        console.error('Error fetching PDFs:', error)
+        setPdfs([])
+      } finally {
+        setLoadingPdfs(false)
+      }
+    }
+
+    fetchPDFs()
+  }, [currentSubject, branchData, semester])
+
+  // Convert real PDFs to paper format
+  const realPapers = pdfs.map(pdf => ({
+    id: pdf.id,
+    title: pdf.title,
+    year: new Date(pdf.createdAt).getFullYear(),
+    type: pdf.featured ? 'Featured' : 'Study Material',
+    semester: semester,
+    fileName: pdf.fileName,
+    fileSize: `${(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB`,
+    downloadCount: pdf.downloads,
+    uploadDate: pdf.createdAt,
+    isVerified: true,
+    hasAnswers: false,
+    isRealPDF: true,
+    r2Key: pdf.r2Key,
+    pdfId: pdf.id,
+    description: pdf.description
+  }))
+
+  // Get mock question papers (only if no real PDFs exist)
+  const mockPapers = pdfs.length === 0 && currentSubject 
+    ? getQuestionPapers(currentSubject.name, branchData?.code || '', semester)
+    : []
+  
+  // Combine real and mock papers
+  const questionPapers = [...realPapers, ...mockPapers]
   
   // Filter papers based on search and filters
   const filteredPapers = questionPapers.filter(paper => {
@@ -196,12 +275,14 @@ export default function SubjectPage() {
   const availableYears = [...new Set(questionPapers.map(paper => paper.year))].sort((a, b) => b - a)
   const availableTypes = [...new Set(questionPapers.map(paper => paper.type))]
 
-  if (loading) {
+  if (loading || loadingPdfs) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading subject data...</p>
+          <p className="text-gray-600">
+            {loading ? 'Loading subject data...' : 'Loading study materials...'}
+          </p>
         </div>
       </div>
     )
@@ -218,16 +299,44 @@ export default function SubjectPage() {
     )
   }
 
-  const handleDownload = (paper: any) => {
-    // Mock download functionality
-    console.log('Downloading:', paper.fileName)
-    alert(`Downloading: ${paper.fileName}`)
+  const handleDownload = async (paper: any) => {
+    if (paper.isRealPDF && paper.pdfId) {
+      try {
+        // For real PDFs, fetch from API
+        const response = await fetch(`/api/pdfs/${paper.pdfId}/download`)
+        if (response.ok) {
+          const blob = await response.blob()
+          const url = window.URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = paper.fileName
+          document.body.appendChild(a)
+          a.click()
+          window.URL.revokeObjectURL(url)
+          document.body.removeChild(a)
+        } else {
+          alert('Failed to download file')
+        }
+      } catch (error) {
+        console.error('Download error:', error)
+        alert('Failed to download file')
+      }
+    } else {
+      // Mock download for demo papers
+      console.log('Downloading:', paper.fileName)
+      alert(`Downloading: ${paper.fileName}\n(This is a demo file)`)
+    }
   }
 
   const handlePreview = (paper: any) => {
-    // Mock preview functionality
-    console.log('Previewing:', paper.fileName)
-    alert(`Opening preview for: ${paper.fileName}`)
+    if (paper.isRealPDF && paper.pdfId) {
+      // For real PDFs, open in new tab
+      window.open(`/api/pdfs/${paper.pdfId}/view`, '_blank')
+    } else {
+      // Mock preview for demo papers
+      console.log('Previewing:', paper.fileName)
+      alert(`Opening preview for: ${paper.fileName}\n(This is a demo file)`)
+    }
   }
 
   return (
@@ -387,7 +496,14 @@ export default function SubjectPage() {
 
         {/* Question Papers */}
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Available Question Papers</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-bold text-gray-900">Available Study Materials</h2>
+            {pdfs.length > 0 && (
+              <Badge variant="default" className="bg-green-600">
+                {pdfs.length} Uploaded File{pdfs.length !== 1 ? 's' : ''}
+              </Badge>
+            )}
+          </div>
           
           {filteredPapers.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl">
@@ -408,7 +524,12 @@ export default function SubjectPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-lg leading-tight mb-2">{paper.title}</CardTitle>
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
+                          {(paper as any).isRealPDF && (
+                            <Badge variant="default" className="text-xs bg-blue-600">
+                              Uploaded
+                            </Badge>
+                          )}
                           <Badge 
                             variant={paper.type === 'Main Exam' ? 'default' : paper.type === 'Model Paper' ? 'secondary' : 'outline'}
                             className="text-xs"
@@ -418,9 +539,9 @@ export default function SubjectPage() {
                           <Badge variant="outline" className="text-xs">
                             {paper.year}
                           </Badge>
-                          {paper.isVerified && (
+                          {paper.isVerified && !(paper as any).isRealPDF && (
                             <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                              Verified
+                              Demo
                             </Badge>
                           )}
                         </div>

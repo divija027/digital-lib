@@ -59,10 +59,36 @@ model Subject {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Relations
+  pdfs        PDF[]
+
   @@map("subjects")
 }
 
+model PDF {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  fileName    String
+  fileSize    Int      // Size in bytes
+  r2Key       String   @unique // Unique key/ID for R2 storage
+  branch      String   // Branch code (CS, EC, ME, etc.)
+  semester    Int
+  subjectId   String
+  uploadedBy  String   // Admin user ID
+  downloads   Int      @default(0)
+  views       Int      @default(0)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  // Relations
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([branch, semester])
+  @@index([subjectId])
+  @@map("pdfs")
+}
 
 enum Role {
   STUDENT
@@ -84,6 +110,9 @@ model MCQSet {
   tags        String[] // Array of tags
   companies   String[] // Array of companies
   featured    Boolean  @default(false)
+  showInHomePreview Boolean @default(false) // Show in home page preview section
+  homePreviewPosition Int? @unique // Position on home page (1-5: 1-4 small cards, 5 big card)
+  bannerImage String?  // URL to banner image for home page display
   status      MCQStatus @default(DRAFT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

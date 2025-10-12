@@ -43,7 +43,10 @@ import {
   Users,
   BarChart3,
   Settings,
-  FileText
+  FileText,
+  Image as ImageIcon,
+  Home,
+  Upload
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -62,6 +65,8 @@ interface MCQSetData {
   attempts: number
   status: string
   featured: boolean
+  showInHomePreview: boolean   // Show in home page preview
+  bannerImage?: string         // Banner image URL
   tags: string[]
   companies?: string[]
   createdAt: string
@@ -178,6 +183,9 @@ export function MCQSetManager() {
   const [selectedStatus, setSelectedStatus] = useState('All')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [setToDelete, setSetToDelete] = useState<string | null>(null)
+  const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false)
+  const [selectedSetForImage, setSelectedSetForImage] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   // Fetch MCQ sets from API
   const fetchMCQSets = async () => {
@@ -293,6 +301,70 @@ export function MCQSetManager() {
     } catch (error) {
       console.error('Failed to update status:', error)
       alert('Failed to update status. Please try again.')
+    }
+  }
+
+  const handleToggleHomePreview = async (id: string, currentValue: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/mcq/sets/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ showInHomePreview: !currentValue }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle home preview')
+      }
+
+      // Refresh the data
+      await fetchMCQSets()
+    } catch (error) {
+      console.error('Failed to toggle home preview:', error)
+      alert('Failed to update home preview setting. Please try again.')
+    }
+  }
+
+  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !selectedSetForImage) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB')
+      return
+    }
+
+    try {
+      setUploadingImage(true)
+      const formData = new FormData()
+      formData.append('banner', file)
+
+      const response = await fetch(`/api/admin/mcq/sets/${selectedSetForImage}/banner`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to upload banner')
+      }
+
+      // Refresh the data
+      await fetchMCQSets()
+      setIsImageUploadModalOpen(false)
+      setSelectedSetForImage(null)
+    } catch (error) {
+      console.error('Failed to upload banner:', error)
+      alert('Failed to upload banner image. Please try again.')
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -420,6 +492,7 @@ export function MCQSetManager() {
                 <TableHead>Questions & Time</TableHead>
                 <TableHead>Performance</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Home Preview</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -501,6 +574,31 @@ export function MCQSetManager() {
                     </Select>
                   </TableCell>
                   <TableCell>
+                    <div className="space-y-2">
+                      <Button
+                        variant={set.showInHomePreview ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleToggleHomePreview(set.id, set.showInHomePreview)}
+                        className="w-full"
+                      >
+                        <Home className="h-3 w-3 mr-1" />
+                        {set.showInHomePreview ? 'Shown' : 'Hidden'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedSetForImage(set.id)
+                          setIsImageUploadModalOpen(true)
+                        }}
+                        className="w-full"
+                      >
+                        <ImageIcon className="h-3 w-3 mr-1" />
+                        {set.bannerImage ? 'Change' : 'Upload'}
+                      </Button>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <div className="space-y-1">
                       <p className="text-sm">{formatDate(set.createdAt)}</p>
                       <p className="text-xs text-gray-500">by {set.createdBy}</p>
@@ -567,6 +665,45 @@ export function MCQSetManager() {
               onClick={() => setToDelete && handleDelete(setToDelete)}
             >
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Banner Image Upload Dialog */}
+      <Dialog open={isImageUploadModalOpen} onOpenChange={setIsImageUploadModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Banner Image</DialogTitle>
+            <DialogDescription>
+              Upload a banner image for this MCQ set. This will be displayed on the home page when the set is shown in preview. Recommended size: 1200x600px (max 5MB)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="border-2 border-dashed rounded-lg p-6 text-center">
+              <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleBannerUpload}
+                disabled={uploadingImage}
+                className="max-w-xs mx-auto"
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                {uploadingImage ? 'Uploading...' : 'Select an image file (JPG, PNG, WebP)'}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsImageUploadModalOpen(false)
+                setSelectedSetForImage(null)
+              }}
+              disabled={uploadingImage}
+            >
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -134,6 +134,30 @@ export async function PUT(
   }
 }
 
+// PATCH /api/admin/mcq/sets/[id] - Partially update MCQ set (e.g., toggle home preview)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const body = await request.json()
+    
+    const mcqSet = await prisma.mCQSet.update({
+      where: { id },
+      data: body,
+    })
+
+    return NextResponse.json(mcqSet)
+  } catch (error) {
+    console.error('Error updating MCQ set:', error)
+    return NextResponse.json(
+      { error: 'Failed to update MCQ set' },
+      { status: 500 }
+    )
+  }
+}
+
 // DELETE /api/admin/mcq/sets/[id] - Delete a specific MCQ set (admin version)
 export async function DELETE(
   request: NextRequest,

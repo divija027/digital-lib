@@ -100,6 +100,11 @@ export default function MCQAdminPage() {
       onClick: () => router.push('/admin/mcq/sets/new')
     },
     {
+      icon: Target,
+      label: 'Home Page Layout',
+      onClick: () => router.push('/admin/mcq/layout')
+    },
+    {
       icon: FileText,
       label: 'Add Individual Question',
       onClick: () => setActiveTab('questions')
