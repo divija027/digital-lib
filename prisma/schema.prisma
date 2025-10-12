@@ -110,6 +110,9 @@ model MCQSet {
   tags        String[] // Array of tags
   companies   String[] // Array of companies
   featured    Boolean  @default(false)
+  showInHomePreview Boolean @default(false) // Show in home page preview section
+  homePreviewPosition Int? @unique // Position on home page (1-5: 1-4 small cards, 5 big card)
+  bannerImage String?  // URL to banner image for home page display
   status      MCQStatus @default(DRAFT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

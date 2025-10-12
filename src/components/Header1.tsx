@@ -4,6 +4,7 @@ import { Button } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 type ImageProps = {
   src: string;
@@ -14,25 +15,42 @@ type Props = {
   heading: string;
   description: string;
   buttons: ButtonProps[];
+  authenticatedButtons: ButtonProps[];
   image: ImageProps;
 };
 
 export type Header1Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
 
 export const Header1 = (props: Header1Props) => {
-  const { heading, description, buttons, image } = {
+  const { heading, description, buttons, authenticatedButtons, image } = {
     ...Header1Defaults,
     ...props,
   };
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  // Use authenticated buttons if logged in, otherwise use default buttons
+  const displayButtons = isAuthenticated ? authenticatedButtons : buttons;
 
   const handleButtonClick = (index: number) => {
-    if (index === 0) {
-      // First button - Start Learning Free
-      router.push('/dashboard');
-    } else if (index === 1) {
-      // Second button - Explore Resources
-      router.push('/dashboard');
+    if (isAuthenticated) {
+      // Authenticated user buttons
+      if (index === 0) {
+        // Go to Dashboard
+        router.push('/dashboard');
+      } else if (index === 1) {
+        // Practice Quiz
+        router.push('/quiz');
+      }
+    } else {
+      // Non-authenticated user buttons
+      if (index === 0) {
+        // Start Learning Free
+        router.push('/register');
+      } else if (index === 1) {
+        // Explore Resources
+        router.push('/dashboard');
+      }
     }
   };
 
@@ -48,7 +66,7 @@ export const Header1 = (props: Header1Props) => {
               {description}
             </p>
             <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 md:mt-8 justify-center lg:justify-start">
-              {buttons.map((button, index) => (
+              {displayButtons.map((button, index) => (
                 <Button 
                   key={index} 
                   {...button}
@@ -91,13 +109,17 @@ export const Header1 = (props: Header1Props) => {
 export const Header1Defaults: Props = {
   heading: "Dive into Knowledge, Rise with Skills",
   description:
-    "Your one-stop student hub for learning, practice, and growth. Access comprehensive VTU resources, practice MCQ tests, and excel in your academic journey.",
+    "Your one-stop student hub for MCQs, study notes, and past papers. Access VTU resources, practice time-bound quizzes, and track your progress—all tailored to your semester and branch.",
   buttons: [
-    { title: "Start Learning Free", variant: "primary" }, 
-    { title: "Explore Resources", variant: "secondary" }
+    { title: "Start Learning Free", variant: "primary" },
+    { title: "Explore Resources", variant: "secondary" },
+  ],
+  authenticatedButtons: [
+    { title: "Go to Dashboard", variant: "primary" },
+    { title: "Practice Quiz", variant: "secondary" },
   ],
   image: {
     src: "/female-employee-with-black-laptop-having-video-call-having-fun 2.jpg",
-    alt: "Student learning and having fun with online education",
+    alt: "Student studying with laptop",
   },
 };

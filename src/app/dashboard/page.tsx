@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Footer4 } from '@/components/Footer4'
 import { 
   BookOpen, 
   GraduationCap,
-  ChevronRight
+  ChevronRight,
+  Home,
+  ArrowLeft
 } from 'lucide-react'
 import { getBranchSlug } from '@/lib/branch-utils'
 
@@ -55,8 +58,20 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-12">
+      {/* Back to Home Button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Button
+          onClick={() => router.push('/')}
+          variant="outline"
+          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
+        >
+          <Home className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+      </div>
+
       {/* Enhanced Header */}
-      <div className="text-center space-y-6">
+      <div className="text-center space-y-6 pt-20">
         <div className="flex flex-col items-center gap-6">
           <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform duration-200">
             <GraduationCap className="w-12 h-12 text-white" />

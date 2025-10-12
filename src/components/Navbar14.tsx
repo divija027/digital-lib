@@ -7,6 +7,7 @@ import type { ButtonProps } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
 import { useAuth } from "@/hooks/useAuth";
+import { LogoutConfirmation } from "@/components/LogoutConfirmation";
 
 type ImageProps = {
   url?: string;
@@ -35,8 +36,10 @@ export const Navbar14 = (props: Navbar14Props) => {
   };
 
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isMobile = useMediaQuery("(max-width: 991px)");
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -60,14 +63,33 @@ export const Navbar14 = (props: Navbar14Props) => {
     };
   }, []);
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      logout();
+      setIsLoggingOut(false);
+      setShowLogoutConfirm(false);
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   return (
     <section
       id="relume"
       className="fixed inset-0 bottom-auto z-[999] mx-auto mt-5 flex w-full bg-white px-[5%] md:mt-6 lg:mx-[5%] lg:w-auto lg:px-0"
     >
       <div className="mx-auto flex min-h-16 w-full max-w-xxl items-center justify-between gap-x-4 gap-y-4 border border-black bg-white px-5 md:min-h-18 md:px-8">
-        <a href={logo.url}>
-          <img src={logo.src} alt={logo.alt} />
+        <a href={logo.url} className="group block">
+          <img 
+            src="/logo.png" 
+            alt={logo.alt} 
+            className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-300"
+            style={{ mixBlendMode: 'multiply' }}
+          />
         </a>
         <button
           ref={buttonRef}
@@ -129,20 +151,26 @@ export const Navbar14 = (props: Navbar14Props) => {
                 ),
               )}
               <div className="rt-4 mt-4 flex flex-col items-center gap-4 lg:ml-8 lg:mt-0 lg:flex-row">
-                {isAuthenticated ? (
+                {isLoading ? (
+                  // Loading skeleton to prevent flash
+                  <>
+                    <div className="h-9 w-24 bg-gray-200 animate-pulse rounded" />
+                    <div className="h-9 w-24 bg-gray-200 animate-pulse rounded" />
+                  </>
+                ) : isAuthenticated ? (
                   <>
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => router.push('/dashboard')}
+                      onClick={() => router.push('/quiz')}
                       className="w-full lg:w-auto"
                     >
-                      Dashboard
+                      Practice Quiz
                     </Button>
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => logout()}
+                      onClick={() => setShowLogoutConfirm(true)}
                       className="w-full lg:w-auto"
                     >
                       Logout
@@ -172,6 +200,16 @@ export const Navbar14 = (props: Navbar14Props) => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmation
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        userName={user?.name}
+        isLoading={isLoggingOut}
+        variant="main"
+      />
     </section>
   );
 };
@@ -242,12 +280,11 @@ const SubMenu = ({ navLink, isMobile }: { navLink: NavLink; isMobile: boolean })
 export const Navbar14Defaults: Props = {
   logo: {
     url: "/",
-    src: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
+    src: "/logo.png",
     alt: "BrainReef Logo",
   },
   navLinks: [
     { title: "Dashboard", url: "/dashboard" },
-    { title: "Quiz", url: "/quiz" },
     { title: "Blog", url: "/blog" },
     {
       title: "Resources",

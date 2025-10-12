@@ -9,6 +9,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const difficulty = searchParams.get('difficulty')
     const featured = searchParams.get('featured')
+    const showInHomePreview = searchParams.get('showInHomePreview')
+    const orderBy = searchParams.get('orderBy')
 
     const where: Record<string, unknown> = {}
     
@@ -26,6 +28,17 @@ export async function GET(request: NextRequest) {
     
     if (featured === 'true') {
       where.featured = true
+    }
+
+    if (showInHomePreview === 'true') {
+      where.showInHomePreview = true
+      where.status = 'ACTIVE' // Only show active sets in home preview
+    }
+
+    // Set orderBy based on parameter
+    let orderByClause: any = { createdAt: 'desc' }
+    if (orderBy === 'homePreviewPosition') {
+      orderByClause = { homePreviewPosition: 'asc' }
     }
 
     const mcqSets = await prisma.mCQSet.findMany({
@@ -51,9 +64,7 @@ export async function GET(request: NextRequest) {
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: orderByClause
     })
 
     // Calculate statistics for each set
@@ -77,6 +88,9 @@ export async function GET(request: NextRequest) {
         tags: set.tags,
         companies: set.companies,
         featured: set.featured,
+        showInHomePreview: set.showInHomePreview,
+        homePreviewPosition: set.homePreviewPosition,
+        bannerImage: set.bannerImage,
         status: set.status,
         createdAt: set.createdAt,
         updatedAt: set.updatedAt,

@@ -5,6 +5,7 @@ import type { ButtonProps } from "@relume_io/relume-ui";
 import { MotionValue, useMotionValue, motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { RxChevronRight } from "react-icons/rx";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import React from "react";
 
@@ -107,41 +108,66 @@ const FeatureSection = ({
 const FeatureSectionContent = ({
   isEven,
   ...featureSection
-}: FeatureSectionProps & { isEven: boolean }) => (
-  <React.Fragment>
-    <div
-      className={clsx(
-        "order-first flex flex-col justify-center p-6 md:p-8 lg:p-12",
-        isEven ? "md:order-first" : "md:order-last",
-      )}
-    >
-      <p className="mb-2 font-semibold">{featureSection.tagline}</p>
-      <h2 className="rb-5 mb-5 text-4xl font-bold leading-[1.2] md:mb-6 md:text-5xl lg:text-6xl">
-        {featureSection.heading}
-      </h2>
-      <p>{featureSection.description}</p>
-      <div className="mt-6 flex items-center gap-x-4 md:mt-8">
-        {featureSection.buttons.map((button, index) => (
-          <Button key={index} {...button}>
-            {button.title}
-          </Button>
-        ))}
+}: FeatureSectionProps & { isEven: boolean }) => {
+  const router = useRouter();
+
+  const handleButtonClick = (buttonTitle: string) => {
+    // Map button titles to routes
+    const routeMap: { [key: string]: string } = {
+      "Explore Resources": "/dashboard",
+      "Start Practice": "/quiz",
+      "View Tests": "/quiz",
+      "Join Community": "/blog",
+      "Explore": "/blog",
+      "Get Started Free": "/register",
+      "Learn More": "/dashboard",
+      "Our Mission": "/blog",
+    };
+
+    const route = routeMap[buttonTitle] || "/dashboard";
+    router.push(route);
+  };
+
+  return (
+    <React.Fragment>
+      <div
+        className={clsx(
+          "order-first flex flex-col justify-center p-6 md:p-8 lg:p-12",
+          isEven ? "md:order-first" : "md:order-last",
+        )}
+      >
+        <p className="mb-2 font-semibold">{featureSection.tagline}</p>
+        <h2 className="rb-5 mb-5 text-4xl font-bold leading-[1.2] md:mb-6 md:text-5xl lg:text-6xl">
+          {featureSection.heading}
+        </h2>
+        <p>{featureSection.description}</p>
+        <div className="mt-6 flex items-center gap-x-4 md:mt-8">
+          {featureSection.buttons.map((button, index) => (
+            <Button 
+              key={index} 
+              {...button}
+              onClick={() => button.title && handleButtonClick(button.title)}
+            >
+              {button.title}
+            </Button>
+          ))}
+        </div>
       </div>
-    </div>
-    <div
-      className={clsx(
-        "order-last flex flex-col items-center justify-center p-6 md:p-8",
-        isEven ? "md:order-last" : "md:order-first",
-      )}
-    >
-      <img 
-        src={featureSection.image.src} 
-        alt={featureSection.image.alt}
-        className="w-full h-full object-cover rounded-lg shadow-lg"
-      />
-    </div>
-  </React.Fragment>
-);
+      <div
+        className={clsx(
+          "order-last flex flex-col items-center justify-center p-6 md:p-8",
+          isEven ? "md:order-last" : "md:order-first",
+        )}
+      >
+        <img 
+          src={featureSection.image.src} 
+          alt={featureSection.image.alt}
+          className="w-full h-full object-cover rounded-lg shadow-lg"
+        />
+      </div>
+    </React.Fragment>
+  );
+};
 
 export const Layout409Defaults: Props = {
   tagline: "Why Choose BrainReef",

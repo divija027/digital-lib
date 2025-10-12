@@ -14,7 +14,8 @@ import {
   Search, 
   BookOpen,
   Filter,
-  TrendingUp
+  TrendingUp,
+  Home
 } from 'lucide-react'
 
 // Custom components and hooks
@@ -101,8 +102,20 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Back to Home Button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Button
+          onClick={() => window.location.href = '/'}
+          variant="outline"
+          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
+        >
+          <BookOpen className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+      </div>
+
       {/* Header Section */}
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white pt-20">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">

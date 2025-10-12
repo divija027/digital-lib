@@ -49,8 +49,13 @@ export const Footer4 = (props: Footer4Props) => {
     <footer id="relume" className="px-[5%] py-12 md:py-18 lg:py-20 bg-white">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 items-center justify-center justify-items-center gap-x-[4vw] gap-y-12 pb-12 md:pb-18 lg:grid-cols-[0.25fr_1fr_0.25fr] lg:justify-between lg:gap-y-4 lg:pb-20">
-          <Link href={logo.url || '#'} className="lg:justify-self-start">
-            <img src={logo.src} alt={logo.alt} className="inline-block h-8" />
+          <Link href={logo.url || '#'} className="lg:justify-self-start group block">
+            <img 
+              src="/logo.png" 
+              alt={logo.alt} 
+              className="h-10 w-auto object-contain transition-transform group-hover:scale-105 duration-300"
+              style={{ mixBlendMode: 'multiply' }}
+            />
           </Link>
           {columnLinks.map((column, index) => (
             <ul
@@ -99,7 +104,7 @@ export const Footer4 = (props: Footer4Props) => {
 export const Footer4Defaults: Props = {
   logo: {
     url: "/dashboard",
-    src: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
+    src: "/logo.png",
     alt: "Brainreef Logo",
   },
   columnLinks: [

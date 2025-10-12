@@ -230,37 +230,20 @@ export default function MCQSelectPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40">
-      {/* Header with smooth scroll animation */}
-      <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-        navbarVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-4">
-                <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                  <Home className="w-5 h-5" />
-                  <span className="text-sm font-medium">Home</span>
-                </Link>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-                <div className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-semibold text-gray-900">Quiz Center</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-3 py-1.5 font-medium">
-                  {filteredSets.length} Available
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Back to Home Button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Button
+          onClick={() => router.push('/')}
+          variant="outline"
+          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
+        >
+          <Home className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
       </div>
 
-      {/* Main Content - Add top padding to account for fixed header */}
-      <div className="pt-16">
+      {/* Main Content */}
+      <div className="pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className={`text-center mb-16 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>

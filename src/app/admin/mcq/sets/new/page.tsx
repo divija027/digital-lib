@@ -37,6 +37,7 @@ interface MCQSet {
   questionTimeLimit?: number   // Time per question in seconds (Option 2)
   tags: string[]
   featured: boolean
+  showInHomePreview: boolean
   companies: string[]
 }
 
@@ -55,6 +56,7 @@ export default function CreateMCQSetPage() {
     questionTimeLimit: 90,
     tags: [],
     featured: false,
+    showInHomePreview: false,
     companies: []
   })
   const [currentTag, setCurrentTag] = useState('')
@@ -375,6 +377,20 @@ export default function CreateMCQSetPage() {
                   />
                   <Label htmlFor="featured">Mark as Featured</Label>
                 </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="showInHomePreview"
+                    checked={formData.showInHomePreview}
+                    onChange={(e) => handleInputChange('showInHomePreview', e.target.checked)}
+                    className="rounded"
+                  />
+                  <Label htmlFor="showInHomePreview">Show in Home Page Preview</Label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Note: After creating the MCQ set, you can upload a banner image from the MCQ Sets management page.
+                </p>
               </CardContent>
             </Card>
 
