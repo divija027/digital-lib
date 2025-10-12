@@ -15,7 +15,8 @@ import {
   User,
   Brain,
   PenTool,
-  Loader2
+  Loader2,
+  FileText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LogoutConfirmation } from '@/components/LogoutConfirmation'
@@ -40,6 +41,15 @@ const navigationItems = [
       { title: 'All Branches', href: '/admin/branches' },
       { title: 'Add New Branch', href: '/admin/branches/new' },
       { title: 'Reorder Branches', href: '/admin/branches/reorder' }
+    ]
+  },
+  {
+    title: 'PDF Management',
+    href: '/admin/pdfs',
+    icon: FileText,
+    children: [
+      { title: 'Upload PDF', href: '/admin/pdfs' },
+      { title: 'All PDFs', href: '/admin/pdfs' }
     ]
   },
   {

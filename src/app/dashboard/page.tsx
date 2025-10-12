@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
+import { Footer4 } from '@/components/Footer4'
 import { 
   BookOpen, 
   GraduationCap,
@@ -117,57 +118,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12 rounded-2xl p-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-gray-900">BrainReef</span>
-            </div>
-            <p className="text-sm text-gray-600">
-              Your comprehensive VTU study materials platform.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Resources</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>Question Papers</li>
-              <li>Study Notes</li>
-              <li>Syllabus</li>
-              <li>Previous Year Papers</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Branches</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>Computer Science</li>
-              <li>Information Science</li>
-              <li>Electronics & Communication</li>
-              <li>Mechanical Engineering</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>Help Center</li>
-              <li>Contact Us</li>
-              <li>Report Issue</li>
-              <li>Request Content</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 pt-8 mt-8">
-          <p className="text-center text-sm text-gray-600">
-            © 2024 BrainReef. All rights reserved. Made for VTU students.
-          </p>
-        </div>
-      </footer>
+      <Footer4 />
     </div>
   )
 }

@@ -59,10 +59,36 @@ model Subject {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Relations
+  pdfs        PDF[]
+
   @@map("subjects")
 }
 
+model PDF {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  fileName    String
+  fileSize    Int      // Size in bytes
+  r2Key       String   @unique // Unique key/ID for R2 storage
+  branch      String   // Branch code (CS, EC, ME, etc.)
+  semester    Int
+  subjectId   String
+  uploadedBy  String   // Admin user ID
+  downloads   Int      @default(0)
+  views       Int      @default(0)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  // Relations
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([branch, semester])
+  @@index([subjectId])
+  @@map("pdfs")
+}
 
 enum Role {
   STUDENT
