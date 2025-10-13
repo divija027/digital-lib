@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,7 +20,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Upload, FileText, X, Loader2, CheckCircle } from 'lucide-react'
+import { Upload, FileText, Loader2 } from 'lucide-react'
+import { validatePDFFile, validateUploadFields } from '@/lib/validators/pdf'
+import { MAX_PDF_SIZE, formatFileSize } from '@/lib/constants/upload'
 
 interface Subject {
   id: string
@@ -35,6 +38,33 @@ interface Branch {
   isActive: boolean
 }
 
+/**
+ * PDFUpload Component
+ * 
+ * Admin component for uploading PDF files to R2 storage.
+ * Features:
+ * - Branch, semester, and subject selection
+ * - File validation (type and size)
+ * - Upload progress indication
+ * - Toast notifications for user feedback
+ * - Auto-fills title from filename
+ * - Emits 'pdf-uploaded' event on success for parent components to refresh
+ * 
+ * @example
+ * ```tsx
+ * <PDFUpload />
+ * 
+ * // Listen for upload events in parent component:
+ * useEffect(() => {
+ *   const handleUpload = (e: CustomEvent) => {
+ *     console.log('PDF uploaded:', e.detail)
+ *     refreshPDFList()
+ *   }
+ *   window.addEventListener('pdf-uploaded', handleUpload)
+ *   return () => window.removeEventListener('pdf-uploaded', handleUpload)
+ * }, [])
+ * ```
+ */
 export function PDFUpload() {
   const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState('')
@@ -74,10 +104,12 @@ export function PDFUpload() {
         const data = await response.json()
         const activeBranches = (data.branches || []).filter((b: Branch) => b.isActive)
         setBranches(activeBranches)
+      } else {
+        throw new Error('Failed to fetch branches')
       }
     } catch (error) {
       console.error('Error fetching branches:', error)
-      alert('Failed to load branches')
+      toast.error('Failed to load branches. Please refresh the page.')
     } finally {
       setLoadingBranches(false)
     }
@@ -94,10 +126,12 @@ export function PDFUpload() {
           ? (data.subjects || []).filter((s: Subject) => s.semester === parseInt(semester))
           : (data.subjects || [])
         setSubjects(filteredSubjects)
+      } else {
+        throw new Error('Failed to fetch subjects')
       }
     } catch (error) {
       console.error('Error fetching subjects:', error)
-      alert('Failed to load subjects')
+      toast.error('Failed to load subjects. Please select a different branch or semester.')
     } finally {
       setLoadingSubjects(false)
     }
@@ -105,46 +139,60 @@ export function PDFUpload() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
-    if (selectedFile) {
-      if (selectedFile.type !== 'application/pdf') {
-        alert('Invalid file type. Please select a PDF file')
-        return
-      }
+    if (!selectedFile) return
 
-      if (selectedFile.size > 25 * 1024 * 1024) {
-        alert('File too large. Maximum file size is 25MB')
-        return
-      }
-
-      setFile(selectedFile)
-      if (!title) {
-        setTitle(selectedFile.name.replace('.pdf', ''))
-      }
+    // Validate file using shared validator
+    const validation = validatePDFFile(selectedFile)
+    if (!validation.isValid) {
+      toast.error(validation.error || 'Invalid file')
+      e.target.value = '' // Reset file input
+      return
     }
+
+    setFile(selectedFile)
+    
+    // Auto-fill title from filename if empty
+    if (!title) {
+      setTitle(selectedFile.name.replace('.pdf', ''))
+    }
+    
+    toast.success(`File selected: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!file || !title || !branchCode || !semester || !subjectId) {
-      alert('Please fill in all required fields')
+    // Validate all required fields
+    const validation = validateUploadFields({
+      file: file!,
+      title,
+      branch: branchCode,
+      semester,
+      subjectId,
+    })
+
+    if (!validation.isValid) {
+      toast.error(validation.error || 'Please fill in all required fields')
       return
     }
 
     setIsUploading(true)
     setUploadProgress(0)
 
+    // Show loading toast
+    const uploadToast = toast.loading('Uploading PDF...')
+
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', file!)
       formData.append('title', title)
       formData.append('description', description)
-      formData.append('branch', branchCode) // Use branch code for API
+      formData.append('branch', branchCode)
       formData.append('semester', semester)
       formData.append('subjectId', subjectId)
       formData.append('featured', featured.toString())
 
-      // Simulate progress
+      // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => Math.min(prev + 10, 90))
       }, 300)
@@ -164,31 +212,40 @@ export function PDFUpload() {
 
       const data = await response.json()
 
-      alert('PDF uploaded successfully!')
+      // Dismiss loading toast and show success
+      toast.success(data.message || 'PDF uploaded successfully!', { id: uploadToast })
 
       // Reset form
-      setFile(null)
-      setTitle('')
-      setDescription('')
-      setBranchId('')
-      setBranchCode('')
-      setSemester('')
-      setSubjectId('')
-      setFeatured(false)
-      setUploadProgress(0)
+      resetForm()
 
-      // Reset file input
-      const fileInput = document.getElementById('file-upload') as HTMLInputElement
-      if (fileInput) fileInput.value = ''
-      
-      // Trigger a page reload to refresh the PDF list
-      window.location.reload()
+      // Emit custom event for parent components to refresh data
+      window.dispatchEvent(new CustomEvent('pdf-uploaded', { detail: data.pdf }))
     } catch (error) {
       console.error('Upload error:', error)
-      alert(`Upload failed: ${error instanceof Error ? error.message : 'Failed to upload PDF'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload PDF'
+      toast.error(errorMessage, { id: uploadToast })
     } finally {
       setIsUploading(false)
     }
+  }
+
+  /**
+   * Reset form to initial state
+   */
+  const resetForm = () => {
+    setFile(null)
+    setTitle('')
+    setDescription('')
+    setBranchId('')
+    setBranchCode('')
+    setSemester('')
+    setSubjectId('')
+    setFeatured(false)
+    setUploadProgress(0)
+
+    // Reset file input
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement
+    if (fileInput) fileInput.value = ''
   }
 
   return (
@@ -216,7 +273,7 @@ export function PDFUpload() {
               {file && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <FileText className="w-4 h-4" />
-                  <span>{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                  <span>{formatFileSize(file.size)}</span>
                 </div>
               )}
             </div>

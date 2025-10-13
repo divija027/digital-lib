@@ -22,15 +22,12 @@ export default function RegisterPage() {
           {/* Header */}
           <div className="text-center">
             <Link href="/" className="inline-flex items-center justify-center group">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mr-2 sm:mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <GraduationCap className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                  BrainReef
-                </h1>
-                
-              </div>
+              <img 
+                src="/logocropped.jpg" 
+                alt="BrainReef Logo" 
+                className="h-16 sm:h-20 w-auto object-contain transition-transform group-hover:scale-105 duration-300 drop-shadow-md"
+                style={{ mixBlendMode: 'multiply', filter: 'contrast(1.1) brightness(1.05)' }}
+              />
             </Link>
             
             <div className="mt-4 sm:mt-6">

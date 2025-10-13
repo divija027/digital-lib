@@ -452,29 +452,6 @@ export default function MCQSelectPage() {
             </div>
           </div>
         )}
-
-        {/* Bottom CTA */}
-        <div className={`text-center mt-16 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200 max-w-4xl mx-auto shadow-xl">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Trophy className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">Ready to Excel?</h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have improved their interview skills with our comprehensive practice tests and detailed explanations.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                <Target className="w-5 h-5 mr-2" />
-                Take Assessment
-              </Button>
-              <Button variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2 border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-300">
-                <Brain className="w-5 h-5 mr-2" />
-                Browse All Quizzes
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
       </div>
     </div>

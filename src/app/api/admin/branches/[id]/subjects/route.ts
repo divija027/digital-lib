@@ -34,7 +34,7 @@ export async function GET(
       ]
     })
 
-    const formattedSubjects = subjects.map(subject => {
+    const formattedSubjects = await Promise.all(subjects.map(async subject => {
       let metadata: SubjectMetadata = {}
       try {
         if (subject.description) {
@@ -44,12 +44,31 @@ export async function GET(
         metadata = {}
       }
 
+      const subjectName = metadata.subjectName || subject.name.replace(`BRANCH_${branchId}_SUBJECT_`, '')
+      const subjectCode = metadata.subjectCode || ''
+      const semester = metadata.semester || 1
+
+      // Try to find corresponding Subject table entry
+      let actualSubjectId = subject.id // Default to category ID
+      const subjectRecord = await prisma.subject.findFirst({
+        where: {
+          code: subjectCode,
+          semester: semester,
+        }
+      })
+
+      // If found, use the Subject table ID instead
+      if (subjectRecord) {
+        actualSubjectId = subjectRecord.id
+      }
+
       return {
-        id: subject.id,
-        name: metadata.subjectName || subject.name.replace(`BRANCH_${branchId}_SUBJECT_`, ''),
-        code: metadata.subjectCode || '',
+        id: actualSubjectId, // Use Subject table ID if exists, otherwise Category ID
+        categoryId: subject.id, // Keep original category ID for reference
+        name: subjectName,
+        code: subjectCode,
         description: metadata.subjectDescription || '',
-        semester: metadata.semester || 1,
+        semester: semester,
         credits: metadata.credits || 3,
         isCore: metadata.isCore !== false,
         isActive: metadata.isActive !== false,
@@ -57,7 +76,7 @@ export async function GET(
         createdAt: subject.createdAt,
         updatedAt: subject.updatedAt
       }
-    })
+    }))
 
     return Response.json({
       success: true,

@@ -159,7 +159,8 @@ export default function SubjectPage() {
 
         // Fetch branch data
         const branchResponse = await fetch('/api/admin/branches')
-        const branchesData = await branchResponse.json()
+        const branchesResponse = await branchResponse.json()
+        const branchesData = branchesResponse.success ? branchesResponse.branches : []
         const branch = branchesData.find((b: Branch) => b.code === branchCode)
 
         if (!branch) {
@@ -171,12 +172,14 @@ export default function SubjectPage() {
 
         // Fetch subjects for this branch
         const subjectsResponse = await fetch(`/api/admin/branches/${branch.id}/subjects`)
-        const subjectsData: Subject[] = await subjectsResponse.json()
+        const subjectsResponseData = await subjectsResponse.json()
+        const subjectsData: Subject[] = Array.isArray(subjectsResponseData) ? subjectsResponseData : (subjectsResponseData.subjects || [])
 
         // Filter subjects based on semester
         let filteredSubjects: Subject[]
         if (semester === 'physics-cycle' || semester === 'chemistry-cycle') {
-          filteredSubjects = subjectsData.filter(s => s.semester === null)
+          // Physics and Chemistry cycles use semester 1 subjects
+          filteredSubjects = subjectsData.filter(s => s.semester === 1)
         } else {
           const semesterNumber = parseInt(semester)
           filteredSubjects = subjectsData.filter(s => s.semester === semesterNumber)
@@ -214,13 +217,15 @@ export default function SubjectPage() {
         const semesterNum = semester === 'physics-cycle' || semester === 'chemistry-cycle' ? '1' : semester
         
         // Fetch PDFs for this subject
+        console.log(`Fetching PDFs: branch=${branchCode}, semester=${semesterNum}, subjectId=${currentSubject.id}`)
         const response = await fetch(`/api/admin/pdfs?branch=${branchCode}&semester=${semesterNum}&subjectId=${currentSubject.id}`)
         
         if (response.ok) {
           const data = await response.json()
+          console.log('Fetched PDFs:', data)
           setPdfs(data || [])
         } else {
-          console.error('Failed to fetch PDFs')
+          console.error('Failed to fetch PDFs, status:', response.status)
           setPdfs([])
         }
       } catch (error) {
@@ -242,24 +247,20 @@ export default function SubjectPage() {
     type: pdf.featured ? 'Featured' : 'Study Material',
     semester: semester,
     fileName: pdf.fileName,
-    fileSize: `${(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB`,
+    fileSize: pdf.fileSize > 0 ? `${(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB` : 'Unknown',
     downloadCount: pdf.downloads,
     uploadDate: pdf.createdAt,
     isVerified: true,
     hasAnswers: false,
     isRealPDF: true,
     r2Key: pdf.r2Key,
+    publicUrl: (pdf as any).publicUrl || null, // Use public URL if available
     pdfId: pdf.id,
     description: pdf.description
   }))
 
-  // Get mock question papers (only if no real PDFs exist)
-  const mockPapers = pdfs.length === 0 && currentSubject 
-    ? getQuestionPapers(currentSubject.name, branchData?.code || '', semester)
-    : []
-  
-  // Combine real and mock papers
-  const questionPapers = [...realPapers, ...mockPapers]
+  // Only use real PDFs - no mock data
+  const questionPapers = realPapers
   
   // Filter papers based on search and filters
   const filteredPapers = questionPapers.filter(paper => {
@@ -300,9 +301,35 @@ export default function SubjectPage() {
   }
 
   const handleDownload = async (paper: any) => {
-    if (paper.isRealPDF && paper.pdfId) {
+    if (paper.isRealPDF && paper.publicUrl) {
       try {
-        // For real PDFs, fetch from API
+        // Fetch the PDF as blob to force download
+        const response = await fetch(paper.publicUrl)
+        if (!response.ok) throw new Error('Failed to fetch PDF')
+        
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = paper.fileName || 'document.pdf'
+        document.body.appendChild(a)
+        a.click()
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        
+        // Track download count (optional)
+        fetch(`/api/admin/pdfs/${paper.pdfId}/track-download`, { 
+          method: 'POST' 
+        }).catch(err => console.error('Failed to track download:', err))
+      } catch (error) {
+        console.error('Download error:', error)
+        alert('Failed to download file. Please try again.')
+      }
+    } else if (paper.isRealPDF && paper.pdfId) {
+      // Fallback: try API route if publicUrl not available
+      try {
         const response = await fetch(`/api/pdfs/${paper.pdfId}/download`)
         if (response.ok) {
           const blob = await response.blob()
@@ -329,8 +356,16 @@ export default function SubjectPage() {
   }
 
   const handlePreview = (paper: any) => {
-    if (paper.isRealPDF && paper.pdfId) {
-      // For real PDFs, open in new tab
+    if (paper.isRealPDF && paper.publicUrl) {
+      // Use public URL for direct preview
+      window.open(paper.publicUrl, '_blank')
+      
+      // Track view count (optional)
+      fetch(`/api/admin/pdfs/${paper.pdfId}/track-view`, { 
+        method: 'POST' 
+      }).catch(err => console.error('Failed to track view:', err))
+    } else if (paper.isRealPDF && paper.pdfId) {
+      // Fallback: try API route if publicUrl not available
       window.open(`/api/pdfs/${paper.pdfId}/view`, '_blank')
     } else {
       // Mock preview for demo papers
@@ -375,123 +410,6 @@ export default function SubjectPage() {
           </Button>
           <ChevronRight className="w-4 h-4" />
           <span className="font-medium text-gray-900">{currentSubject.name}</span>
-        </div>
-
-        {/* Subject Header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 mb-8">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-6">
-              <div className={`w-20 h-20 rounded-3xl flex items-center justify-center ${
-                currentSubject.type === 'lab' ? 'bg-green-100' : 
-                currentSubject.type === 'project' ? 'bg-purple-100' : 'bg-blue-100'
-              }`}>
-                <FileText className={`w-10 h-10 ${
-                  currentSubject.type === 'lab' ? 'text-green-600' : 
-                  currentSubject.type === 'project' ? 'text-purple-600' : 'text-blue-600'
-                }`} />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">{currentSubject.name}</h1>
-                <p className="text-xl text-gray-600 mb-4">{currentSubject.code} - Question Papers</p>
-                <div className="flex items-center gap-4 mb-4">
-                  <Badge variant="default" className="text-sm">{currentSubject.credits} Credits</Badge>
-                  <Badge variant="outline" className="text-sm">{currentSubject.type}</Badge>
-                  <Badge variant="secondary" className="text-sm">
-                    {semester === 'physics-cycle' ? 'Physics Cycle' : 
-                     semester === 'chemistry-cycle' ? 'Chemistry Cycle' : 
-                     `Semester ${semester}`}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <FileText className="w-6 h-6 text-blue-600 mx-auto mb-1" />
-                    <div className="font-bold text-lg">{questionPapers.length}</div>
-                    <div className="text-sm text-gray-600">Question Papers</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <Calendar className="w-6 h-6 text-green-600 mx-auto mb-1" />
-                    <div className="font-bold text-lg">{availableYears.length}</div>
-                    <div className="text-sm text-gray-600">Years Available</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <Download className="w-6 h-6 text-purple-600 mx-auto mb-1" />
-                    <div className="font-bold text-lg">{questionPapers.reduce((sum, paper) => sum + paper.downloadCount, 0)}</div>
-                    <div className="text-sm text-gray-600">Total Downloads</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <Star className="w-6 h-6 text-yellow-600 mx-auto mb-1" />
-                    <div className="font-bold text-lg">{questionPapers.filter(p => p.isVerified).length}</div>
-                    <div className="text-sm text-gray-600">Verified Papers</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsBookmarked(!isBookmarked)}
-                className={isBookmarked ? 'bg-yellow-50 border-yellow-300' : ''}
-              >
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current text-yellow-500' : ''}`} />
-                {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(`/dashboard/${branchSlug}/semester/${semester}/subjects`)}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Subjects
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search question papers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-3">
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Types</option>
-                  {availableTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-                <select
-                  value={filterYear}
-                  onChange={(e) => setFilterYear(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Years</option>
-                  {availableYears.map(year => (
-                    <option key={year} value={year.toString()}>{year}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-600">
-                {filteredPapers.length} of {questionPapers.length} papers
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Question Papers */}

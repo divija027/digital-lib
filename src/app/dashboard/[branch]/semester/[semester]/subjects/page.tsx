@@ -28,6 +28,7 @@ interface Subject {
   credits: number
   isCore: boolean
   isActive: boolean
+  resourceCount?: number
 }
 
 interface Branch {
@@ -54,7 +55,10 @@ export default function SubjectsPage() {
   const branchSlug = params?.branch as string
   const semester = params?.semester as string
   
-  const semesterNumber = parseInt(semester)
+  // Handle physics-cycle and chemistry-cycle as semester 1
+  const semesterNumber = (semester === 'physics-cycle' || semester === 'chemistry-cycle') 
+    ? 1 
+    : parseInt(semester)
 
   useEffect(() => {
     const fetchBranchCode = async () => {
@@ -97,7 +101,27 @@ export default function SubjectsPage() {
             const semesterSubjects = subjectsData.subjects.filter(
               (s: Subject) => s.isActive && s.semester === semesterNumber
             )
-            setSubjects(semesterSubjects)
+            
+            // Fetch PDF counts for each subject
+            const subjectsWithCounts = await Promise.all(
+              semesterSubjects.map(async (subject: Subject) => {
+                try {
+                  const pdfResponse = await fetch(
+                    `/api/admin/pdfs?branch=${branchCode}&semester=${semesterNumber}&subjectId=${subject.id}`
+                  )
+                  if (pdfResponse.ok) {
+                    const pdfs = await pdfResponse.json()
+                    return { ...subject, resourceCount: Array.isArray(pdfs) ? pdfs.length : 0 }
+                  }
+                  return { ...subject, resourceCount: 0 }
+                } catch (error) {
+                  console.error(`Error fetching PDFs for subject ${subject.id}:`, error)
+                  return { ...subject, resourceCount: 0 }
+                }
+              })
+            )
+            
+            setSubjects(subjectsWithCounts)
           }
         } else {
           setError('Branch not found or inactive')
@@ -211,36 +235,6 @@ export default function SubjectsPage() {
             </div>
           </div>
 
-          {/* Search and Controls */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search subjects..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/80 border-gray-200 focus:border-blue-500"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-              >
-                <Grid3X3 className="w-4 h-4 mr-2" />
-                Grid
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-              >
-                <List className="w-4 h-4 mr-2" />
-                List
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* No subjects message */}
@@ -311,7 +305,7 @@ export default function SubjectsPage() {
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
                               <FileText className="w-4 h-4" />
-                              <span>0 Resources</span>
+                              <span>{subject.resourceCount || 0} Resource{subject.resourceCount !== 1 ? 's' : ''}</span>
                             </div>
                           </div>
                           <Button

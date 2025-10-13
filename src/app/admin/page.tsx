@@ -258,19 +258,35 @@ export default function AdminDashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/admin/users'}
+                >
                   <Users className="h-4 w-4 mr-2" />
                   Manage Users
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/admin/mcq/sets/new'}
+                >
                   <Brain className="h-4 w-4 mr-2" />
                   Create MCQ Set
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/admin/blog'}
+                >
                   <FileText className="h-4 w-4 mr-2" />
                   Write Blog Post
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/admin/branches'}
+                >
                   <BookOpen className="h-4 w-4 mr-2" />
                   Manage Subjects
                 </Button>
