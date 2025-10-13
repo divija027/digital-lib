@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "pdfs" ADD COLUMN     "publicUrl" TEXT;
+ALTER TABLE "pdfs" ADD COLUMN IF NOT EXISTS "publicUrl" TEXT;
 
--- DropTable
-DROP TABLE "public"."site_settings";
+-- DropTable (conditional - only drop if exists)
+DROP TABLE IF EXISTS "public"."site_settings";
