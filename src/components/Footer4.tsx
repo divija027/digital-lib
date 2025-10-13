@@ -51,10 +51,10 @@ export const Footer4 = (props: Footer4Props) => {
         <div className="grid grid-cols-1 items-center justify-center justify-items-center gap-x-[4vw] gap-y-12 pb-12 md:pb-18 lg:grid-cols-[0.25fr_1fr_0.25fr] lg:justify-between lg:gap-y-4 lg:pb-20">
           <Link href={logo.url || '#'} className="lg:justify-self-start group block">
             <img 
-              src="/logo.png" 
+              src="/logocropped.jpg" 
               alt={logo.alt} 
-              className="h-10 w-auto object-contain transition-transform group-hover:scale-105 duration-300"
-              style={{ mixBlendMode: 'multiply' }}
+              className="h-14 md:h-16 w-auto max-w-[220px] md:max-w-[280px] lg:max-w-[320px] object-contain transition-transform group-hover:scale-105 duration-300 drop-shadow-sm"
+              style={{ mixBlendMode: 'multiply', filter: 'contrast(1.1) brightness(1.05)' }}
             />
           </Link>
           {columnLinks.map((column, index) => (
@@ -104,7 +104,7 @@ export const Footer4 = (props: Footer4Props) => {
 export const Footer4Defaults: Props = {
   logo: {
     url: "/dashboard",
-    src: "/logo.png",
+    src: "/logocropped.jpg",
     alt: "Brainreef Logo",
   },
   columnLinks: [
@@ -127,8 +127,8 @@ export const Footer4Defaults: Props = {
   ],
   footerText: "© 2025 Brainreef. All rights reserved.",
   footerLinks: [
-    { title: "Privacy Policy", url: "#" },
-    { title: "Terms of Service", url: "#" },
-    { title: "Cookies Settings", url: "#" },
+    { title: "Privacy Policy", url: "/privacy-policy" },
+    { title: "Terms of Service", url: "/terms-of-service" },
+    { title: "Cookie Settings", url: "/cookie-settings" },
   ],
 }

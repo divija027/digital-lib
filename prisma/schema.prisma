@@ -72,6 +72,7 @@ model PDF {
   fileName    String
   fileSize    Int      // Size in bytes
   r2Key       String   @unique // Unique key/ID for R2 storage
+  publicUrl   String?  // R2 public URL for direct access
   branch      String   // Branch code (CS, EC, ME, etc.)
   semester    Int
   subjectId   String

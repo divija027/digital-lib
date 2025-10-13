@@ -85,10 +85,10 @@ export const Navbar14 = (props: Navbar14Props) => {
       <div className="mx-auto flex min-h-16 w-full max-w-xxl items-center justify-between gap-x-4 gap-y-4 border border-black bg-white px-5 md:min-h-18 md:px-8">
         <a href={logo.url} className="group block">
           <img 
-            src="/logo.png" 
+            src="/logocropped.jpg" 
             alt={logo.alt} 
-            className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-300"
-            style={{ mixBlendMode: 'multiply' }}
+            className="h-10 md:h-11 w-auto max-w-[160px] md:max-w-[200px] lg:max-w-[220px] object-contain transition-transform group-hover:scale-105 duration-300 drop-shadow-sm"
+            style={{ mixBlendMode: 'multiply', filter: 'contrast(1.1) brightness(1.05)' }}
           />
         </a>
         <button
@@ -280,7 +280,7 @@ const SubMenu = ({ navLink, isMobile }: { navLink: NavLink; isMobile: boolean })
 export const Navbar14Defaults: Props = {
   logo: {
     url: "/",
-    src: "/logo.png",
+    src: "/logocropped.jpg",
     alt: "BrainReef Logo",
   },
   navLinks: [

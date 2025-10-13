@@ -15,20 +15,30 @@ async function fetchBranchData() {
   
   try {
     // Use absolute URL for client-side, relative for server-side
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-    const response = await fetch(`${baseUrl}/api/admin/branches`)
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+    const response = await fetch(`${baseUrl}/api/admin/branches`, {
+      cache: 'no-store'
+    })
+    
+    if (!response.ok) {
+      console.error(`API responded with status: ${response.status}`)
+      return []
+    }
+    
     const data = await response.json()
     
-    if (data.success) {
+    if (data.success && Array.isArray(data.branches)) {
       branchCache = data.branches
       cacheTimestamp = now
       return data.branches
+    } else {
+      console.error('Invalid API response format:', data)
+      return []
     }
   } catch (error) {
     console.error('Error fetching branches:', error)
+    return []
   }
-  
-  return []
 }
 
 // Dynamic function to find branch code from slug

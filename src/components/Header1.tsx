@@ -119,7 +119,7 @@ export const Header1Defaults: Props = {
     { title: "Practice Quiz", variant: "secondary" },
   ],
   image: {
-    src: "/female-employee-with-black-laptop-having-video-call-having-fun 2.jpg",
+    src: "/herosec.jpg",
     alt: "Student studying with laptop",
   },
 };

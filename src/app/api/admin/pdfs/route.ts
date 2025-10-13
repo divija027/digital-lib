@@ -1,22 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { nanoid } from 'nanoid'
-import { getR2Service } from '@/lib/r2-client'
+import { getR2Service, createR2Client, getR2Config } from '@/lib/r2-client'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
 import { isAdminAllowed } from '@/lib/admin-rbac'
+import {
+  MAX_PDF_SIZE,
+  ALLOWED_MIME_TYPES,
+  UPLOAD_ERROR_MESSAGES,
+  UPLOAD_SUCCESS_MESSAGES,
+} from '@/lib/constants/upload'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60 // 60 seconds for large file uploads
 
-// GET - List all PDFs with filtering
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const branch = searchParams.get('branch')
-    const semester = searchParams.get('semester')
-    const subjectId = searchParams.get('subjectId')
-    const featured = searchParams.get('featured')
+/**
+ * Logger utility for structured error logging
+ */
+const logger = {
+  error: (context: string, error: unknown, metadata?: Record<string, any>) => {
+    console.error(`[PDF API Error] ${context}:`, {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      ...metadata,
+    })
+  },
+  info: (message: string, metadata?: Record<string, any>) => {
+    console.log(`[PDF API] ${message}`, metadata || '')
+  },
+}
 
+/**
+ * GET /api/admin/pdfs
+ * List all PDFs with optional filtering by branch, semester, subject, and featured status
+ */
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const branch = searchParams.get('branch')
+  const semester = searchParams.get('semester')
+  const subjectId = searchParams.get('subjectId')
+  const featured = searchParams.get('featured')
+
+  try {
     const where: any = {}
     if (branch) where.branch = branch
     if (semester) where.semester = parseInt(semester)
@@ -35,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(pdfs)
   } catch (error) {
-    console.error('Error fetching PDFs:', error)
+    logger.error('Fetching PDFs', error, { branch, semester, subjectId, featured })
     return NextResponse.json(
       { error: 'Failed to fetch PDFs' },
       { status: 500 }
@@ -43,22 +69,49 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Upload new PDF
+/**
+ * POST /api/admin/pdfs
+ * Upload a new PDF file to R2 storage and save metadata to database
+ * 
+ * @param request - NextRequest with FormData containing:
+ *   - file: PDF file (required, max 25MB)
+ *   - title: PDF title (required)
+ *   - description: Optional description
+ *   - branch: Branch code (required, e.g., 'CSE', 'ISE')
+ *   - semester: Semester number (required, 1-8)
+ *   - subjectId: Subject ID (required)
+ *   - featured: Boolean flag for featured content (optional)
+ * 
+ * @returns JSON response with uploaded PDF metadata or error
+ * 
+ * Process:
+ * 1. Authenticate and authorize user
+ * 2. Validate form data and file
+ * 3. Verify subject exists (Subject table, fallback to Category table)
+ * 4. Upload file to R2 storage
+ * 5. Save metadata to database
+ */
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
     const auth = await getCurrentUser(request)
     if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { error: UPLOAD_ERROR_MESSAGES.UNAUTHORIZED }, 
+        { status: 401 }
+      )
     }
 
     // Check admin access
     if (!isAdminAllowed(auth.email, auth.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json(
+        { error: UPLOAD_ERROR_MESSAGES.FORBIDDEN }, 
+        { status: 403 }
+      )
     }
 
     const formData = await request.formData()
-    const file = formData.get('file') as File
+    const file = formData.get('file') as File | null
     const title = formData.get('title') as string
     const description = formData.get('description') as string | null
     const branch = formData.get('branch') as string
@@ -68,138 +121,160 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!file || !title || !branch || !semester || !subjectId) {
+      const missingFields = []
+      if (!file) missingFields.push('file')
+      if (!title) missingFields.push('title')
+      if (!branch) missingFields.push('branch')
+      if (!semester) missingFields.push('semester')
+      if (!subjectId) missingFields.push('subjectId')
+      
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: `${UPLOAD_ERROR_MESSAGES.MISSING_REQUIRED_FIELDS}: ${missingFields.join(', ')}` },
         { status: 400 }
       )
     }
 
-    // Validate file type (only PDF)
-    if (file.type !== 'application/pdf') {
+    // Validate file type
+    if (file.type !== ALLOWED_MIME_TYPES.PDF) {
       return NextResponse.json(
-        { error: 'Only PDF files are allowed' },
+        { error: UPLOAD_ERROR_MESSAGES.INVALID_FILE_TYPE },
         { status: 400 }
       )
     }
 
-    // Validate file size (max 25MB)
-    const maxSize = 25 * 1024 * 1024 // 25MB
-    if (file.size > maxSize) {
+    // Validate file size
+    if (file.size > MAX_PDF_SIZE) {
       return NextResponse.json(
-        { error: 'File size exceeds 25MB limit' },
+        { error: UPLOAD_ERROR_MESSAGES.FILE_TOO_LARGE },
         { status: 400 }
       )
     }
 
-    // Verify subject exists (check Category table since subjects are stored there)
-    const subject = await prisma.category.findUnique({
+    // Verify subject exists (check Subject table first, then Category table as fallback)
+    let subjectRecord = await prisma.subject.findUnique({
       where: { id: subjectId },
     })
 
-    if (!subject) {
-      return NextResponse.json(
-        { error: 'Subject not found. Please select a valid subject.' },
-        { status: 404 }
-      )
-    }
+    let subjectName = ''
+    let subjectCode = ''
 
-    // Extract subject metadata
-    let subjectMetadata: any = {}
-    try {
-      if (subject.description) {
-        subjectMetadata = JSON.parse(subject.description)
+    if (subjectRecord) {
+      // Found in Subject table
+      subjectName = subjectRecord.name
+      subjectCode = subjectRecord.code
+    } else {
+      // Fallback: check Category table for backwards compatibility
+      const categorySubject = await prisma.category.findUnique({
+        where: { id: subjectId },
+      })
+
+      if (!categorySubject) {
+        return NextResponse.json(
+          { error: UPLOAD_ERROR_MESSAGES.SUBJECT_NOT_FOUND },
+          { status: 404 }
+        )
       }
-    } catch {
-      subjectMetadata = {}
+
+      // Extract subject metadata from category
+      let subjectMetadata: any = {}
+      try {
+        if (categorySubject.description) {
+          subjectMetadata = JSON.parse(categorySubject.description)
+        }
+      } catch {
+        subjectMetadata = {}
+      }
+
+      subjectName = subjectMetadata.subjectName || categorySubject.name
+      subjectCode = subjectMetadata.subjectCode || ''
+
+      // Try to find or create corresponding Subject table entry
+      const existingSubject = await prisma.subject.findFirst({
+        where: {
+          code: subjectCode,
+          semester: parseInt(semester),
+        }
+      })
+
+      if (existingSubject) {
+        subjectRecord = existingSubject
+      } else if (subjectName && subjectCode) {
+        // Create Subject record
+        try {
+          subjectRecord = await prisma.subject.create({
+            data: {
+              name: subjectName,
+              code: subjectCode,
+              semester: parseInt(semester),
+              description: subjectMetadata.subjectDescription || null,
+            }
+          })
+        } catch (createError) {
+          logger.error('Creating subject record', createError, { 
+            subjectName, 
+            subjectCode, 
+            semester 
+          })
+          // If creation fails, try to find again (may exist due to race condition)
+          const foundSubject = await prisma.subject.findFirst({
+            where: {
+              OR: [
+                { code: subjectCode },
+                { name: subjectName }
+              ]
+            }
+          })
+          if (foundSubject) {
+            subjectRecord = foundSubject
+          }
+        }
+      }
     }
 
-    const subjectName = subjectMetadata.subjectName || subject.name
-    const subjectCode = subjectMetadata.subjectCode || ''
-
-    // Generate unique R2 key (this is the unique ID)
+    // Generate unique R2 key
     const uniqueId = nanoid(16)
-    const r2Key = `${uniqueId}.pdf` // Just the unique ID + extension, no directories
+    const r2Key = `pdfs/${branch}/${semester}/${uniqueId}.pdf`
+    const actualFileName = file.name
+    const actualFileSize = file.size
 
-    // Get R2 service
-    const r2Service = getR2Service()
-
-    // Upload file to R2
+    // Upload file to R2 directly using S3 SDK
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Generate presigned URL for upload
-    const uploadUrl = await r2Service.generatePresignedUploadUrl(
-      r2Key,
-      'application/pdf',
-      300 // 5 minutes
-    )
+    try {
+      const r2Client = createR2Client()
+      const r2Config = getR2Config()
+      
+      const uploadCommand = new PutObjectCommand({
+        Bucket: r2Config.bucketName,
+        Key: r2Key,
+        Body: buffer,
+        ContentType: ALLOWED_MIME_TYPES.PDF,
+      })
 
-    // Upload to R2 using presigned URL
-    const uploadResponse = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: buffer,
-      headers: {
-        'Content-Type': 'application/pdf',
-      },
-    })
-
-    if (!uploadResponse.ok) {
-      throw new Error('Failed to upload file to R2')
+      await r2Client.send(uploadCommand)
+      logger.info('PDF uploaded to R2', { r2Key, fileName: actualFileName, size: actualFileSize })
+    } catch (uploadError) {
+      logger.error('R2 upload', uploadError, { r2Key, fileName: actualFileName })
+      throw new Error(UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED)
     }
 
-    // Check if we need to create a Subject record for this category
-    let actualSubjectId = subjectId
-    
-    // Try to find if Subject already exists with this code
-    let subjectRecord = await prisma.subject.findFirst({
-      where: {
-        code: subjectCode,
-        semester: parseInt(semester),
-      }
-    })
+    // Get R2 service for public URL generation
+    const r2Service = getR2Service()
+    const finalPublicUrl = r2Service.getPublicUrl(r2Key)
 
-    // If not, create one from the category data
-    if (!subjectRecord && subjectName && subjectCode) {
-      try {
-        subjectRecord = await prisma.subject.create({
-          data: {
-            name: subjectName,
-            code: subjectCode,
-            semester: parseInt(semester),
-            description: subjectMetadata.subjectDescription || null,
-          }
-        })
-        actualSubjectId = subjectRecord.id
-      } catch (createError: any) {
-        console.error('Error creating subject record:', createError)
-        // If creation fails (e.g., duplicate), try to find again
-        const existingSubject = await prisma.subject.findFirst({
-          where: {
-            OR: [
-              { code: subjectCode },
-              { name: subjectName }
-            ]
-          }
-        })
-        if (existingSubject) {
-          actualSubjectId = existingSubject.id
-        } else {
-          throw new Error(`Failed to create or find subject record: ${createError.message}`)
-        }
-      }
-    } else if (subjectRecord) {
-      actualSubjectId = subjectRecord.id
-    }
+    // Use the subjectId from Subject record if available, otherwise use the provided subjectId
+    const actualSubjectId = subjectRecord?.id || subjectId
 
-    // Save metadata to database with the unique r2Key as ID
-    // @ts-ignore - Prisma client type issue, will work at runtime
+    // Save metadata to database
     const pdf = await prisma.pDF.create({
       data: {
         title,
         description: description || null,
-        fileName: file.name,
-        fileSize: file.size,
-        r2Key, // This is the unique ID
+        fileName: actualFileName,
+        fileSize: actualFileSize,
+        r2Key,
+        publicUrl: finalPublicUrl as any, // Type assertion instead of @ts-ignore
         branch,
         semester: parseInt(semester),
         subjectId: actualSubjectId,
@@ -211,13 +286,20 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    logger.info('PDF created in database', { 
+      pdfId: pdf.id, 
+      title: pdf.title, 
+      branch, 
+      semester 
+    })
+
     return NextResponse.json({
       success: true,
       pdf,
-      message: 'PDF uploaded successfully',
+      message: UPLOAD_SUCCESS_MESSAGES.UPLOAD_SUCCESS,
     })
   } catch (error) {
-    console.error('Error uploading PDF:', error)
+    logger.error('Uploading PDF', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to upload PDF' },
       { status: 500 }

@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Fetch branch data from API
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/admin/branches`)
-    const branches = await response.json()
+    const data = await response.json()
+    const branches = data.success ? data.branches : []
     const branchData = branches.find((b: { code: string }) => b.code === branchCode)
     
     if (!branchData) {

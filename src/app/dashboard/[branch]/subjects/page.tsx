@@ -28,6 +28,7 @@ interface Subject {
   credits: number
   isCore: boolean
   isActive: boolean
+  resourceCount?: number
 }
 
 interface Branch {
@@ -92,7 +93,27 @@ export default function SubjectsPage() {
           if (subjectsData.success) {
             // For cycles, don't filter by semester - show all active subjects
             const activeSubjects = subjectsData.subjects.filter((s: Subject) => s.isActive)
-            setSubjects(activeSubjects)
+            
+            // Fetch PDF counts for each subject
+            const subjectsWithCounts = await Promise.all(
+              activeSubjects.map(async (subject: Subject) => {
+                try {
+                  // For Physics/Chemistry, use semester 1
+                  const semester = (branchCode === 'PHYSICS' || branchCode === 'CHEMISTRY') ? 1 : subject.semester
+                  const pdfResponse = await fetch(
+                    `/api/admin/pdfs?branch=${branchCode}&semester=${semester}&subjectId=${subject.id}`
+                  )
+                  const pdfData = await pdfResponse.json()
+                  const count = Array.isArray(pdfData) ? pdfData.length : 0
+                  return { ...subject, resourceCount: count }
+                } catch (err) {
+                  console.error(`Error fetching PDFs for subject ${subject.id}:`, err)
+                  return { ...subject, resourceCount: 0 }
+                }
+              })
+            )
+            
+            setSubjects(subjectsWithCounts)
           }
         } else {
           setError('Branch not found or inactive')
@@ -297,12 +318,18 @@ export default function SubjectsPage() {
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
                               <FileText className="w-4 h-4" />
-                              <span>0 Resources</span>
+                              <span>{subject.resourceCount || 0} Resource{subject.resourceCount !== 1 ? 's' : ''}</span>
                             </div>
                           </div>
                           <Button
                             size="sm"
-                            onClick={() => router.push(`/dashboard/${branchSlug}/subjects/${subjectToSlug(subject.name)}`)}
+                            onClick={() => {
+                              // For Physics/Chemistry cycles, route to semester-based path
+                              const semesterPath = branch.code === 'PHYSICS' ? 'physics-cycle' 
+                                : branch.code === 'CHEMISTRY' ? 'chemistry-cycle'
+                                : subject.semester.toString()
+                              router.push(`/dashboard/${branchSlug}/semester/${semesterPath}/subject/${subjectToSlug(subject.name)}`)
+                            }}
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Eye className="w-4 h-4 mr-2" />
@@ -346,7 +373,13 @@ export default function SubjectsPage() {
                           </Button>
                           <Button
                             size="sm"
-                            onClick={() => router.push(`/dashboard/${branchSlug}/subjects/${subjectToSlug(subject.name)}`)}
+                            onClick={() => {
+                              // For Physics/Chemistry cycles, route to semester-based path
+                              const semesterPath = branch.code === 'PHYSICS' ? 'physics-cycle' 
+                                : branch.code === 'CHEMISTRY' ? 'chemistry-cycle'
+                                : subject.semester.toString()
+                              router.push(`/dashboard/${branchSlug}/semester/${semesterPath}/subject/${subjectToSlug(subject.name)}`)
+                            }}
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View

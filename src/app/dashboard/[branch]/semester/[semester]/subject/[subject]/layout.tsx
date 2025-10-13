@@ -45,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     // Fetch branch data
     const branchResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches`)
-    const branchesData = await branchResponse.json()
+    const branchesResponse = await branchResponse.json()
+    const branchesData = branchesResponse.success ? branchesResponse.branches : []
     const branchData = branchesData.find((b: Branch) => b.code === branchCode)
 
     if (!branchData) {
@@ -57,17 +58,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     // Fetch subjects for this branch
     const subjectsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/branches/${branchData.id}/subjects`)
-    const subjects: Subject[] = await subjectsResponse.json()
+    const subjectsData = await subjectsResponse.json()
+    const subjects: Subject[] = Array.isArray(subjectsData) ? subjectsData : (subjectsData.subjects || [])
 
     let semesterNumber: number | string
     let filteredSubjects: Subject[]
 
     if (semester === 'physics-cycle') {
       semesterNumber = 'Physics Cycle'
-      filteredSubjects = subjects.filter(s => s.semester === null)
+      // Physics cycle uses semester 1 subjects
+      filteredSubjects = subjects.filter(s => s.semester === 1)
     } else if (semester === 'chemistry-cycle') {
       semesterNumber = 'Chemistry Cycle'
-      filteredSubjects = subjects.filter(s => s.semester === null)
+      // Chemistry cycle uses semester 1 subjects
+      filteredSubjects = subjects.filter(s => s.semester === 1)
     } else {
       semesterNumber = parseInt(semester)
       filteredSubjects = subjects.filter(s => s.semester === semesterNumber)
