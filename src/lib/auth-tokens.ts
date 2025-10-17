@@ -137,7 +137,7 @@ export const findUserByEmail = async (email: string) => {
   })
 }
 
-export default {
+const authTokens = {
   createToken,
   setVerificationToken,
   setPasswordResetToken,
@@ -148,3 +148,5 @@ export default {
   findUserByEmail,
   getTokenExpiry
 }
+
+export default authTokens

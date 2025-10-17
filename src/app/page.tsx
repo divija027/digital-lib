@@ -11,6 +11,7 @@ import { Header1 } from '@/components/Header1'
 import { Navbar14 } from '@/components/Navbar14'
 import { Layout375 } from '@/components/Layout375'
 import { Layout409 } from '@/components/Layout409'
+import { EventSection } from '@/components/EventSection'
 
 /**
  * Home Page Component
@@ -22,6 +23,7 @@ import { Layout409 } from '@/components/Layout409'
  * - Hero (Header1): Main hero section with CTA
  * - MCQ Section (Layout375): Interactive quiz features showcase
  * - Features (Layout409): Why choose BrainReef section
+ * - Events (EventSection): Upcoming events and workshops
  * - Blog Preview (BlogSection): Latest blog posts
  * - Footer (Footer4): Site footer with links
  */
@@ -70,6 +72,9 @@ export default function Home() {
 
         {/* Features/Benefits Section - Why choose BrainReef */}
         <Layout409 />
+
+        {/* Events Section - Upcoming events and workshops */}
+        <EventSection />
 
         {/* Blog Preview Section - Latest articles */}
         <BlogSection />

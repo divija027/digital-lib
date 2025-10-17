@@ -229,75 +229,77 @@ export function MarkdownEditorWithImages({
 
   return (
     <div className={`w-full ${className}`}>
-      {/* Featured Image Section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="w-5 h-5" />
-            Featured Image
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {featuredImageUrl ? (
-            <div className="space-y-4">
-              <div className="relative">
-                <img
-                  src={featuredImageUrl}
-                  alt="Featured image"
-                  className="w-full max-w-md h-48 object-cover rounded-lg border"
-                />
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={removeFeaturedImage}
-                  className="absolute top-2 right-2"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                This image will be used as the blog post banner
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  id="featured-image"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      handleFeaturedImageUpload(file)
-                    }
-                  }}
-                  className="hidden"
-                />
-                <label htmlFor="featured-image" className="cursor-pointer">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="p-3 rounded-full bg-muted">
-                      <Upload className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Upload Featured Image</p>
-                      <p className="text-sm text-muted-foreground">
-                        Choose an image for your blog post banner
-                      </p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              {featuredImageUploading && (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                  <span className="text-sm text-muted-foreground">Uploading featured image...</span>
+      {/* Featured Image Section - Only show if onFeaturedImageChange is provided */}
+      {onFeaturedImageChange && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ImageIcon className="w-5 h-5" />
+              Featured Image
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {featuredImageUrl ? (
+              <div className="space-y-4">
+                <div className="relative">
+                  <img
+                    src={featuredImageUrl}
+                    alt="Featured image"
+                    className="w-full max-w-md h-48 object-cover rounded-lg border"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={removeFeaturedImage}
+                    className="absolute top-2 right-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <p className="text-sm text-muted-foreground">
+                  This image will be used as the blog post banner
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                  <input
+                    type="file"
+                    id="featured-image"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        handleFeaturedImageUpload(file)
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <label htmlFor="featured-image" className="cursor-pointer">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="p-3 rounded-full bg-muted">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Upload Featured Image</p>
+                        <p className="text-sm text-muted-foreground">
+                          Choose an image for your blog post banner
+                        </p>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+                {featuredImageUploading && (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    <span className="text-sm text-muted-foreground">Uploading featured image...</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex items-center justify-between mb-4">
@@ -495,6 +497,7 @@ export function MarkdownEditorWithImages({
                 {markdownButtons.map((button, index) => (
                   <Button
                     key={index}
+                    type="button"
                     variant="outline"
                     size="sm"
                     onClick={button.action}
@@ -505,6 +508,7 @@ export function MarkdownEditorWithImages({
                   </Button>
                 ))}
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
                   onClick={addCodeBlock}
@@ -515,6 +519,7 @@ export function MarkdownEditorWithImages({
                   Block
                 </Button>
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setShowImagePanel(!showImagePanel)}
