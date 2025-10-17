@@ -299,3 +299,55 @@ model BlogLike {
   @@unique([postId, userId])
   @@map("blog_likes")
 }
+
+// Event Models
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   // Short description for cards
+  content     String   // Full markdown content for event details
+  imageUrl    String   // Featured image (shows in cards/listings)
+  
+  // Event details
+  eventDate   DateTime // When the event happens
+  location    String   // Online/Offline location
+  speaker     String   // Speaker name (deprecated - use speakers array)
+  type        String   // Workshop, Seminar, Webinar, Conference
+  category    String   // Category for filtering
+  duration    String   // e.g., "3 hours"
+  price       String   // e.g., "Free", "$10"
+  
+  // Event schedule (JSON array of schedule items)
+  schedule    Json?    // [{ time: "2:00 PM", title: "Registration", description: "..." }]
+  
+  // Event speakers (JSON array of speaker details)
+  speakers    Json?    // [{ name: "John Doe", designation: "CEO", company: "Tech Corp", image: "url", bio: "..." }]
+  
+  // Timer
+  countdownIsoDate String? // ISO date for countdown timer
+  
+  // Display settings
+  featured    Boolean  @default(false) // Show on home page
+  published   Boolean  @default(false)
+  archived    Boolean  @default(false) // Archived events (hidden from public, kept for records)
+  views       Int      @default(0)
+  showInHomePage Boolean @default(false) // Show in home page events section (max 3)
+  
+  bannerImage String? // Banner image for event detail page header
+  registrationLink String? // External link for event registration
+  
+  // Registration analytics
+  registrationClicks Int @default(0) // Total number of clicks on Register Now button
+  uniqueRegistrationUsers String[] @default([]) // Array of unique user fingerprints who clicked
+  
+  // SEO
+  seoTitle    String?
+  seoDescription String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+}

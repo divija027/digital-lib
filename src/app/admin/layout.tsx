@@ -16,7 +16,8 @@ import {
   Brain,
   PenTool,
   Loader2,
-  FileText
+  FileText,
+  Calendar
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LogoutConfirmation } from '@/components/LogoutConfirmation'
@@ -82,6 +83,15 @@ const navigationItems = [
       { title: 'Overview', href: '/admin/mcq' },
       { title: 'Question Sets', href: '/admin/mcq?tab=sets' },
       { title: 'Bulk Upload', href: '/admin/mcq?tab=upload' }
+    ]
+  },
+  {
+    title: 'Event Management',
+    href: '/admin/events',
+    icon: Calendar,
+    children: [
+      { title: 'All Events', href: '/admin/events' },
+      { title: 'Create Event', href: '/admin/events/create' }
     ]
   }
 ]

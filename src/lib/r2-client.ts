@@ -108,10 +108,10 @@ export function validateFile(file: { type: string; size: number; name: string })
 
 // Generate unique file key for R2
 export function generateFileKey(originalName: string, category: string = 'uploads'): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { nanoid } = require('nanoid')
   const timestamp = Date.now()
   const randomId = nanoid(10)
-  const extension = originalName.split('.').pop()?.toLowerCase() || ''
   
   // Create a safe filename
   const safeName = originalName

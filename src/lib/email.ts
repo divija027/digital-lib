@@ -322,9 +322,11 @@ export const EMAIL_EXPIRY = {
 } as const
 
 // Default export for backwards compatibility
-export default {
+const emailService = {
   sendVerificationEmail,
   sendPasswordResetEmail,
   generateToken,
   EMAIL_EXPIRY
 }
+
+export default emailService
